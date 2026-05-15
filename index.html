@@ -11,12 +11,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .landing-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .landing-btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+        .btn-criar {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+        }
+        .btn-criar:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.6); }
+        .btn-login {
+            background: transparent;
+            border: 2px solid #30363d;
+            color: #c9d1d9;
+        }
+        .btn-login:hover { border-color: #8b5cf6; color: #fff; }
+        .btn-super {
+            background: rgba(245,158,11,0.1);
+            border: 2px solid rgba(245,158,11,0.3);
+            color: #f59e0b;
+        }
+        .btn-super:hover { background: rgba(245,158,11,0.2); }
+        .preview-badge {
+            display: inline-block;
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: #f59e0b;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 20px;
+        }
+        .btn-admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #30363d;
+            color: #a0a0b8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .btn-admin-link:hover { border-color: #8b5cf6; color: #fff; }
+        .btn-super-link { border-color: rgba(245,158,11,0.3); color: #f59e0b; }
+        .btn-super-link:hover { border-color: #f59e0b; }
+    </style>
 </head>
 <body>
 
     <div class="container-lt">
+        <!-- HEADER -->
         <header class="header-lt" id="header-lt">
             <div class="console-line">
+                <img src="favicon.png" alt="Logo" style="width:20px;height:20px;border-radius:4px;object-fit:cover;">
                 <span class="console-dot dot-green"></span>
                 <span class="console-dot dot-yellow"></span>
                 <span class="console-dot dot-red"></span>
@@ -24,17 +91,64 @@
             </div>
         </header>
 
-        <section class="profile-section" id="profile-section"></section>
-        <section class="links-section" id="links-section"></section>
-        <section class="media-section" id="media-section"></section>
+        <!-- BOTÕES DE AÇÃO -->
+        <div class="landing-buttons">
+            <a href="cadastro.html" class="landing-btn btn-criar">🚀 Criar Minha Conta</a>
+            <a href="admin.html" class="landing-btn btn-login">🔐 Fazer Login</a>
+            <a href="super-admin.html" class="landing-btn btn-super">👑 Super Admin</a>
+        </div>
 
-        <div style="text-align:center; margin-top:16px;" id="meu-link"></div>
+        <div style="text-align:center;">
+            <span class="preview-badge">👁️ Prévia - Veja como seu perfil pode ficar</span>
+        </div>
 
-        <div style="text-align:center; margin-top:24px; display:none; justify-content:center; gap:10px; flex-wrap:wrap;" id="botoes-admin">
+        <!-- PERFIL DE EXEMPLO -->
+        <section class="profile-section">
+            <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div>
+            <h1 class="profile-name">@seunome</h1>
+            <p class="profile-bio">// sua bio personalizada aqui ✨</p>
+        </section>
+
+        <!-- LINKS DE EXEMPLO -->
+        <section class="links-section">
+            <a href="#" class="link-btn" onclick="return false;">
+                <span class="link-icon">💻</span>
+                <span>Meu GitHub</span>
+                <span class="link-arrow">→</span>
+            </a>
+            <a href="#" class="link-btn" onclick="return false;">
+                <span class="link-icon">📱</span>
+                <span>Instagram</span>
+                <span class="link-arrow">→</span>
+            </a>
+            <a href="#" class="link-btn" onclick="return false;">
+                <span class="link-icon">🌐</span>
+                <span>Meu Portfólio</span>
+                <span class="link-arrow">→</span>
+            </a>
+            <a href="#" class="link-btn" onclick="return false;">
+                <span class="link-icon">📺</span>
+                <span>Canal do YouTube</span>
+                <span class="link-arrow">→</span>
+            </a>
+        </section>
+
+        <!-- MÍDIA DE EXEMPLO -->
+        <section class="media-section">
+            <div class="media-card">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTÕES ADMIN -->
+        <div style="text-align:center; margin-top:24px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
             <a href="admin.html" class="btn-admin-link">⚙️ Meu Painel</a>
             <a href="super-admin.html" class="btn-admin-link btn-super-link">👑 Super Admin</a>
         </div>
 
+        <!-- FOOTER -->
         <footer class="footer-lt" id="footer-lt">
             <div class="footer-tags">
                 <span class="tag-lt">Firebase</span>
@@ -42,7 +156,7 @@
                 <span class="tag-lt">CMS</span>
                 <span class="tag-lt">Planos</span>
             </div>
-            <p>© 2024 Divulga Link BR</p>
+            <p>© 2024 Divulga Link BR - Crie seu perfil gratuitamente</p>
         </footer>
     </div>
 
@@ -50,7 +164,5 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="app.js"></script>
 </body>
 </html>
