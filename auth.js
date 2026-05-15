@@ -29,11 +29,7 @@ auth.onAuthStateChanged(async (user) => {
             if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
         }
     } else {
-        // Só redireciona para cadastro se estiver tentando acessar admin/super-admin
-        if (path.includes('admin.html') || path.includes('super-admin.html')) {
-            window.location.href = 'cadastro.html';
-        }
-        // Se estiver no index, carrega a página pública (prévia estática)
+        // NÃO redireciona mais - deixa a pessoa tentar logar
         if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
     }
 });
