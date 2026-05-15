@@ -1,5 +1,5 @@
 let usuarioAtual = null;
-const SUPER_ADMIN_EMAIL = "curina@gmail.com"; // 👈 TROQUE PELO SEU EMAIL
+const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com"; // 👈 TROQUE PELO SEU EMAIL
 
 auth.onAuthStateChanged(async (user) => {
     usuarioAtual = user;
@@ -17,26 +17,32 @@ auth.onAuthStateChanged(async (user) => {
         
         if (path.includes('super-admin.html')) {
             if (user.email === SUPER_ADMIN_EMAIL) {
-                carregarSuperAdmin();
+                if (typeof carregarSuperAdmin === 'function') carregarSuperAdmin();
             } else {
-                alert('Acesso restrito ao Super Admin');
+                alert('⛔ Acesso restrito ao Super Admin');
+                auth.signOut();
                 window.location.href = 'index.html';
             }
         } else if (path.includes('admin.html')) {
-            carregarDadosAdmin();
-        } else if (path.includes('index.html') || path === '/') {
-            carregarPaginaPublica();
+            if (typeof carregarDadosAdmin === 'function') carregarDadosAdmin();
+        } else if (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br')) {
+            if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
         }
     } else {
+        // Só redireciona para cadastro se estiver tentando acessar admin/super-admin
         if (path.includes('admin.html') || path.includes('super-admin.html')) {
             window.location.href = 'cadastro.html';
         }
+        // Se estiver no index, carrega a página pública (prévia estática)
+        if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
     }
 });
 
 function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(() => alert('Erro ao fazer login com Google'));
+    auth.signInWithPopup(provider).then(() => {
+        window.location.href = 'admin.html';
+    }).catch(() => alert('Erro ao fazer login com Google'));
 }
 
 function loginEmail(email, senha) {
