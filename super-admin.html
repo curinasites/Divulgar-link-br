@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Divulga Link BR</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0d1117; font-family: 'Inter', 'JetBrains Mono', monospace; color: #c9d1d9; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: #161b22; border: 1px solid #f59e0b; border-radius: 12px;
+            padding: 14px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+        }
+        .header .title { flex: 1; font-size: 14px; color: #f59e0b; font-family: 'JetBrains Mono', monospace; }
+        .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        .btn-logout:hover { background: rgba(248,81,73,0.2); }
+        .section {
+            background: #161b22; border: 1px solid #30363d; border-radius: 16px;
+            padding: 24px; margin-bottom: 20px;
+        }
+        .section h3 { font-size: 15px; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card {
+            background: #0d1117; border: 1px solid #30363d; border-radius: 12px;
+            padding: 16px; text-align: center;
+        }
+        .stat-numero { font-size: 28px; font-weight: 800; color: #f59e0b; }
+        .stat-label { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+        .tabela { width: 100%; border-collapse: collapse; }
+        .tabela th {
+            text-align: left; padding: 10px 14px; font-size: 11px; color: #8b949e;
+            font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid #30363d;
+        }
+        .tabela td {
+            padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #21262d;
+        }
+        .tabela tr:hover { background: rgba(255,255,255,0.02); }
+        .badge-plano {
+            display: inline-block; padding: 3px 10px; border-radius: 8px;
+            font-size: 11px; font-weight: 600;
+        }
+        .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
+        .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
+        .badge-bloqueado { background: rgba(248,81,73,0.2); color: #f87171; }
+        select {
+            padding: 6px 10px; border-radius: 8px; border: 1px solid #30363d;
+            background: #0d1117; color: #c9d1d9; font-size: 12px; cursor: pointer;
+        }
+        select:focus { border-color: #f59e0b; outline: none; }
+        .btn-small {
+            background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+            color: #f59e0b; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;
+        }
+        .btn-small:hover { background: rgba(245,158,11,0.2); }
+        .btn-block {
+            background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3);
+            color: #f87171; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;
+        }
+        .btn-block:hover { background: rgba(248,81,73,0.2); }
+        .btn-unblock {
+            background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3);
+            color: #4ade80; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;
+        }
+        .btn-unblock:hover { background: rgba(74,222,128,0.2); }
+        .msg-sucesso { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+        .form-group input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+        .form-group input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <span>👑</span>
+            <div class="title">> super-admin@divulgalinkbr:~$ dashboard</div>
+            <a href="index.html" class="btn-small" style="text-decoration:none;margin-right:8px;">🏠 Site</a>
+            <button class="btn-logout" onclick="logout()">> exit</button>
+        </div>
+
+        <!-- ESTATÍSTICAS -->
+        <div class="section">
+            <h3>📊 Estatísticas Gerais</h3>
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card"><div class="stat-numero" id="stat-total">0</div><div class="stat-label">Total de Usuários</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-gratis">0</div><div class="stat-label">Plano Grátis</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-pro">0</div><div class="stat-label">Plano Pro</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-premium">0</div><div class="stat-label">Plano Premium</div></div>
+            </div>
+        </div>
+
+        <!-- USUÁRIOS -->
+        <div class="section">
+            <h3>👥 Gerenciar Usuários</h3>
+            <div style="overflow-x:auto;">
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Plano</th>
+                            <th>Status</th>
+                            <th>Alterar Plano</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-usuarios"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CONFIGURAR PLANOS -->
+        <div class="section">
+            <h3>💰 Configurar Planos e Pagamentos</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <div>
+                    <div class="form-group"><label>⭐ Preço Plano Pro (R$)</label><input type="text" id="config-preco-pro" placeholder="10"></div>
+                    <div class="form-group"><label>🔗 Link Checkout Pro (Kiwify/Hotmart)</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
+                </div>
+                <div>
+                    <div class="form-group"><label>💎 Preço Plano Premium (R$)</label><input type="text" id="config-preco-premium" placeholder="25"></div>
+                    <div class="form-group"><label>🔗 Link Checkout Premium (Kiwify/Hotmart)</label><input type="text" id="config-link-premium" placeholder="https://kiwify.com/..."></div>
+                </div>
+            </div>
+            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar Configurações</button>
+            <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
+        </div>
+
+        <p class="msg-sucesso" id="msg-sucesso">✅ Plano atualizado!</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="super-admin.js"></script>
+</body>
+</html>

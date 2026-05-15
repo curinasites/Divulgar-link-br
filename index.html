@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divulga Link BR</title>
+    <meta name="description" content="Seus links, projetos e mídia em um só lugar.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container-lt">
+        <header class="header-lt" id="header-lt">
+            <div class="console-line">
+                <span class="console-dot dot-green"></span>
+                <span class="console-dot dot-yellow"></span>
+                <span class="console-dot dot-red"></span>
+                <span class="console-text">> Divulga Link BR | online</span>
+            </div>
+        </header>
+
+        <section class="profile-section" id="profile-section"></section>
+        <section class="links-section" id="links-section"></section>
+        <section class="media-section" id="media-section"></section>
+
+        <div style="text-align:center; margin-top:16px;" id="meu-link"></div>
+
+        <div style="text-align:center; margin-top:24px; display:none; justify-content:center; gap:10px; flex-wrap:wrap;" id="botoes-admin">
+            <a href="admin.html" class="btn-admin-link">⚙️ Meu Painel</a>
+            <a href="super-admin.html" class="btn-admin-link btn-super-link">👑 Super Admin</a>
+        </div>
+
+        <footer class="footer-lt" id="footer-lt">
+            <div class="footer-tags">
+                <span class="tag-lt">Firebase</span>
+                <span class="tag-lt">Auth</span>
+                <span class="tag-lt">CMS</span>
+                <span class="tag-lt">Planos</span>
+            </div>
+            <p>© 2024 Divulga Link BR</p>
+        </footer>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

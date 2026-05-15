@@ -1,0 +1,137 @@
+  <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divulga Link BR - Criar Conta</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .cadastro-container { background: #161b22; border: 1px solid #30363d; border-radius: 20px; padding: 40px; max-width: 420px; width: 100%; text-align: center; }
+        .cadastro-container h1 { font-size: 24px; font-weight: 700; color: #f0f6fc; margin-bottom: 6px; }
+        .cadastro-container .subtitulo { font-size: 13px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 28px; }
+        .btn-google { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .btn-google:hover { border-color: #8b5cf6; background: #1c2230; }
+        .btn-google img { width: 20px; height: 20px; }
+        .divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; color: #484f58; font-size: 12px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #30363d; }
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+        .form-group input { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+        .form-group input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .btn-cadastrar { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn-cadastrar:hover { opacity: 0.9; }
+        .msg-erro { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .link-login { margin-top: 16px; font-size: 13px; color: #8b949e; }
+        .link-login a { color: #a78bfa; text-decoration: none; }
+        .planos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+        .plano-card { background: #0d1117; border: 2px solid #30363d; border-radius: 10px; padding: 14px 8px; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .plano-card:hover { border-color: #8b5cf6; }
+        .plano-card.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
+        .plano-card .plano-nome { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+        .plano-card .plano-preco { font-size: 18px; font-weight: 800; color: #a78bfa; margin: 4px 0; }
+        .plano-card .plano-desc { font-size: 10px; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <div class="cadastro-container">
+        <h1>🚀 Divulga Link BR</h1>
+        <p class="subtitulo">> crie sua conta_</p>
+        <div class="planos" id="planos">
+            <div class="plano-card ativo" data-plano="gratis" onclick="selecionarPlano('gratis')">
+                <div class="plano-nome">🌱 Grátis</div><div class="plano-preco">R$0</div><div class="plano-desc">3 links</div>
+            </div>
+            <div class="plano-card" data-plano="pro" onclick="selecionarPlano('pro')">
+                <div class="plano-nome">⭐ Pro</div><div class="plano-preco">R$10</div><div class="plano-desc">10 links + vídeos</div>
+            </div>
+            <div class="plano-card" data-plano="premium" onclick="selecionarPlano('premium')">
+                <div class="plano-nome">💎 Premium</div><div class="plano-preco">R$25</div><div class="plano-desc">Ilimitado</div>
+            </div>
+        </div>
+        <button class="btn-google" onclick="cadastrarGoogle()"><img src="https://www.google.com/favicon.ico" alt="G"> Continuar com Google</button>
+        <div class="divider">ou email</div>
+        <div class="form-group"><label>nome</label><input type="text" id="cad-nome" placeholder="Seu nome"></div>
+        <div class="form-group"><label>@nome de usuário</label><input type="text" id="cad-username" placeholder="seunome (sem espaços)" style="text-transform:lowercase;"></div>
+        <div class="form-group"><label>email</label><input type="email" id="cad-email" placeholder="seu@email.com"></div>
+        <div class="form-group"><label>senha</label><input type="password" id="cad-senha" placeholder="••••••••"></div>
+        <p class="msg-erro" id="cad-erro">Preencha todos os campos</p>
+        <button class="btn-cadastrar" onclick="cadastrarComEmail()">Criar Conta</button>
+        <div class="link-login">Já tem conta? <a href="admin.html">Fazer login</a></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        let planoSelecionado = 'gratis';
+        function selecionarPlano(p) { planoSelecionado = p; document.querySelectorAll('.plano-card').forEach(el => el.classList.remove('ativo')); document.querySelector(`[data-plano="${p}"]`).classList.add('ativo'); }
+        
+        async function cadastrarGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                const username = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
+                await db.collection('usuarios').doc(user.uid).set({
+                    nome: user.displayName || user.email.split('@')[0], email: user.email, plano: planoSelecionado,
+                    username: username,
+                    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                    perfil: { nome: user.displayName || '@' + user.email.split('@')[0], bio: 'Novo por aqui! ✨', foto: user.photoURL || '' }
+                }, { merge: true });
+                window.location.href = 'admin.html';
+            } catch (e) { document.getElementById('cad-erro').textContent = 'Erro ao cadastrar com Google'; document.getElementById('cad-erro').style.display = 'block'; }
+        }
+        
+        async function cadastrarComEmail() {
+            const nome = document.getElementById('cad-nome').value.trim();
+            const username = document.getElementById('cad-username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            const email = document.getElementById('cad-email').value.trim();
+            const senha = document.getElementById('cad-senha').value;
+            const erro = document.getElementById('cad-erro');
+            
+            if (!nome || !username || !email || !senha) { erro.textContent = 'Preencha todos os campos'; erro.style.display = 'block'; return; }
+            if (username.length < 3) { erro.textContent = 'Nome de usuário deve ter pelo menos 3 caracteres'; erro.style.display = 'block'; return; }
+            
+            const snap = await db.collection('usuarios').where('username', '==', username).get();
+            if (!snap.empty) { erro.textContent = 'Este @username já está em uso'; erro.style.display = 'block'; return; }
+            
+            try {
+                const result = await auth.createUserWithEmailAndPassword(email, senha);
+                await db.collection('usuarios').doc(result.user.uid).set({
+                    nome: nome, email: email, plano: planoSelecionado, username: username,
+                    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                    perfil: { nome: nome, bio: 'Novo por aqui! ✨', foto: '' }
+                });
+                window.location.href = 'admin.html';
+            } catch (e) {
+                erro.textContent = e.code === 'auth/email-already-in-use' ? 'Email já cadastrado' : 'Erro ao cadastrar';
+                erro.style.display = 'block';
+            }
+        }
+        
+        async function carregarPrecos() {
+            try {
+                const snap = await db.collection('config').doc('planos').get();
+                if (snap.exists) {
+                    const d = snap.data();
+                    if (d.pro?.preco) {
+                        const el = document.querySelector('[data-plano="pro"] .plano-preco');
+                        if (el) el.textContent = 'R$' + d.pro.preco;
+                    }
+                    if (d.premium?.preco) {
+                        const el = document.querySelector('[data-plano="premium"] .plano-preco');
+                        if (el) el.textContent = 'R$' + d.premium.preco;
+                    }
+                }
+            } catch(e) {}
+        }
+        carregarPrecos();
+    </script>
+</body>
+</html>

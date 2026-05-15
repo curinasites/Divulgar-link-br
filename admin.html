@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Divulga Link BR</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0d1117; font-family: 'Inter', 'JetBrains Mono', monospace; color: #c9d1d9; }
+        .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .admin-header { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; }
+        .admin-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .admin-header .dot.red { background: #f85149; } .admin-header .dot.yellow { background: #d2991d; } .admin-header .dot.green { background: #3fb950; }
+        .admin-header .title { flex: 1; font-size: 13px; color: #8b949e; min-width: 150px; }
+        .admin-header .title span { color: #a78bfa; }
+        .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+        .btn-logout:hover { background: rgba(248,81,73,0.2); }
+        .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+        .admin-section h3 { font-size: 15px; font-weight: 600; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .admin-section h3 .icon { color: #8b5cf6; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .form-group textarea { min-height: 60px; resize: vertical; }
+        .form-group select { cursor: pointer; }
+        .link-hint { font-size: 10px; color: #6a6a80; margin-top: 4px; }
+        .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
+        .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; white-space: nowrap; }
+        .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
+        .btn-upgrade { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b !important; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 11px; text-decoration: none; white-space: nowrap; display: none; }
+        .btn-upgrade:hover { background: rgba(245,158,11,0.2); }
+        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
+        .list-item .info { flex: 1; min-width: 0; }
+        .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-item .info small { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
+        .list-item .actions { display: flex; gap: 6px; }
+        .login-container { max-width: 400px; margin: 80px auto; background: #161b22; border: 1px solid #30363d; border-radius: 20px; padding: 36px; text-align: center; }
+        .login-container h2 { font-size: 22px; font-weight: 700; color: #f0f6fc; margin-bottom: 8px; }
+        .login-container .subtitle { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
+        .msg-sucesso-lt { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .msg-erro-lt { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .hidden { display: none !important; }
+        .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; transition: all 0.2s; background: #0d1117; color: #c9d1d9; }
+        .tema-preset:hover { border-color: #8b5cf6; }
+        .tema-preset.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
+        .cor-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
+        .badge-plano { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
+        .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
+        @media (max-width: 600px) { .admin-container { padding: 12px; } .admin-section { padding: 16px; } .tema-presets { grid-template-columns: 1fr; } .admin-header { gap: 8px; } }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <!-- TELA DE LOGIN -->
+        <div id="tela-login" class="login-container">
+            <h2>🔐 Divulga Link BR</h2>
+            <p class="subtitle">> authentication required</p>
+            <div class="form-group"><label>email</label><input type="email" id="login-email" placeholder="admin@email.com"></div>
+            <div class="form-group"><label>senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
+            <p class="msg-erro-lt" id="login-erro">Email ou senha incorretos</p>
+            <button class="btn-primary-lt" onclick="fazerLogin()" style="width:100%;">> entrar_</button>
+        </div>
+
+        <!-- PAINEL ADMIN -->
+        <div id="tela-admin" class="hidden">
+            <div class="admin-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
+                <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
+                <a href="#" id="btn-upgrade" class="btn-upgrade" target="_blank">🔼 Fazer Upgrade</a>
+                <a href="index.html" class="btn-small-lt" style="text-decoration:none;">🏠 ver site</a>
+                <button class="btn-logout" onclick="logout()">> exit</button>
+            </div>
+
+            <!-- TEMA -->
+            <div class="admin-section">
+                <h3><span class="icon">🎨</span> Personalizar Tema</h3>
+                <div class="form-group"><label>Presets</label>
+                    <div class="tema-presets" id="tema-presets">
+                        <div class="tema-preset ativo" data-tema="dev" onclick="aplicarPreset('dev')"><span class="cor-preview" style="background:#8b5cf6;"></span>Dev Terminal</div>
+                        <div class="tema-preset" data-tema="clean" onclick="aplicarPreset('clean')"><span class="cor-preview" style="background:#3b82f6;"></span>Clean Blue</div>
+                        <div class="tema-preset" data-tema="dark" onclick="aplicarPreset('dark')"><span class="cor-preview" style="background:#10b981;"></span>Dark Green</div>
+                        <div class="tema-preset" data-tema="rosa" onclick="aplicarPreset('rosa')"><span class="cor-preview" style="background:#ec4899;"></span>Rose Pink</div>
+                        <div class="tema-preset" data-tema="minimal" onclick="aplicarPreset('minimal')"><span class="cor-preview" style="background:#6b7280;"></span>Minimal</div>
+                        <div class="tema-preset" data-tema="warm" onclick="aplicarPreset('warm')"><span class="cor-preview" style="background:#f59e0b;"></span>Warm Orange</div>
+                        <div class="tema-preset" data-tema="cyber" onclick="aplicarPreset('cyber')"><span class="cor-preview" style="background:#a855f7;"></span>Cyber Neon</div>
+                        <div class="tema-preset" data-tema="ocean" onclick="aplicarPreset('ocean')"><span class="cor-preview" style="background:#06b6d4;"></span>Ocean Blue</div>
+                        <div class="tema-preset" data-tema="sunset" onclick="aplicarPreset('sunset')"><span class="cor-preview" style="background:#f97316;"></span>Sunset</div>
+                        <div class="tema-preset" data-tema="forest" onclick="aplicarPreset('forest')"><span class="cor-preview" style="background:#22c55e;"></span>Forest</div>
+                        <div class="tema-preset" data-tema="galaxy" onclick="aplicarPreset('galaxy')"><span class="cor-preview" style="background:#7c3aed;"></span>Galaxy</div>
+                        <div class="tema-preset" data-tema="coffee" onclick="aplicarPreset('coffee')"><span class="cor-preview" style="background:#92400e;"></span>Coffee</div>
+                    </div>
+                </div>
+                <div class="form-group"><label>🖼️ Logo do Header (URL)</label><input type="text" id="tema-logo" placeholder="https://... ou deixe vazio"><div class="link-hint">💡 Substitui os pontinhos no topo do site</div></div>
+                <button class="btn-primary-lt" onclick="salvarTema()">💾 Salvar Tema</button>
+                <p class="msg-sucesso-lt" id="tema-sucesso">✅ Tema salvo!</p>
+            </div>
+
+            <!-- PERFIL -->
+            <div class="admin-section">
+                <h3><span class="icon">👤</span> Perfil</h3>
+                <div class="form-group"><label>Nome</label><input type="text" id="perfil-nome" placeholder="@dev"></div>
+                <div class="form-group"><label>Bio</label><textarea id="perfil-bio" placeholder="full-stack developer | open source"></textarea></div>
+                <div class="form-group"><label>URL da Foto</label><input type="text" id="perfil-foto" placeholder="https://..."></div>
+                <button class="btn-primary-lt" onclick="salvarPerfil()">💾 Salvar Perfil</button>
+                <p class="msg-sucesso-lt" id="perfil-sucesso">✅ Perfil atualizado!</p>
+            </div>
+
+            <!-- LINKS -->
+            <div class="admin-section">
+                <h3><span class="icon">🔗</span> Links</h3>
+                <div class="form-group"><label>Título</label><input type="text" id="link-titulo" placeholder="Meu GitHub"></div>
+                <div class="form-group"><label>URL</label><input type="text" id="link-url" placeholder="https://github.com/..."></div>
+                <div class="form-group"><label>Ícone (emoji)</label><input type="text" id="link-icone" placeholder="💻"></div>
+                <div class="form-group"><label>Ordem (número)</label><input type="number" id="link-ordem" placeholder="1" value="1"></div>
+                <input type="hidden" id="link-id" value="">
+                <button class="btn-primary-lt" onclick="salvarLink()">💾 Salvar Link</button>
+                <button class="btn-small-lt" onclick="limparFormLink()" style="margin-left:8px;">✕ Limpar</button>
+                <p class="msg-sucesso-lt" id="link-sucesso">✅ Link salvo!</p>
+                <div id="lista-links" style="margin-top:16px;"></div>
+            </div>
+
+            <!-- MÍDIA -->
+            <div class="admin-section">
+                <h3><span class="icon">🎬</span> Mídia</h3>
+                <div class="form-group"><label>Tipo</label><select id="midia-tipo"><option value="imagem">🖼️ Imagem</option><option value="youtube">▶️ YouTube</option><option value="mp4">🎥 MP4</option></select></div>
+                <div class="form-group"><label>URL</label><input type="text" id="midia-url" placeholder="https://..."></div>
+                <div class="form-group"><label>Ordem (número)</label><input type="number" id="midia-ordem" placeholder="1" value="1"></div>
+                <input type="hidden" id="midia-id" value="">
+                <button class="btn-primary-lt" onclick="salvarMidia()">💾 Salvar Mídia</button>
+                <button class="btn-small-lt" onclick="limparFormMidia()" style="margin-left:8px;">✕ Limpar</button>
+                <p class="msg-sucesso-lt" id="midia-sucesso">✅ Mídia salva!</p>
+                <div id="lista-midias" style="margin-top:16px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
