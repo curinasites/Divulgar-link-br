@@ -16,7 +16,6 @@ const TEMAS = {
     coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloHeader: 'clean', logo: '' }
 };
 
-// ========== LIMITES POR PLANO ==========
 const LIMITES = {
     gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false },
     pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true },
@@ -62,24 +61,17 @@ async function carregarDadosAdmin() {
     const plano = await getPlanoAtual();
     const limites = LIMITES[plano];
     
-    // Badge do plano
     const badge = document.getElementById('plano-badge');
     if (badge) {
         badge.textContent = plano;
         badge.className = 'badge-plano badge-' + plano;
     }
     
-    // Botão upgrade (mostra se não for premium)
     const btnUpgrade = document.getElementById('btn-upgrade');
     if (btnUpgrade) {
-        if (plano !== 'premium') {
-            btnUpgrade.style.display = 'inline-block';
-        } else {
-            btnUpgrade.style.display = 'none';
-        }
+        btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
     }
     
-    // Logo do header
     const campoTemaLogo = document.getElementById('tema-logo');
     if (campoTemaLogo) {
         if (!limites.logo) {
@@ -91,7 +83,6 @@ async function carregarDadosAdmin() {
         }
     }
     
-    // Limitar temas
     const temasPermitidos = getTemasDisponiveis(plano);
     document.querySelectorAll('.tema-preset').forEach(el => {
         if (!temasPermitidos.includes(el.dataset.tema)) {
@@ -105,7 +96,6 @@ async function carregarDadosAdmin() {
         }
     });
     
-    // Limitar opções de mídia
     const selectMidia = document.getElementById('midia-tipo');
     if (selectMidia) {
         const optYouTube = selectMidia.querySelector('option[value="youtube"]');
@@ -114,16 +104,35 @@ async function carregarDadosAdmin() {
         if (optMP4) optMP4.disabled = !limites.mp4;
     }
     
-    // Carregar perfil
     const userDoc = await db.collection('usuarios').doc(userUID).get();
     if (userDoc.exists) {
         const d = userDoc.data();
         document.getElementById('perfil-nome').value = d.perfil?.nome || '';
         document.getElementById('perfil-bio').value = d.perfil?.bio || '';
         document.getElementById('perfil-foto').value = d.perfil?.foto || '';
+        
+        // 🔗 MOSTRAR LINK DE DIVULGAÇÃO
+        if (d.username) {
+            const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+            const link = baseURL + '?u=' + d.username;
+            let divLink = document.getElementById('meu-link-admin');
+            if (!divLink) {
+                divLink = document.createElement('div');
+                divLink.id = 'meu-link-admin';
+                divLink.style.cssText = 'text-align:center;margin-bottom:16px;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;';
+                const header = document.querySelector('.admin-header');
+                if (header) header.insertAdjacentElement('afterend', divLink);
+            }
+            divLink.innerHTML = `
+                <p style="font-size:11px;color:#8b949e;font-family:'JetBrains Mono',monospace;margin-bottom:6px;">🔗 Seu link público (copie e divulgue):</p>
+                <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+                    <code style="background:#0d1117;padding:8px 14px;border-radius:8px;font-size:12px;color:#a78bfa;">${link}</code>
+                    <button onclick="navigator.clipboard.writeText('${link}').then(()=>alert('✅ Link copiado!'))" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button>
+                </div>
+            `;
+        }
     }
     
-    // Carregar tema
     const temaSnap = await db.collection('usuarios').doc(userUID).collection('config').doc('tema').get();
     if (temaSnap.exists) {
         const t = temaSnap.data();
@@ -167,7 +176,6 @@ async function salvarPerfil() {
     mostrarSucesso('perfil-sucesso');
 }
 
-// ========== LINKS ==========
 async function salvarLink() {
     if (!document.getElementById('link-id').value) {
         const pode = await verificarLimite('links');
@@ -226,7 +234,6 @@ function limparFormLink() {
     document.getElementById('link-ordem').value = '1';
 }
 
-// ========== MÍDIA ==========
 async function salvarMidia() {
     if (!document.getElementById('midia-id').value) {
         const pode = await verificarLimite('midia');
@@ -241,11 +248,7 @@ async function salvarMidia() {
     if (tipo === 'mp4' && !limites.mp4) { alert('⚠️ Vídeos MP4 disponíveis apenas no plano Premium.'); return; }
     
     const id = document.getElementById('midia-id').value;
-    const dados = {
-        tipo: tipo,
-        url: document.getElementById('midia-url').value.trim(),
-        ordem: parseInt(document.getElementById('midia-ordem').value) || 1
-    };
+    const dados = { tipo: tipo, url: document.getElementById('midia-url').value.trim(), ordem: parseInt(document.getElementById('midia-ordem').value) || 1 };
     if (!dados.url) { alert('⚠️ URL obrigatória!'); return; }
     
     const ref = db.collection('usuarios').doc(userUID).collection('midia');
@@ -292,7 +295,6 @@ function limparFormMidia() {
     document.getElementById('midia-ordem').value = '1';
 }
 
-// ========== UTILITÁRIOS ==========
 function mostrarSucesso(id) {
     const el = document.getElementById(id);
     if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
@@ -306,4 +308,4 @@ function fazerLogin() {
     auth.signInWithEmailAndPassword(email, senha).catch(() => {
         erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
     });
-}
+           }
