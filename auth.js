@@ -15,20 +15,22 @@ auth.onAuthStateChanged(async (user) => {
             return;
         }
         
-        // Se for Super Admin e estiver tentando acessar admin normal, redireciona
-        if (user.email === SUPER_ADMIN_EMAIL && path.includes('admin.html') && !path.includes('super-admin')) {
-            window.location.href = 'super-admin.html';
-            return;
+        // 🔴 FORÇA Super Admin SEMPRE para o painel certo
+        if (user.email === SUPER_ADMIN_EMAIL) {
+            if (!path.includes('super-admin.html')) {
+                window.location.href = 'super-admin.html';
+                return;
+            } else {
+                if (typeof carregarSuperAdmin === 'function') carregarSuperAdmin();
+                return;
+            }
         }
         
+        // Usuário normal
         if (path.includes('super-admin.html')) {
-            if (user.email === SUPER_ADMIN_EMAIL) {
-                if (typeof carregarSuperAdmin === 'function') carregarSuperAdmin();
-            } else {
-                alert('⛔ Acesso restrito ao Super Admin');
-                auth.signOut();
-                window.location.href = 'index.html';
-            }
+            alert('⛔ Acesso restrito ao Super Admin');
+            auth.signOut();
+            window.location.href = 'index.html';
         } else if (path.includes('admin.html')) {
             if (typeof carregarDadosAdmin === 'function') carregarDadosAdmin();
         } else if (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br')) {
