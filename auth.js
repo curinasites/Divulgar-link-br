@@ -15,6 +15,12 @@ auth.onAuthStateChanged(async (user) => {
             return;
         }
         
+        // Se for Super Admin e estiver tentando acessar admin normal, redireciona
+        if (user.email === SUPER_ADMIN_EMAIL && path.includes('admin.html') && !path.includes('super-admin')) {
+            window.location.href = 'super-admin.html';
+            return;
+        }
+        
         if (path.includes('super-admin.html')) {
             if (user.email === SUPER_ADMIN_EMAIL) {
                 if (typeof carregarSuperAdmin === 'function') carregarSuperAdmin();
@@ -29,7 +35,6 @@ auth.onAuthStateChanged(async (user) => {
             if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
         }
     } else {
-        // NÃO redireciona mais - deixa a pessoa tentar logar
         if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
     }
 });
