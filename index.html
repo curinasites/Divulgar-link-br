@@ -12,6 +12,105 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* ========== MENU SANDUÍCHE ========== */
+        .btn-menu {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #b0b0c8;
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 300;
+            transition: all 0.3s;
+        }
+        .btn-menu:hover { background: rgba(139,92,246,0.3); color: #fff; transform: scale(1.05); }
+        .btn-menu.ativo { background: rgba(139,92,246,0.3); border-color: rgba(139,92,246,0.5); color: #fff; }
+
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 298;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .menu-overlay.ativo { display: block; opacity: 1; }
+
+        .menu-painel {
+            position: fixed;
+            top: 0; right: -300px;
+            width: 280px; height: 100%;
+            background: #161b22;
+            border-left: 1px solid #30363d;
+            z-index: 299;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+        }
+        .menu-painel.ativo { right: 0; }
+
+        .menu-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+        }
+        .menu-logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .menu-sub { font-size: 10px; color: #808098; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+
+        .menu-links { padding: 10px 0; flex: 1; }
+        .menu-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 20px;
+            color: #b0b0c0; text-decoration: none;
+            font-size: 13px; font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .menu-link:hover { background: rgba(255,255,255,0.03); color: #fff; border-left-color: #8b5cf6; }
+        .menu-link .menu-icon { font-size: 16px; width: 20px; text-align: center; }
+        .menu-link.destaque { background: rgba(139,92,246,0.08); color: #a78bfa; border-left-color: #8b5cf6; }
+        .menu-link.super { background: rgba(245,158,11,0.05); color: #f59e0b; border-left-color: #f59e0b; }
+        .menu-divider { border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 8px 16px; }
+
+        .menu-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            font-size: 10px;
+            color: #606060;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Animação hamburger */
+        .hamburger-linhas { display: flex; flex-direction: column; gap: 5px; }
+        .hamburger-linha {
+            width: 20px; height: 2px;
+            background: #b0b0c8;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .btn-menu.ativo .hamburger-linha:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .btn-menu.ativo .hamburger-linha:nth-child(2) { opacity: 0; }
+        .btn-menu.ativo .hamburger-linha:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ========== BOTÕES LANDING (escondidos no mobile) ========== */
         .landing-buttons {
             display: flex;
             justify-content: center;
@@ -28,7 +127,6 @@
             text-decoration: none;
             transition: all 0.3s;
             font-family: 'Inter', sans-serif;
-            cursor: pointer;
         }
         .btn-criar {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -59,25 +157,53 @@
             font-family: 'JetBrains Mono', monospace;
             margin-bottom: 20px;
         }
-        .btn-admin-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid #30363d;
-            color: #a0a0b8;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 12px;
-            transition: all 0.2s;
+
+        @media (max-width: 600px) {
+            .landing-buttons { display: none; }
         }
-        .btn-admin-link:hover { border-color: #8b5cf6; color: #fff; }
-        .btn-super-link { border-color: rgba(245,158,11,0.3); color: #f59e0b; }
-        .btn-super-link:hover { border-color: #f59e0b; }
     </style>
 </head>
 <body>
+
+    <!-- BOTÃO MENU SANDUÍCHE -->
+    <button class="btn-menu" id="btn-menu" onclick="toggleMenu()" title="Menu">
+        <div class="hamburger-linhas">
+            <div class="hamburger-linha"></div>
+            <div class="hamburger-linha"></div>
+            <div class="hamburger-linha"></div>
+        </div>
+    </button>
+
+    <!-- MENU OVERLAY -->
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+
+    <!-- MENU PAINEL -->
+    <div class="menu-painel" id="menu-painel">
+        <div class="menu-header">
+            <div class="menu-logo-text">Divulga Link BR</div>
+            <div class="menu-sub">> menu rápido</div>
+        </div>
+        <div class="menu-links">
+            <a href="cadastro.html" class="menu-link destaque">
+                <span class="menu-icon">🚀</span> Criar Minha Conta
+            </a>
+            <a href="admin.html" class="menu-link">
+                <span class="menu-icon">🔐</span> Fazer Login
+            </a>
+            <hr class="menu-divider">
+            <a href="admin.html" class="menu-link">
+                <span class="menu-icon">⚙️</span> Meu Painel
+            </a>
+            <a href="super-admin.html" class="menu-link super">
+                <span class="menu-icon">👑</span> Super Admin
+            </a>
+            <hr class="menu-divider">
+            <a href="#" class="menu-link" onclick="toggleMenu(); return false;">
+                <span class="menu-icon">✕</span> Fechar Menu
+            </a>
+        </div>
+        <div class="menu-footer">© 2024 Divulga Link BR</div>
+    </div>
 
     <div class="container-lt">
         <!-- HEADER -->
@@ -91,7 +217,7 @@
             </div>
         </header>
 
-        <!-- BOTÕES DE AÇÃO -->
+        <!-- BOTÕES DE AÇÃO (desktop) -->
         <div class="landing-buttons">
             <a href="cadastro.html" class="landing-btn btn-criar">🚀 Criar Minha Conta</a>
             <a href="admin.html" class="landing-btn btn-login">🔐 Fazer Login</a>
@@ -112,24 +238,16 @@
         <!-- LINKS DE EXEMPLO -->
         <section class="links-section">
             <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">💻</span>
-                <span>Meu GitHub</span>
-                <span class="link-arrow">→</span>
+                <span class="link-icon">💻</span><span>Meu GitHub</span><span class="link-arrow">→</span>
             </a>
             <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">📱</span>
-                <span>Instagram</span>
-                <span class="link-arrow">→</span>
+                <span class="link-icon">📱</span><span>Instagram</span><span class="link-arrow">→</span>
             </a>
             <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">🌐</span>
-                <span>Meu Portfólio</span>
-                <span class="link-arrow">→</span>
+                <span class="link-icon">🌐</span><span>Meu Portfólio</span><span class="link-arrow">→</span>
             </a>
             <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">📺</span>
-                <span>Canal do YouTube</span>
-                <span class="link-arrow">→</span>
+                <span class="link-icon">📺</span><span>Canal do YouTube</span><span class="link-arrow">→</span>
             </a>
         </section>
 
@@ -141,12 +259,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- BOTÕES ADMIN -->
-        <div style="text-align:center; margin-top:24px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-            <a href="admin.html" class="btn-admin-link">⚙️ Meu Painel</a>
-            <a href="super-admin.html" class="btn-admin-link btn-super-link">👑 Super Admin</a>
-        </div>
 
         <!-- FOOTER -->
         <footer class="footer-lt" id="footer-lt">
@@ -160,9 +272,23 @@
         </footer>
     </div>
 
+    <script>
+        function toggleMenu() {
+            document.getElementById('menu-painel').classList.toggle('ativo');
+            document.getElementById('menu-overlay').classList.toggle('ativo');
+            document.getElementById('btn-menu').classList.toggle('ativo');
+            document.body.style.overflow = document.getElementById('menu-painel').classList.contains('ativo') ? 'hidden' : '';
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('menu-painel').classList.contains('ativo')) toggleMenu();
+        });
+    </script>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
