@@ -30,6 +30,8 @@ function aplicarTema(tema) {
     root.style.setProperty('--card-radius', t.cardRadius);
     
     const header = document.getElementById('header-lt');
+    if (!header) return;
+    
     const logoURL = t.logo || '';
     header.innerHTML = `
         <div class="console-line">
@@ -45,15 +47,23 @@ function aplicarTema(tema) {
 async function carregarPaginaPublica() {
     let uid = null;
     
+    // Tenta carregar pelo username da URL
     if (userParam) {
-        const snap = await db.collection('usuarios').where('username', '==', userParam).get();
-        if (!snap.empty) uid = snap.docs[0].id;
-    } else if (usuarioAtual) {
+        try {
+            const snap = await db.collection('usuarios').where('username', '==', userParam).get();
+            if (!snap.empty) uid = snap.docs[0].id;
+        } catch(e) {}
+    }
+    
+    // Se não tem username, tenta o usuário logado
+    if (!uid && usuarioAtual) {
         uid = usuarioAtual.uid;
     }
     
+    // Se não tem UID, mostra a prévia (já está no HTML)
     if (!uid) {
-        window.location.href = 'cadastro.html';
+        // A prévia estática já está no index.html, não precisa fazer nada
+        aplicarTema(TEMA_PADRAO);
         return;
     }
     
@@ -77,19 +87,19 @@ async function carregarPaginaPublica() {
         
         document.title = perfil.nome || 'Divulga Link BR';
         
-        // Mostra botões admin só para o dono
+        // Mostra botões admin para o dono
         const botoesAdmin = document.getElementById('botoes-admin');
         if (botoesAdmin) {
             botoesAdmin.style.display = (usuarioAtual && usuarioAtual.uid === uid) ? 'flex' : 'none';
         }
         
-        // Mostra o link de divulgação para o dono
+        // Mostra link de divulgação
         if (usuarioAtual && usuarioAtual.uid === uid && userData?.username) {
             const linkDiv = document.getElementById('meu-link');
             if (linkDiv) {
                 const baseURL = window.location.origin + window.location.pathname;
                 linkDiv.innerHTML = `
-                    <p style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">🔗 Seu link:</p>
+                    <p style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">🔗 Seu link de divulgação:</p>
                     <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
                         <code style="background:#161b22;padding:8px 14px;border-radius:8px;font-size:12px;color:#a78bfa;">${baseURL}?u=${userData.username}</code>
                         <button onclick="copiarLink('${baseURL}?u=${userData.username}')" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button>
@@ -104,12 +114,15 @@ async function carregarPaginaPublica() {
 
 function copiarLink(link) {
     navigator.clipboard.writeText(link).then(() => {
-        alert('✅ Link copiado!');
+        alert('✅ Link copiado! Compartilhe com seus seguidores.');
+    }).catch(() => {
+        prompt('Copie seu link:', link);
     });
 }
 
 function renderizarPerfil(perfil) {
     const section = document.getElementById('profile-section');
+    if (!section) return;
     const inicial = (perfil.nome || 'D').charAt(0).toUpperCase();
     section.innerHTML = `
         ${perfil.foto ? `<img src="${perfil.foto}" class="profile-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
@@ -121,9 +134,10 @@ function renderizarPerfil(perfil) {
 
 function renderizarLinks(links) {
     const section = document.getElementById('links-section');
-    if (links.length === 0) { section.innerHTML = ''; return; }
+    if (!section) return;
+    if (links.length === 0) { section.innerHTML = '<p style="text-align:center;color:#8b949e;font-size:13px;padding:20px;">Nenhum link ainda.</p>'; return; }
     section.innerHTML = links.map((link, i) => `
-        <a href="${link.url || '#'}" class="link-btn" target="_blank" style="animation-delay:${i*0.05}s;">
+        <a href="${link.url || '#'}" class="link-btn" target="_blank" rel="noopener" style="animation-delay:${i*0.05}s;">
             <span class="link-icon">${link.icone || '🔗'}</span>
             <span>${link.titulo || 'Link'}</span>
             <span class="link-arrow">→</span>
@@ -133,16 +147,18 @@ function renderizarLinks(links) {
 
 function renderizarMidia(midias) {
     const section = document.getElementById('media-section');
+    if (!section) return;
     if (midias.length === 0) { section.innerHTML = ''; return; }
     section.innerHTML = midias.map((midia, i) => {
         let conteudo = '';
-        if (midia.tipo === 'imagem') conteudo = `<img src="${midia.url}" loading="lazy">`;
-        else if (midia.tipo === 'youtube') {
+        if (midia.tipo === 'imagem') {
+            conteudo = `<img src="${midia.url}" alt="Mídia" loading="lazy" style="width:100%;display:block;">`;
+        } else if (midia.tipo === 'youtube') {
             const vid = (midia.url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) || [])[1] || midia.url;
             conteudo = `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${vid}?rel=0" allowfullscreen></iframe></div>`;
         } else if (midia.tipo === 'mp4') {
-            conteudo = `<video controls><source src="${midia.url}" type="video/mp4"></video>`;
+            conteudo = `<video controls style="width:100%;"><source src="${midia.url}" type="video/mp4"></video>`;
         }
         return `<div class="media-card" style="animation-delay:${i*0.08}s;">${conteudo}</div>`;
     }).join('');
-}
+            }
