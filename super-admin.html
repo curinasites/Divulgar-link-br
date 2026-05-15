@@ -73,67 +73,27 @@
         .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
         .form-group input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
         .form-group input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+        /* Tela de login */
+        .login-box {
+            max-width: 400px; margin: 80px auto;
+            background: #161b22; border: 1px solid #30363d;
+            border-radius: 20px; padding: 36px; text-align: center;
+        }
+        .login-box h2 { font-size: 22px; font-weight: 700; color: #f59e0b; margin-bottom: 6px; }
+        .login-box .subtitulo { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 20px; }
+        .btn-entrar {
+            width: 100%; padding: 13px; border-radius: 10px; border: none;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000; font-weight: 700; font-size: 15px; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-entrar:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header">
-            <span>👑</span>
-            <div class="title">> super-admin@divulgalinkbr:~$ dashboard</div>
-            <a href="index.html" class="btn-small" style="text-decoration:none;margin-right:8px;">🏠 Site</a>
-            <button class="btn-logout" onclick="logout()">> exit</button>
-        </div>
-
-        <!-- ESTATÍSTICAS -->
-        <div class="section">
-            <h3>📊 Estatísticas Gerais</h3>
-            <div class="stats-grid" id="stats-grid">
-                <div class="stat-card"><div class="stat-numero" id="stat-total">0</div><div class="stat-label">Total de Usuários</div></div>
-                <div class="stat-card"><div class="stat-numero" id="stat-gratis">0</div><div class="stat-label">Plano Grátis</div></div>
-                <div class="stat-card"><div class="stat-numero" id="stat-pro">0</div><div class="stat-label">Plano Pro</div></div>
-                <div class="stat-card"><div class="stat-numero" id="stat-premium">0</div><div class="stat-label">Plano Premium</div></div>
-            </div>
-        </div>
-
-        <!-- USUÁRIOS -->
-        <div class="section">
-            <h3>👥 Gerenciar Usuários</h3>
-            <div style="overflow-x:auto;">
-                <table class="tabela">
-                    <thead>
-                        <tr>
-                            <th>Usuário</th>
-                            <th>Email</th>
-                            <th>Plano</th>
-                            <th>Status</th>
-                            <th>Alterar Plano</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-usuarios"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- CONFIGURAR PLANOS -->
-        <div class="section">
-            <h3>💰 Configurar Planos e Pagamentos</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-                <div>
-                    <div class="form-group"><label>⭐ Preço Plano Pro (R$)</label><input type="text" id="config-preco-pro" placeholder="10"></div>
-                    <div class="form-group"><label>🔗 Link Checkout Pro (Kiwify/Hotmart)</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
-                </div>
-                <div>
-                    <div class="form-group"><label>💎 Preço Plano Premium (R$)</label><input type="text" id="config-preco-premium" placeholder="25"></div>
-                    <div class="form-group"><label>🔗 Link Checkout Premium (Kiwify/Hotmart)</label><input type="text" id="config-link-premium" placeholder="https://kiwify.com/..."></div>
-                </div>
-            </div>
-            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar Configurações</button>
-            <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
-        </div>
-
-        <p class="msg-sucesso" id="msg-sucesso">✅ Plano atualizado!</p>
+        <!-- Tudo aqui é controlado pelo super-admin.js -->
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
