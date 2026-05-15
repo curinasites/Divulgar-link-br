@@ -32,7 +32,21 @@ function aplicarTema(tema) {
     const header = document.getElementById('header-lt');
     if (!header) return;
     
-    const logoURL = t.logo || '';
+    // Busca logo global do Super Admin
+    let logoURL = t.logo || '';
+    if (!logoURL) {
+        db.collection('config').doc('geral').get().then(snap => {
+            if (snap.exists && snap.data().logo) {
+                const img = header.querySelector('img');
+                if (!img) {
+                    header.querySelector('.console-line').insertAdjacentHTML('afterbegin', 
+                        `<img src="${snap.data().logo}" alt="Logo" style="width:22px;height:22px;border-radius:4px;object-fit:cover;">`
+                    );
+                }
+            }
+        }).catch(() => {});
+    }
+    
     header.innerHTML = `
         <div class="console-line">
             ${logoURL ? `<img src="${logoURL}" alt="Logo" style="width:22px;height:22px;border-radius:4px;object-fit:cover;">` : ''}
@@ -62,7 +76,6 @@ async function carregarPaginaPublica() {
     
     // Se não tem UID, mostra a prévia (já está no HTML)
     if (!uid) {
-        // A prévia estática já está no index.html, não precisa fazer nada
         aplicarTema(TEMA_PADRAO);
         return;
     }
@@ -161,4 +174,4 @@ function renderizarMidia(midias) {
         }
         return `<div class="media-card" style="animation-delay:${i*0.08}s;">${conteudo}</div>`;
     }).join('');
-            }
+}
