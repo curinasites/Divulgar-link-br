@@ -1,15 +1,35 @@
 // ========== SUPER ADMIN ==========
 const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com"; // ⚠️ ALTERE PARA SEU EMAIL!
 
+// Esconde tudo até verificar login
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.container').style.display = 'none';
+});
+
 // Verifica autenticação
 auth.onAuthStateChanged(async (user) => {
     if (user && user.email === SUPER_ADMIN_EMAIL) {
+        document.querySelector('.container').style.display = 'block';
         carregarSuperAdmin();
     } else if (user) {
         alert('⛔ Acesso negado! Apenas Super Admin.');
         auth.signOut();
+        window.location.href = 'index.html';
+    } else {
+        // Não logado - mostra tela de aviso
+        document.querySelector('.container').innerHTML = `
+            <div style="max-width:400px;margin:80px auto;background:#161b22;border:1px solid #30363d;border-radius:20px;padding:36px;text-align:center;">
+                <span style="font-size:48px;">👑</span>
+                <h2 style="color:#f59e0b;margin-top:10px;">Super Admin</h2>
+                <p style="color:#8b949e;font-size:12px;font-family:'JetBrains Mono',monospace;margin:8px 0 20px;">> acesso restrito</p>
+                <p style="color:#8b949e;font-size:13px;">Faça login com o email autorizado para acessar o painel.</p>
+                <a href="admin.html" style="display:inline-block;margin-top:16px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:10px 24px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;">🔐 Fazer Login</a>
+                <br>
+                <a href="index.html" style="color:#8b949e;font-size:12px;display:inline-block;margin-top:14px;text-decoration:none;">← Voltar ao site</a>
+            </div>
+        `;
+        document.querySelector('.container').style.display = 'block';
     }
-    // Se não estiver logado, a página mostra o login (se houver)
 });
 
 function logout() {
