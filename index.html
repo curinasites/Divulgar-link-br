@@ -228,27 +228,30 @@
     </div>
 
     <div class="container-lt">
+        <!-- HEADER DINÂMICO (logo será carregada via JS) -->
         <header class="header-lt" id="header-lt">
             <div class="console-line">
                 <img src="favicon.png" alt="Logo" style="width:20px;height:20px;border-radius:4px;object-fit:cover;">
-                <span class="console-dot dot-green"></span>
-                <span class="console-dot dot-yellow"></span>
-                <span class="console-dot dot-red"></span>
+                <span class="console-dot dot-green" style="display:none;"></span>
+                <span class="console-dot dot-yellow" style="display:none;"></span>
+                <span class="console-dot dot-red" style="display:none;"></span>
                 <span class="console-text">> Divulga Link BR | online</span>
             </div>
         </header>
 
-        <div style="text-align:center;">
+        <!-- PRÉVIA (só aparece se não tiver ?u= na URL) -->
+        <div id="previa-badge" style="text-align:center;">
             <span class="preview-badge">👁️ Prévia - Veja como seu perfil pode ficar</span>
         </div>
 
-        <section class="profile-section">
+        <!-- CONTEÚDO DINÂMICO (será preenchido pelo app.js) -->
+        <section class="profile-section" id="profile-section">
             <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div>
             <h1 class="profile-name">@seunome</h1>
             <p class="profile-bio">// sua bio personalizada aqui ✨</p>
         </section>
 
-        <section class="links-section">
+        <section class="links-section" id="links-section">
             <a href="#" class="link-btn" onclick="return false;">
                 <span class="link-icon">💻</span><span>Meu GitHub</span><span class="link-arrow">→</span>
             </a>
@@ -263,13 +266,16 @@
             </a>
         </section>
 
-        <section class="media-section">
+        <section class="media-section" id="media-section">
             <div class="media-card">
                 <div class="video-wrapper">
                     <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen></iframe>
                 </div>
             </div>
         </section>
+
+        <div id="meu-link" style="text-align:center; margin-top:16px;"></div>
+        <div id="botoes-admin" style="text-align:center; margin-top:24px; display:none; justify-content:center; gap:10px; flex-wrap:wrap;"></div>
 
         <footer class="footer-lt" id="footer-lt">
             <div class="footer-tags">
@@ -340,7 +346,6 @@
                 if (painelLink) painelLink.style.display = 'flex';
                 if (logoutLink) logoutLink.style.display = 'flex';
                 
-                // Verifica se é Super Admin
                 const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
                 if (user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
                     if (superLink) superLink.style.display = 'flex';
@@ -359,9 +364,37 @@
             window.location.href = 'index.html';
         }
 
+        // ========== CARREGAR LOGO DO FIRESTORE ==========
+        async function carregarLogoHeader() {
+            try {
+                const configSnap = await db.collection('config').doc('geral').get();
+                if (configSnap.exists && configSnap.data().logo) {
+                    const logoUrl = configSnap.data().logo;
+                    const header = document.getElementById('header-lt');
+                    const consoleLine = header.querySelector('.console-line');
+                    
+                    // Substitui os pontinhos pela logo
+                    consoleLine.innerHTML = `
+                        <img src="${logoUrl}" alt="Logo" style="width:22px;height:22px;border-radius:4px;object-fit:cover;">
+                        <span class="console-text">> Divulga Link BR | online</span>
+                    `;
+                    console.log("✅ Logo carregada do Firestore:", logoUrl);
+                } else {
+                    console.log("ℹ️ Nenhuma logo configurada, usando padrão");
+                }
+            } catch (error) {
+                console.error("❌ Erro ao carregar logo:", error);
+            }
+        }
+
         // Observa mudanças de autenticação
         auth.onAuthStateChanged((user) => {
             atualizarMenuPorLogin(user);
+        });
+        
+        // Carrega a logo quando a página iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarLogoHeader();
         });
     </script>
 
@@ -372,4 +405,4 @@
     <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
-            </html>
+                </html>
