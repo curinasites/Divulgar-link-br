@@ -72,7 +72,7 @@ async function carregarConfigGlobal() {
             if (config.logo && headerLt) {
                 const consoleLine = headerLt.querySelector('.console-line');
                 if (consoleLine) {
-                    consoleLine.innerHTML = `<img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;"><span class="console-text">> Divulga Link BR</span>`;
+                    consoleLine.innerHTML = `<img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;"><span class="console-text"> Divulga Link BR</span>`;
                 }
             }
             return config;
