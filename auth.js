@@ -29,8 +29,8 @@ auth.onAuthStateChanged(async (user) => {
             return;
         }
         
+        // Admin normal - não faz nada, deixa o admin.html gerenciar
         if (path.includes('admin.html')) {
-            window.location.href = 'admin.html'; // força recarregar
             return;
         }
         
@@ -50,8 +50,7 @@ function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).then(() => {
         const user = auth.currentUser;
-        const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
-        window.location.href = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() ? 'super-admin.html' : 'admin.html';
+        window.location.href = user?.email?.toLowerCase() === 'franciscodemelocurina9@gmail.com' ? 'super-admin.html' : 'admin.html';
     }).catch(() => alert('Erro ao fazer login com Google'));
 }
 
