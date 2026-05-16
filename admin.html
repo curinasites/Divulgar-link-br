@@ -142,7 +142,7 @@
 <body>
 
 <div class="admin-container">
-    <!-- TELA DE LOGIN (só aparece se não estiver logado) -->
+    <!-- TELA DE LOGIN -->
     <div id="tela-login" class="login-container">
         <h2>🔐 Divulga Link BR</h2>
         <p class="subtitle">> authentication required</p>
@@ -163,14 +163,12 @@
             <button class="btn-logout" onclick="logout()">> exit</button>
         </div>
 
-        <!-- LINK PÚBLICO -->
         <div id="meu-link-admin" class="link-card" style="display:none;">
-            <p>🔗 Seu link público - compartilhe em suas redes sociais:</p>
+            <p>🔗 Seu link público:</p>
             <code id="perfil-link-preview"></code>
             <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
         </div>
 
-        <!-- TEMA -->
         <div class="admin-section">
             <h3><span class="icon">🎨</span> Personalizar Tema</h3>
             <div class="form-group"><label>Presets</label>
@@ -194,7 +192,6 @@
             <p class="msg-sucesso-lt" id="tema-sucesso">✅ Tema salvo!</p>
         </div>
 
-        <!-- PERFIL -->
         <div class="admin-section">
             <h3><span class="icon">👤</span> Perfil</h3>
             <div class="form-group"><label>Nome</label><input type="text" id="perfil-nome" placeholder="@dev"></div>
@@ -204,7 +201,6 @@
             <p class="msg-sucesso-lt" id="perfil-sucesso">✅ Perfil atualizado!</p>
         </div>
 
-        <!-- LINKS -->
         <div class="admin-section">
             <h3><span class="icon">🔗</span> Links</h3>
             <div class="form-group"><label>Título</label><input type="text" id="link-titulo" placeholder="Meu GitHub"></div>
@@ -218,7 +214,6 @@
             <div id="lista-links" style="margin-top:16px;"></div>
         </div>
 
-        <!-- MÍDIA -->
         <div class="admin-section">
             <h3><span class="icon">🎬</span> Mídia</h3>
             <div class="form-group"><label>Tipo</label><select id="midia-tipo"><option value="imagem">🖼️ Imagem</option><option value="youtube">▶️ YouTube</option><option value="mp4">🎥 MP4</option></select></div>
@@ -233,21 +228,16 @@
     </div>
 </div>
 
-<!-- MODAL UPGRADE -->
 <div id="modal-upgrade" class="modal-upgrade">
     <div class="modal-upgrade-content">
         <h3>🚀 Fazer Upgrade</h3>
-        <p>Escolha o plano que deseja:</p>
+        <p>Escolha o plano:</p>
         <div class="planos-upgrade">
             <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('pro')">
-                <div class="plano-icon">⭐</div>
-                <div class="plano-nome">Plano Pro</div>
-                <div class="plano-preco" id="preco-upgrade-pro">R$10</div>
+                <div class="plano-icon">⭐</div><div class="plano-nome">Plano Pro</div><div class="plano-preco" id="preco-upgrade-pro">R$10</div>
             </div>
             <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('premium')">
-                <div class="plano-icon">💎</div>
-                <div class="plano-nome">Plano Premium</div>
-                <div class="plano-preco" id="preco-upgrade-premium">R$25</div>
+                <div class="plano-icon">💎</div><div class="plano-nome">Plano Premium</div><div class="plano-preco" id="preco-upgrade-premium">R$25</div>
             </div>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalUpgrade()">Cancelar</button>
@@ -286,31 +276,15 @@
         premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true }
     };
 
-    function getTemasDisponiveis(plano) {
-        const todos = ['dev', 'clean', 'dark', 'rosa', 'minimal', 'warm', 'cyber', 'ocean', 'sunset', 'forest', 'galaxy', 'coffee'];
-        return todos.slice(0, LIMITES[plano]?.temas || 3);
-    }
-
-    function aplicarPreset(nome) {
-        temaAtual = nome;
-        document.querySelectorAll('.tema-preset').forEach(el => el.classList.remove('ativo'));
-        const el = document.querySelector(`[data-tema="${nome}"]`);
-        if (el) el.classList.add('ativo');
-    }
-
-    async function getPlanoAtual() {
-        const userDoc = await db.collection('usuarios').doc(userUID).get();
-        return userDoc.exists ? (userDoc.data().plano || 'gratis') : 'gratis';
-    }
+    function getTemasDisponiveis(plano) { return ['dev','clean','dark','rosa','minimal','warm','cyber','ocean','sunset','forest','galaxy','coffee'].slice(0, LIMITES[plano]?.temas || 3); }
+    function aplicarPreset(nome) { temaAtual = nome; document.querySelectorAll('.tema-preset').forEach(el => el.classList.remove('ativo')); const el = document.querySelector(`[data-tema="${nome}"]`); if (el) el.classList.add('ativo'); }
+    async function getPlanoAtual() { const doc = await db.collection('usuarios').doc(userUID).get(); return doc.exists ? (doc.data().plano || 'gratis') : 'gratis'; }
 
     async function verificarLimite(tipo) {
         const plano = await getPlanoAtual();
         const limite = LIMITES[plano][tipo];
         const snap = await db.collection('usuarios').doc(userUID).collection(tipo === 'midia' ? 'midia' : 'links').get();
-        if (snap.size >= limite) {
-            alert(`⚠️ Limite atingido! Seu plano permite ${limite} ${tipo === 'links' ? 'links' : 'mídias'}. Faça upgrade!`);
-            return false;
-        }
+        if (snap.size >= limite) { alert(`⚠️ Limite atingido! Faça upgrade!`); return false; }
         return true;
     }
 
@@ -319,43 +293,24 @@
             const snap = await db.collection('config').doc('planos').get();
             if (snap.exists) {
                 const d = snap.data();
-                if (d.pro) {
-                    linksPagamentoUpgrade.pro = d.pro.link || '';
-                    const el = document.getElementById('preco-upgrade-pro');
-                    if (el && d.pro.preco) el.textContent = 'R$' + d.pro.preco;
-                }
-                if (d.premium) {
-                    linksPagamentoUpgrade.premium = d.premium.link || '';
-                    const el = document.getElementById('preco-upgrade-premium');
-                    if (el && d.premium.preco) el.textContent = 'R$' + d.premium.preco;
-                }
+                if (d.pro) { linksPagamentoUpgrade.pro = d.pro.link || ''; const el = document.getElementById('preco-upgrade-pro'); if (el && d.pro.preco) el.textContent = 'R$' + d.pro.preco; }
+                if (d.premium) { linksPagamentoUpgrade.premium = d.premium.link || ''; const el = document.getElementById('preco-upgrade-premium'); if (el && d.premium.preco) el.textContent = 'R$' + d.premium.preco; }
             }
         } catch(e) {}
     }
 
     function abrirModalUpgrade() { document.getElementById('modal-upgrade').classList.add('ativo'); }
     function fecharModalUpgrade() { document.getElementById('modal-upgrade').classList.remove('ativo'); }
-
     function escolherPlanoUpgrade(plano) {
         const link = linksPagamentoUpgrade[plano];
-        if (link) {
-            window.open(link, '_blank');
-            alert(`✅ Redirecionando para pagamento do plano ${plano.toUpperCase()}. Após pagar, avise o Super Admin.`);
-            fecharModalUpgrade();
-        } else {
-            alert('⚠️ Link de pagamento não configurado.');
-            fecharModalUpgrade();
-        }
+        if (link) { window.open(link, '_blank'); alert('✅ Redirecionando...'); fecharModalUpgrade(); }
+        else { alert('⚠️ Link não configurado.'); fecharModalUpgrade(); }
     }
-
-    function copiarLinkPerfil() {
-        const link = document.getElementById('perfil-link-preview')?.textContent;
-        if (link) navigator.clipboard.writeText(link).then(() => alert('✅ Link copiado!'));
-    }
+    function copiarLinkPerfil() { const link = document.getElementById('perfil-link-preview')?.textContent; if (link) navigator.clipboard.writeText(link).then(() => alert('✅ Copiado!')); }
 
     // ========== LINKS ==========
     async function carregarListaLinks() {
-        const snap = await db.collection('usuarios').doc(userUID).collection('links').orderBy('ordem', 'asc').get();
+        const snap = await db.collection('usuarios').doc(userUID).collection('links').orderBy('ordem','asc').get();
         const lista = document.getElementById('lista-links');
         if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
         lista.innerHTML = '';
@@ -370,45 +325,27 @@
     async function salvarLink() {
         if (!document.getElementById('link-id').value) { if (!await verificarLimite('links')) return; }
         const id = document.getElementById('link-id').value;
-        const dados = {
-            titulo: document.getElementById('link-titulo').value.trim(),
-            url: document.getElementById('link-url').value.trim(),
-            icone: document.getElementById('link-icone').value.trim() || '🔗',
-            ordem: parseInt(document.getElementById('link-ordem').value) || 1
-        };
+        const dados = { titulo: document.getElementById('link-titulo').value.trim(), url: document.getElementById('link-url').value.trim(), icone: document.getElementById('link-icone').value.trim() || '🔗', ordem: parseInt(document.getElementById('link-ordem').value) || 1 };
         if (!dados.titulo || !dados.url) { alert('⚠️ Título e URL obrigatórios!'); return; }
         const ref = db.collection('usuarios').doc(userUID).collection('links');
-        if (id) await ref.doc(id).update(dados);
-        else await ref.add(dados);
+        if (id) await ref.doc(id).update(dados); else await ref.add(dados);
         limparFormLink(); carregarListaLinks(); mostrarSucesso('link-sucesso');
     }
 
-    async function editarLink(id) {
-        const doc = await db.collection('usuarios').doc(userUID).collection('links').doc(id).get();
-        if (doc.exists) {
-            const l = doc.data();
-            document.getElementById('link-id').value = id;
-            document.getElementById('link-titulo').value = l.titulo || '';
-            document.getElementById('link-url').value = l.url || '';
-            document.getElementById('link-icone').value = l.icone || '';
-            document.getElementById('link-ordem').value = l.ordem || 1;
-        }
-    }
-
+    async function editarLink(id) { const doc = await db.collection('usuarios').doc(userUID).collection('links').doc(id).get(); if (doc.exists) { const l = doc.data(); document.getElementById('link-id').value = id; document.getElementById('link-titulo').value = l.titulo||''; document.getElementById('link-url').value = l.url||''; document.getElementById('link-icone').value = l.icone||''; document.getElementById('link-ordem').value = l.ordem||1; } }
     async function removerLink(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete(); carregarListaLinks(); } }
     function limparFormLink() { ['link-id','link-titulo','link-url','link-icone'].forEach(id => document.getElementById(id).value = ''); document.getElementById('link-ordem').value = '1'; }
 
     // ========== MÍDIA ==========
     async function carregarListaMidias() {
-        const snap = await db.collection('usuarios').doc(userUID).collection('midia').orderBy('ordem', 'asc').get();
+        const snap = await db.collection('usuarios').doc(userUID).collection('midia').orderBy('ordem','asc').get();
         const lista = document.getElementById('lista-midias');
         if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhuma mídia.</p>'; return; }
         lista.innerHTML = '';
         snap.forEach(doc => {
             const m = doc.data();
-            const tipoEmoji = { imagem:'🖼️', youtube:'▶️', mp4:'🎥' };
             const div = document.createElement('div'); div.className = 'list-item';
-            div.innerHTML = `<div class="info"><strong>${tipoEmoji[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1}</small></div><div class="actions"><button class="btn-small-lt" onclick="editarMidia('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerMidia('${doc.id}')">🗑</button></div>`;
+            div.innerHTML = `<div class="info"><strong>${({imagem:'🖼️',youtube:'▶️',mp4:'🎥'})[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1}</small></div><div class="actions"><button class="btn-small-lt" onclick="editarMidia('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerMidia('${doc.id}')">🗑</button></div>`;
             lista.appendChild(div);
         });
     }
@@ -418,34 +355,23 @@
         const tipo = document.getElementById('midia-tipo').value;
         const plano = await getPlanoAtual();
         if (tipo === 'youtube' && !LIMITES[plano].youtube) { alert('⚠️ YouTube disponível nos planos Pro/Premium.'); return; }
-        if (tipo === 'mp4' && !LIMITES[plano].mp4) { alert('⚠️ MP4 disponível apenas no Premium.'); return; }
+        if (tipo === 'mp4' && !LIMITES[plano].mp4) { alert('⚠️ MP4 apenas no Premium.'); return; }
         const id = document.getElementById('midia-id').value;
         const dados = { tipo, url: document.getElementById('midia-url').value.trim(), ordem: parseInt(document.getElementById('midia-ordem').value) || 1 };
         if (!dados.url) { alert('⚠️ URL obrigatória!'); return; }
         const ref = db.collection('usuarios').doc(userUID).collection('midia');
-        if (id) await ref.doc(id).update(dados);
-        else await ref.add(dados);
+        if (id) await ref.doc(id).update(dados); else await ref.add(dados);
         limparFormMidia(); carregarListaMidias(); mostrarSucesso('midia-sucesso');
     }
 
-    async function editarMidia(id) {
-        const doc = await db.collection('usuarios').doc(userUID).collection('midia').doc(id).get();
-        if (doc.exists) {
-            const m = doc.data();
-            document.getElementById('midia-id').value = id;
-            document.getElementById('midia-tipo').value = m.tipo || 'imagem';
-            document.getElementById('midia-url').value = m.url || '';
-            document.getElementById('midia-ordem').value = m.ordem || 1;
-        }
-    }
-
+    async function editarMidia(id) { const doc = await db.collection('usuarios').doc(userUID).collection('midia').doc(id).get(); if (doc.exists) { const m = doc.data(); document.getElementById('midia-id').value = id; document.getElementById('midia-tipo').value = m.tipo||'imagem'; document.getElementById('midia-url').value = m.url||''; document.getElementById('midia-ordem').value = m.ordem||1; } }
     async function removerMidia(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('midia').doc(id).delete(); carregarListaMidias(); } }
     function limparFormMidia() { document.getElementById('midia-id').value = ''; document.getElementById('midia-url').value = ''; document.getElementById('midia-ordem').value = '1'; }
 
     // ========== TEMA & PERFIL ==========
     async function salvarTema() {
         const plano = await getPlanoAtual();
-        if (!getTemasDisponiveis(plano).includes(temaAtual)) { alert('⚠️ Tema não disponível no seu plano.'); return; }
+        if (!getTemasDisponiveis(plano).includes(temaAtual)) { alert('⚠️ Tema não disponível.'); return; }
         const tema = { ...TEMAS[temaAtual] };
         tema.logo = LIMITES[plano].logo ? document.getElementById('tema-logo').value.trim() : '';
         await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set(tema);
@@ -453,18 +379,11 @@
     }
 
     async function salvarPerfil() {
-        await db.collection('usuarios').doc(userUID).set({
-            perfil: {
-                nome: document.getElementById('perfil-nome').value.trim(),
-                bio: document.getElementById('perfil-bio').value.trim(),
-                foto: document.getElementById('perfil-foto').value.trim()
-            }
-        }, { merge: true });
+        await db.collection('usuarios').doc(userUID).set({ perfil: { nome: document.getElementById('perfil-nome').value.trim(), bio: document.getElementById('perfil-bio').value.trim(), foto: document.getElementById('perfil-foto').value.trim() } }, { merge: true });
         const userDoc = await db.collection('usuarios').doc(userUID).get();
         if (userDoc.exists && userDoc.data().username) {
-            const link = window.location.origin + window.location.pathname.replace('admin.html', 'index.html') + '?u=' + userDoc.data().username;
-            const el = document.getElementById('perfil-link-preview');
-            if (el) el.textContent = link;
+            const link = window.location.origin + window.location.pathname.replace('admin.html','index.html') + '?u=' + userDoc.data().username;
+            const el = document.getElementById('perfil-link-preview'); if (el) el.textContent = link;
         }
         mostrarSucesso('perfil-sucesso');
     }
@@ -475,78 +394,42 @@
         document.getElementById('tela-login').classList.add('hidden');
         document.getElementById('tela-admin').classList.remove('hidden');
         await carregarLinksPagamentoUpgrade();
-        
         const btnUpgrade = document.getElementById('btn-upgrade');
         if (btnUpgrade) btnUpgrade.onclick = (e) => { e.preventDefault(); abrirModalUpgrade(); };
-        
         const plano = await getPlanoAtual();
         const badge = document.getElementById('plano-badge');
         if (badge) { badge.textContent = plano; badge.className = 'badge-plano badge-' + plano; }
         if (btnUpgrade) btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
-        
         const campoTemaLogo = document.getElementById('tema-logo');
         if (campoTemaLogo) { campoTemaLogo.disabled = !LIMITES[plano].logo; campoTemaLogo.placeholder = LIMITES[plano].logo ? 'https://...' : '🔒 Pro/Premium'; }
-        
         const temasPermitidos = getTemasDisponiveis(plano);
-        document.querySelectorAll('.tema-preset').forEach(el => {
-            el.style.opacity = temasPermitidos.includes(el.dataset.tema) ? '1' : '0.3';
-            el.style.pointerEvents = temasPermitidos.includes(el.dataset.tema) ? 'auto' : 'none';
-        });
-        
+        document.querySelectorAll('.tema-preset').forEach(el => { el.style.opacity = temasPermitidos.includes(el.dataset.tema) ? '1' : '0.3'; el.style.pointerEvents = temasPermitidos.includes(el.dataset.tema) ? 'auto' : 'none'; });
         const selectMidia = document.getElementById('midia-tipo');
-        if (selectMidia) {
-            const optY = selectMidia.querySelector('option[value="youtube"]');
-            const optM = selectMidia.querySelector('option[value="mp4"]');
-            if (optY) optY.disabled = !LIMITES[plano].youtube;
-            if (optM) optM.disabled = !LIMITES[plano].mp4;
-        }
-        
+        if (selectMidia) { const optY = selectMidia.querySelector('option[value="youtube"]'); const optM = selectMidia.querySelector('option[value="mp4"]'); if (optY) optY.disabled = !LIMITES[plano].youtube; if (optM) optM.disabled = !LIMITES[plano].mp4; }
         const userDoc = await db.collection('usuarios').doc(userUID).get();
-        if (userDoc.exists) {
-            const d = userDoc.data();
-            document.getElementById('perfil-nome').value = d.perfil?.nome || '';
-            document.getElementById('perfil-bio').value = d.perfil?.bio || '';
-            document.getElementById('perfil-foto').value = d.perfil?.foto || '';
-            if (d.username) {
-                const link = window.location.origin + window.location.pathname.replace('admin.html', 'index.html') + '?u=' + d.username;
-                document.getElementById('perfil-link-preview').textContent = link;
-                document.getElementById('meu-link-admin').style.display = 'block';
-            }
-        }
-        
+        if (userDoc.exists) { const d = userDoc.data(); document.getElementById('perfil-nome').value = d.perfil?.nome || ''; document.getElementById('perfil-bio').value = d.perfil?.bio || ''; document.getElementById('perfil-foto').value = d.perfil?.foto || ''; if (d.username) { const link = window.location.origin + window.location.pathname.replace('admin.html','index.html') + '?u=' + d.username; document.getElementById('perfil-link-preview').textContent = link; document.getElementById('meu-link-admin').style.display = 'block'; } }
         const temaSnap = await db.collection('usuarios').doc(userUID).collection('config').doc('tema').get();
-        if (temaSnap.exists) {
-            const t = temaSnap.data();
-            temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev';
-            if (campoTemaLogo) campoTemaLogo.value = t.logo || '';
-        }
-        aplicarPreset(temaAtual);
-        carregarListaLinks();
-        carregarListaMidias();
+        if (temaSnap.exists) { const t = temaSnap.data(); temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev'; if (campoTemaLogo) campoTemaLogo.value = t.logo || ''; }
+        aplicarPreset(temaAtual); carregarListaLinks(); carregarListaMidias();
     }
 
-    function mostrarSucesso(id) {
-        const el = document.getElementById(id);
-        if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
-    }
+    function mostrarSucesso(id) { const el = document.getElementById(id); if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); } }
 
+    // ========== LOGIN CORRIGIDO ==========
     function fazerLogin() {
         const email = document.getElementById('login-email').value.trim();
         const senha = document.getElementById('login-senha').value;
         const erro = document.getElementById('login-erro');
         erro.style.display = 'none';
         if (!email || !senha) { erro.textContent = '⚠️ Preencha email e senha'; erro.style.display = 'block'; return; }
-        auth.signInWithEmailAndPassword(email, senha).catch(() => {
-            erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
-        });
+        auth.signInWithEmailAndPassword(email, senha)
+            .then(() => { carregarDadosAdmin(); })
+            .catch(() => { erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block'; });
     }
 
     function logout() { auth.signOut(); window.location.href = 'index.html'; }
 
-    // ========== VERIFICA LOGIN IMEDIATO (evita tela de login parada) ==========
-    if (auth.currentUser) {
-        carregarDadosAdmin();
-    }
+    if (auth.currentUser) { carregarDadosAdmin(); }
 </script>
 </body>
-                                                                                                      </html>
+</html>
