@@ -9,56 +9,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0d1117; font-family: 'Inter', 'JetBrains Mono', monospace; color: #c9d1d9; }
-        .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        .admin-header { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; }
-        .admin-header .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .admin-header .dot.red { background: #f85149; } .admin-header .dot.yellow { background: #d2991d; } .admin-header .dot.green { background: #3fb950; }
-        .admin-header .title { flex: 1; font-size: 13px; color: #8b949e; min-width: 150px; }
-        .admin-header .title span { color: #a78bfa; }
-        .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
-        .btn-logout:hover { background: rgba(248,81,73,0.2); }
-        .btn-upgrade { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; display: inline-block; }
-        .btn-upgrade:hover { background: rgba(245,158,11,0.2); }
-        .btn-ver-site { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; text-decoration: none; display: inline-block; }
-        .btn-ver-site:hover { background: rgba(139,92,246,0.2); }
-        .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
-        .admin-section h3 { font-size: 15px; font-weight: 600; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .admin-section h3 .icon { color: #8b5cf6; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
-        .form-group textarea { min-height: 60px; resize: vertical; }
-        .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
-        .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; white-space: nowrap; text-decoration: none; display: inline-block; }
-        .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
-        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
-        .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
-        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
-        .list-item .info { flex: 1; min-width: 0; }
-        .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-item .info small { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
-        .list-item .actions { display: flex; gap: 6px; }
-        .login-container { max-width: 400px; margin: 80px auto; background: #161b22; border: 1px solid #30363d; border-radius: 20px; padding: 36px; text-align: center; }
-        .login-container h2 { font-size: 22px; font-weight: 700; color: #f0f6fc; margin-bottom: 8px; }
-        .login-container .subtitle { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
-        .msg-sucesso-lt { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
-        .msg-erro-lt { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
-        .hidden { display: none !important; }
-        .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; transition: all 0.2s; background: #0d1117; color: #c9d1d9; }
-        .tema-preset:hover { border-color: #8b5cf6; }
-        .tema-preset.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
-        .cor-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
-        .badge-plano { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
-        .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
-        .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
-        .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
-        
+        /* Estilos adicionais */
+        .admin-header .btn-upgrade {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: #f59e0b;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .admin-header .btn-upgrade:hover {
+            background: rgba(245,158,11,0.2);
+        }
         .link-card {
             background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.05));
             border: 1px solid rgba(245,158,11,0.3);
@@ -125,19 +93,19 @@
         .btn-fechar-modal { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 10px 20px; border-radius: 10px; cursor: pointer; width: 100%; }
         .btn-fechar-modal:hover { border-color: #f85149; color: #f85149; }
         
-        @media (max-width: 600px) { 
-            .admin-container { padding: 12px; } 
-            .admin-section { padding: 16px; } 
-            .tema-presets { grid-template-columns: 1fr; } 
-            .admin-header { gap: 8px; }
+        .carregando {
+            text-align: center;
+            padding: 50px;
+            color: #8b949e;
+            font-family: 'JetBrains Mono', monospace;
         }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
-    <!-- TELA DE LOGIN -->
-    <div id="tela-login" class="login-container">
+    <!-- TELA DE LOGIN (só aparece se não estiver logado) -->
+    <div id="tela-login" class="login-container" style="display:none;">
         <h2>🔐 Divulga Link BR</h2>
         <p class="subtitle">> authentication required</p>
         <div class="form-group"><label>email</label><input type="email" id="login-email" placeholder="admin@email.com"></div>
@@ -146,14 +114,20 @@
         <button class="btn-primary-lt" onclick="fazerLogin()" style="width:100%;">> entrar_</button>
     </div>
 
-    <!-- PAINEL ADMIN -->
+    <!-- TELA DE CARREGAMENTO -->
+    <div id="tela-carregando" class="carregando" style="display:none;">
+        <p>⏳ Carregando painel...</p>
+        <p style="font-size:12px; margin-top:8px;">> aguarde</p>
+    </div>
+
+    <!-- PAINEL ADMIN (só aparece se estiver logado) -->
     <div id="tela-admin" class="hidden">
         <div class="admin-header">
             <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
             <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
             <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
             <button id="btn-upgrade" class="btn-upgrade">🔼 Fazer Upgrade</button>
-            <button id="btn-ver-site" class="btn-ver-site">🌐 ver site</button>
+            <a href="index.html" class="btn-small-lt" style="text-decoration:none;">🏠 ver site</a>
             <button class="btn-logout" onclick="logout()">> exit</button>
         </div>
 
@@ -252,6 +226,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="auth.js"></script>
 <script>
     // ========== ADMIN.JS - TODAS AS FUNÇÕES DENTRO DO HTML ==========
     let userUID = null;
@@ -515,11 +490,20 @@
 
     // ========== CARREGAR DADOS DO ADMIN ==========
     async function carregarDadosAdmin() {
-        if (!usuarioAtual) return;
+        console.log("🔄 carregarDadosAdmin chamado, usuarioAtual:", usuarioAtual);
+        
+        if (!usuarioAtual) {
+            console.log("⚠️ usuarioAtual vazio, redirecionando para login?");
+            document.getElementById('tela-login').style.display = 'block';
+            document.getElementById('tela-carregando').style.display = 'none';
+            document.getElementById('tela-admin').classList.add('hidden');
+            return;
+        }
+        
         userUID = usuarioAtual.uid;
         
-        document.getElementById('tela-login').classList.add('hidden');
-        document.getElementById('tela-admin').classList.remove('hidden');
+        document.getElementById('tela-login').style.display = 'none';
+        document.getElementById('tela-carregando').style.display = 'block';
         
         await carregarLinksPagamentoUpgrade();
         
@@ -528,18 +512,6 @@
             btnUpgrade.onclick = (e) => {
                 e.preventDefault();
                 abrirModalUpgrade();
-            };
-        }
-        
-        const btnVerSite = document.getElementById('btn-ver-site');
-        if (btnVerSite) {
-            btnVerSite.onclick = () => {
-                const linkPreview = document.getElementById('perfil-link-preview');
-                if (linkPreview && linkPreview.textContent && linkPreview.textContent !== '') {
-                    window.open(linkPreview.textContent, '_blank');
-                } else {
-                    alert('⚠️ Salve seu perfil primeiro para gerar o link!');
-                }
             };
         }
         
@@ -614,6 +586,9 @@
         
         carregarListaLinks();
         carregarListaMidias();
+        
+        document.getElementById('tela-carregando').style.display = 'none';
+        document.getElementById('tela-admin').classList.remove('hidden');
     }
 
     function mostrarSucesso(id) {
@@ -638,19 +613,38 @@
     }
 
     // ========== INICIALIZAÇÃO ==========
-    if (typeof usuarioAtual !== 'undefined' && usuarioAtual) {
-        carregarDadosAdmin();
-    } else {
-        // Aguarda o auth.js definir usuarioAtual
-        const checkInterval = setInterval(() => {
-            if (typeof usuarioAtual !== 'undefined') {
-                clearInterval(checkInterval);
-                if (usuarioAtual) {
+    // Aguarda o auth.js carregar
+    function inicializar() {
+        console.log("🔧 Inicializando admin.html, usuarioAtual:", usuarioAtual);
+        
+        if (usuarioAtual) {
+            // Já está logado, carrega direto
+            carregarDadosAdmin();
+        } else {
+            // Mostra tela de login e aguarda
+            document.getElementById('tela-login').style.display = 'block';
+            document.getElementById('tela-carregando').style.display = 'none';
+            
+            // Observa mudança de autenticação
+            auth.onAuthStateChanged((user) => {
+                console.log("🔥 auth.onAuthStateChanged:", user?.email);
+                if (user) {
                     carregarDadosAdmin();
+                } else {
+                    document.getElementById('tela-login').style.display = 'block';
+                    document.getElementById('tela-admin').classList.add('hidden');
+                    document.getElementById('tela-carregando').style.display = 'none';
                 }
-            }
-        }, 200);
+            });
+        }
+    }
+    
+    // Espera o auth.js carregar
+    if (typeof auth !== 'undefined') {
+        inicializar();
+    } else {
+        setTimeout(inicializar, 500);
     }
 </script>
 </body>
-</html>
+    </html>
