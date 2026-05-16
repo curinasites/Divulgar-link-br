@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divulga Link BR</title>
-    <meta name="description" content="Seus links, projetos e mídia em um só lugar.">
+    <title>Divulga Link BR - Seus links em um só lugar</title>
+    <meta name="description" content="Seus links, projetos e mídia em um só lugar. Crie seu perfil gratuitamente!">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,6 +120,52 @@
             font-family: 'JetBrains Mono', monospace;
             margin-bottom: 20px;
         }
+
+        /* LOGIN MODAL */
+        .login-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 400;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-modal-overlay.ativo { display: flex; }
+        .login-modal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .login-modal h3 { font-size: 22px; color: #f59e0b; margin-bottom: 8px; }
+        .login-modal .sub { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
+        .login-modal .form-group { margin-bottom: 14px; text-align: left; }
+        .login-modal .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; }
+        .login-modal .form-group input {
+            width: 100%; padding: 12px; border-radius: 10px;
+            border: 1px solid #30363d; background: #0d1117;
+            color: #c9d1d9; font-size: 14px;
+        }
+        .login-modal .form-group input:focus { border-color: #8b5cf6; outline: none; }
+        .btn-login-modal {
+            width: 100%; padding: 12px; border-radius: 10px;
+            border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff; font-weight: 600; cursor: pointer;
+        }
+        .btn-close-modal {
+            background: transparent; border: 1px solid #30363d;
+            color: #8b949e; padding: 8px 16px; border-radius: 8px;
+            cursor: pointer; margin-top: 12px; width: 100%;
+        }
+        .login-erro { color: #f85149; font-size: 12px; margin-top: 8px; display: none; }
+        .modal-link { margin-top: 16px; font-size: 12px; }
+        .modal-link a { color: #a78bfa; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -146,15 +192,18 @@
             <a href="cadastro.html" class="menu-link destaque">
                 <span class="menu-icon">🚀</span> Criar Minha Conta
             </a>
-            <a href="admin.html" class="menu-link">
+            <a href="#" class="menu-link" onclick="abrirModalLogin(); toggleMenu(); return false;">
                 <span class="menu-icon">🔐</span> Fazer Login
             </a>
             <hr class="menu-divider">
-            <a href="admin.html" class="menu-link">
+            <a href="admin.html" class="menu-link" id="menu-painel-link" style="display:none;">
                 <span class="menu-icon">⚙️</span> Meu Painel
             </a>
-            <a href="super-admin.html" class="menu-link super">
+            <a href="super-admin.html" class="menu-link super" id="menu-super-link" style="display:none;">
                 <span class="menu-icon">👑</span> Super Admin
+            </a>
+            <a href="#" class="menu-link" onclick="logoutDoMenu(); toggleMenu(); return false;" id="menu-logout-link" style="display:none;">
+                <span class="menu-icon">🚪</span> Sair
             </a>
             <hr class="menu-divider">
             <a href="#" class="menu-link" onclick="toggleMenu(); return false;">
@@ -164,8 +213,21 @@
         <div class="menu-footer">© 2024 Divulga Link BR</div>
     </div>
 
+    <!-- MODAL DE LOGIN -->
+    <div id="login-modal" class="login-modal-overlay">
+        <div class="login-modal">
+            <h3>🔐 Login</h3>
+            <p class="sub">> acesse seu painel</p>
+            <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+            <div class="form-group"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
+            <p class="login-erro" id="login-erro">Email ou senha incorretos</p>
+            <button class="btn-login-modal" onclick="fazerLogin()">Entrar</button>
+            <button class="btn-close-modal" onclick="fecharModalLogin()">Cancelar</button>
+            <div class="modal-link">Não tem conta? <a href="cadastro.html">Criar conta</a></div>
+        </div>
+    </div>
+
     <div class="container-lt">
-        <!-- HEADER -->
         <header class="header-lt" id="header-lt">
             <div class="console-line">
                 <img src="favicon.png" alt="Logo" style="width:20px;height:20px;border-radius:4px;object-fit:cover;">
@@ -180,14 +242,12 @@
             <span class="preview-badge">👁️ Prévia - Veja como seu perfil pode ficar</span>
         </div>
 
-        <!-- PERFIL DE EXEMPLO -->
         <section class="profile-section">
             <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div>
             <h1 class="profile-name">@seunome</h1>
             <p class="profile-bio">// sua bio personalizada aqui ✨</p>
         </section>
 
-        <!-- LINKS DE EXEMPLO -->
         <section class="links-section">
             <a href="#" class="link-btn" onclick="return false;">
                 <span class="link-icon">💻</span><span>Meu GitHub</span><span class="link-arrow">→</span>
@@ -203,7 +263,6 @@
             </a>
         </section>
 
-        <!-- MÍDIA DE EXEMPLO -->
         <section class="media-section">
             <div class="media-card">
                 <div class="video-wrapper">
@@ -212,7 +271,6 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
         <footer class="footer-lt" id="footer-lt">
             <div class="footer-tags">
                 <span class="tag-lt">Firebase</span>
@@ -225,6 +283,7 @@
     </div>
 
     <script>
+        // ========== MENU ==========
         function toggleMenu() {
             document.getElementById('menu-painel').classList.toggle('ativo');
             document.getElementById('menu-overlay').classList.toggle('ativo');
@@ -233,6 +292,76 @@
         }
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && document.getElementById('menu-painel').classList.contains('ativo')) toggleMenu();
+        });
+
+        // ========== MODAL LOGIN ==========
+        function abrirModalLogin() {
+            document.getElementById('login-modal').classList.add('ativo');
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-senha').value = '';
+            document.getElementById('login-erro').style.display = 'none';
+        }
+
+        function fecharModalLogin() {
+            document.getElementById('login-modal').classList.remove('ativo');
+        }
+
+        async function fazerLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const senha = document.getElementById('login-senha').value;
+            const erro = document.getElementById('login-erro');
+            
+            erro.style.display = 'none';
+            
+            if (!email || !senha) {
+                erro.textContent = 'Preencha email e senha';
+                erro.style.display = 'block';
+                return;
+            }
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, senha);
+                fecharModalLogin();
+                window.location.href = 'admin.html';
+            } catch (error) {
+                console.error("Erro:", error);
+                erro.textContent = 'Email ou senha incorretos';
+                erro.style.display = 'block';
+            }
+        }
+
+        // ========== ATUALIZAR MENU BASEADO NO LOGIN ==========
+        function atualizarMenuPorLogin(user) {
+            const painelLink = document.getElementById('menu-painel-link');
+            const superLink = document.getElementById('menu-super-link');
+            const logoutLink = document.getElementById('menu-logout-link');
+            
+            if (user) {
+                if (painelLink) painelLink.style.display = 'flex';
+                if (logoutLink) logoutLink.style.display = 'flex';
+                
+                // Verifica se é Super Admin
+                const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
+                if (user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+                    if (superLink) superLink.style.display = 'flex';
+                } else {
+                    if (superLink) superLink.style.display = 'none';
+                }
+            } else {
+                if (painelLink) painelLink.style.display = 'none';
+                if (superLink) superLink.style.display = 'none';
+                if (logoutLink) logoutLink.style.display = 'none';
+            }
+        }
+
+        function logoutDoMenu() {
+            auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Observa mudanças de autenticação
+        auth.onAuthStateChanged((user) => {
+            atualizarMenuPorLogin(user);
         });
     </script>
 
@@ -243,4 +372,4 @@
     <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
-              </html>
+            </html>
