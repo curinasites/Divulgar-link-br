@@ -11,6 +11,9 @@
     --font-mono: 'JetBrains Mono', monospace;
     --border-radius: 12px;
     --card-radius: 16px;
+    --particula-cor: rgba(139, 92, 246, 0.4);
+    --link-card-bg: rgba(255, 255, 255, 0.03);
+    --overlay-cor: rgba(13, 17, 23, 0.85);
 }
 
 /* ========== RESET & BASE ========== */
@@ -170,7 +173,7 @@ body {
     display: flex;
     align-items: center;
     gap: 14px;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--link-card-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -359,23 +362,9 @@ input:focus, textarea:focus, select:focus {
     box-shadow: 0 8px 25px rgba(139, 92, 246, 0.1);
 }
 
-.analytics-icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.analytics-numero {
-    font-size: 24px;
-    font-weight: 800;
-    color: #f0f6fc;
-}
-
-.analytics-label {
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-family: var(--font-mono);
-    margin-top: 4px;
-}
+.analytics-icon { font-size: 24px; margin-bottom: 8px; }
+.analytics-numero { font-size: 24px; font-weight: 800; color: #f0f6fc; }
+.analytics-label { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 4px; }
 
 .analytics-top-link {
     background: rgba(139, 92, 246, 0.08);
