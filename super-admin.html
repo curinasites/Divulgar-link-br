@@ -137,27 +137,28 @@
             </div>
         </div>
 
+        <!-- SEÇÃO DE CONFIGURAÇÃO DE PLANOS - CORRIGIDA -->
+        <div class="section">
+            <h3>💰 Configurar Planos e Pagamentos</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <div>
+                    <div class="form-group"><label>⭐ Preço Plano Pro (R$)</label><input type="text" id="config-preco-pro" placeholder="10"></div>
+                    <div class="form-group"><label>🔗 Link Checkout Pro (Kiwify/Hotmart)</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
+                </div>
+                <div>
+                    <div class="form-group"><label>💎 Preço Plano Premium (R$)</label><input type="text" id="config-preco-premium" placeholder="25"></div>
+                    <div class="form-group"><label>🔗 Link Checkout Premium</label><input type="text" id="config-link-premium" placeholder="https://kiwify.com/..."></div>
+                </div>
+            </div>
+            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar Configurações</button>
+            <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
+        </div>
+
         <div class="section">
             <h3>⚙️ Configurações Gerais</h3>
             <div class="form-group"><label>🖼️ Logo do Site (URL)</label><input type="text" id="config-logo" placeholder="https://..."></div>
             <button class="btn-small" onclick="salvarConfigGeral()">💾 Salvar</button>
             <p class="msg-sucesso" id="msg-config-sucesso">✅ Salvo!</p>
-        </div>
-
-        <div class="section">
-            <h3>💰 Configurar Planos</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-                <div>
-                    <div class="form-group"><label>⭐ Preço Pro (R$)</label><input type="text" id="config-preco-pro" placeholder="10"></div>
-                    <div class="form-group"><label>🔗 Link Checkout Pro</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
-                </div>
-                <div>
-                    <div class="form-group"><label>💎 Preço Premium (R$)</label><input type="text" id="config-preco-premium" placeholder="25"></div>
-                    <div class="form-group"><label>🔗 Link Checkout Premium</label><input type="text" id="config-link-premium" placeholder="https://kiwify.com/..."></div>
-                </div>
-            </div>
-            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar</button>
-            <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
         </div>
     </div>
 
@@ -196,8 +197,7 @@
                 document.getElementById('tela-carregando').classList.add('hidden');
                 document.getElementById('tela-dashboard').classList.remove('hidden');
             } else if (user) {
-                alert('⛔ Acesso negado! Apenas Super Admin.');
-                auth.signOut();
+                console.log("👤 Usuário comum logado:", user.email);
             }
         });
 
@@ -247,7 +247,7 @@
             document.getElementById('sa-senha').value = '';
         }
 
-        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE (CORRIGIDA - PEDE SENHA) ==========
+        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE ==========
         window.liberarUsuario = async function(pendingId, dados) {
             if (!dados || !dados.email) {
                 alert('❌ Erro: Dados do usuário incompletos!');
@@ -258,52 +258,32 @@
             
             const btn = event.target;
             const textoOriginal = btn.innerText;
-            btn.innerText = '⏳ Verificando...';
+            btn.innerText = '⏳ Processando...';
             btn.disabled = true;
             
             try {
-                // Pede a senha do Super Admin para continuar
-                const senhaSuperAdmin = prompt('🔐 Digite sua senha de Super Admin para liberar o usuário:');
-                if (!senhaSuperAdmin) {
-                    alert('Operação cancelada.');
-                    btn.innerText = textoOriginal;
-                    btn.disabled = false;
-                    return;
-                }
-                
-                // Relogia como Super Admin
-                await auth.signInWithEmailAndPassword(SUPER_ADMIN_EMAIL, senhaSuperAdmin);
-                
                 let uid = null;
                 let usuarioJaExiste = false;
                 
-                // Verifica se o usuário já existe
                 try {
-                    const userCredential = await auth.signInWithEmailAndPassword(dados.email, dados.senha);
-                    uid = userCredential.user.uid;
-                    usuarioJaExiste = true;
-                    await auth.signOut();
-                } catch (loginError) {
-                    if (loginError.code === 'auth/user-not-found') {
-                        const newUser = await auth.createUserWithEmailAndPassword(dados.email, dados.senha);
-                        uid = newUser.user.uid;
-                        usuarioJaExiste = false;
-                    } else if (loginError.code === 'auth/wrong-password') {
+                    const newUser = await auth.createUserWithEmailAndPassword(dados.email, dados.senha);
+                    uid = newUser.user.uid;
+                    console.log("✅ Usuário criado:", uid);
+                } catch (createError) {
+                    if (createError.code === 'auth/email-already-in-use') {
+                        usuarioJaExiste = true;
                         const userSnapshot = await db.collection('usuarios').where('email', '==', dados.email).get();
                         if (!userSnapshot.empty) {
                             uid = userSnapshot.docs[0].id;
+                            console.log("✅ Usuário já existe, UID:", uid);
+                        } else {
+                            throw new Error('Email já cadastrado mas não encontrado no Firestore');
                         }
-                        alert('⚠️ Este email já está cadastrado com outra senha!');
-                        btn.innerText = textoOriginal;
-                        btn.disabled = false;
-                        return;
                     } else {
-                        throw loginError;
+                        throw createError;
                     }
                 }
                 
-                // Volta a logar como Super Admin (já está logado)
-                // Cria/Atualiza no Firestore
                 const userDoc = await db.collection('usuarios').doc(uid).get();
                 if (!userDoc.exists) {
                     await db.collection('usuarios').doc(uid).set({
@@ -315,14 +295,15 @@
                         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
                         perfil: { nome: dados.nome, bio: '✨ Bem-vindo!', foto: '' }
                     });
-                } else if (usuarioJaExiste) {
+                    console.log("✅ Documento criado no Firestore");
+                } else {
                     await db.collection('usuarios').doc(uid).update({
                         plano: dados.plano,
                         status: 'ativo'
                     });
+                    console.log("✅ Documento atualizado no Firestore");
                 }
                 
-                // Remove pendente
                 await db.collection('usuarios_pendentes').doc(pendingId).delete();
                 
                 alert(`✅ ${dados.nome} foi ${usuarioJaExiste ? 'ATUALIZADO' : 'LIBERADO'} com sucesso!`);
@@ -330,8 +311,17 @@
                 trocarAba('usuarios');
                 
             } catch (error) {
-                console.error("Erro:", error);
-                alert('❌ Erro ao liberar: ' + (error.message || 'Tente novamente'));
+                console.error("Erro detalhado:", error);
+                
+                if (error.code === 'auth/too-many-requests') {
+                    alert('❌ Muitas tentativas! Aguarde alguns minutos e tente novamente.');
+                } else if (error.code === 'auth/email-already-in-use') {
+                    alert('❌ Este email já está cadastrado! Verifique se o usuário já foi liberado.');
+                } else if (error.message) {
+                    alert('❌ Erro ao liberar: ' + error.message);
+                } else {
+                    alert('❌ Erro ao liberar usuário. Tente novamente.');
+                }
                 await carregarDashboard();
             } finally {
                 btn.innerText = textoOriginal;
@@ -346,8 +336,52 @@
             alert('🗑️ Cadastro recusado.');
         };
 
+        // ========== FUNÇÃO PARA SALVAR PLANOS (CORRIGIDA) ==========
+        window.salvarConfigPlanos = async function() {
+            const proPreco = document.getElementById('config-preco-pro').value.trim();
+            const proLink = document.getElementById('config-link-pro').value.trim();
+            const premiumPreco = document.getElementById('config-preco-premium').value.trim();
+            const premiumLink = document.getElementById('config-link-premium').value.trim();
+            
+            console.log("💾 Salvando planos no Firestore...");
+            console.log("Pro:", { preco: proPreco, link: proLink });
+            console.log("Premium:", { preco: premiumPreco, link: premiumLink });
+            
+            try {
+                await db.collection('config').doc('planos').set({
+                    pro: { preco: proPreco, link: proLink },
+                    premium: { preco: premiumPreco, link: premiumLink },
+                    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log("✅ Planos salvos com sucesso!");
+                mostrarSucesso('msg-planos-sucesso');
+            } catch (error) {
+                console.error("❌ Erro ao salvar planos:", error);
+                alert('❌ Erro ao salvar configurações: ' + error.message);
+            }
+        };
+
+        window.salvarConfigGeral = async function() {
+            const logo = document.getElementById('config-logo').value.trim();
+            console.log("💾 Salvando logo:", logo);
+            
+            try {
+                await db.collection('config').doc('geral').set({ 
+                    logo: logo,
+                    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log("✅ Logo salva com sucesso!");
+                mostrarSucesso('msg-config-sucesso');
+            } catch (error) {
+                console.error("❌ Erro ao salvar logo:", error);
+                alert('❌ Erro ao salvar configurações: ' + error.message);
+            }
+        };
+
         // ========== CARREGAR DASHBOARD ==========
         async function carregarDashboard() {
+            console.log("🔄 Carregando dashboard...");
+            
             const snap = await db.collection('usuarios').get();
             const usuarios = [];
             snap.forEach(doc => usuarios.push({ id: doc.id, ...doc.data() }));
@@ -366,7 +400,7 @@
             
             const tabela = document.getElementById('tabela-usuarios');
             if (usuarios.length === 0) {
-                tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
+                tabela.innerHTML = '<td><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
             } else {
                 tabela.innerHTML = usuarios.map(u => {
                     const planoClass = u.plano === 'premium' ? 'badge-premium' : u.plano === 'pro' ? 'badge-pro' : 'badge-gratis';
@@ -424,17 +458,34 @@
                 });
             }
             
-            const configSnap = await db.collection('config').doc('geral').get();
-            if (configSnap.exists) document.getElementById('config-logo').value = configSnap.data().logo || '';
-            
+            // CARREGAR CONFIGURAÇÕES DOS PLANOS DO FIRESTORE
             const planosSnap = await db.collection('config').doc('planos').get();
             if (planosSnap.exists) {
                 const d = planosSnap.data();
-                document.getElementById('config-preco-pro').value = d.pro?.preco || '10';
-                document.getElementById('config-link-pro').value = d.pro?.link || '';
-                document.getElementById('config-preco-premium').value = d.premium?.preco || '25';
-                document.getElementById('config-link-premium').value = d.premium?.link || '';
+                console.log("📦 Planos carregados do Firestore:", d);
+                
+                if (d.pro) {
+                    document.getElementById('config-preco-pro').value = d.pro.preco || '10';
+                    document.getElementById('config-link-pro').value = d.pro.link || '';
+                }
+                if (d.premium) {
+                    document.getElementById('config-preco-premium').value = d.premium.preco || '25';
+                    document.getElementById('config-link-premium').value = d.premium.link || '';
+                }
+            } else {
+                console.log("⚠️ Documento 'config/planos' não encontrado, usando valores padrão");
+                document.getElementById('config-preco-pro').value = '10';
+                document.getElementById('config-link-pro').value = '';
+                document.getElementById('config-preco-premium').value = '25';
+                document.getElementById('config-link-premium').value = '';
             }
+            
+            const configSnap = await db.collection('config').doc('geral').get();
+            if (configSnap.exists) {
+                document.getElementById('config-logo').value = configSnap.data().logo || '';
+            }
+            
+            console.log("✅ Dashboard carregado!");
         }
 
         window.trocarAba = function(aba) {
@@ -458,22 +509,12 @@
             await carregarDashboard();
         }
 
-        window.salvarConfigGeral = async function() {
-            await db.collection('config').doc('geral').set({ logo: document.getElementById('config-logo').value.trim() });
-            mostrarSucesso('msg-config-sucesso');
-        }
-
-        window.salvarConfigPlanos = async function() {
-            await db.collection('config').doc('planos').set({
-                pro: { preco: document.getElementById('config-preco-pro').value.trim(), link: document.getElementById('config-link-pro').value.trim() },
-                premium: { preco: document.getElementById('config-preco-premium').value.trim(), link: document.getElementById('config-link-premium').value.trim() }
-            });
-            mostrarSucesso('msg-planos-sucesso');
-        }
-
         function mostrarSucesso(id) {
             const el = document.getElementById(id);
-            if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
+            if (el) { 
+                el.style.display = 'block'; 
+                setTimeout(() => el.style.display = 'none', 3000); 
+            }
         }
     </script>
 </body>
