@@ -50,10 +50,8 @@
         .modal-upgrade {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(8px);
             z-index: 1000;
@@ -91,12 +89,6 @@
         .btn-fechar-modal { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 10px 20px; border-radius: 10px; cursor: pointer; width: 100%; }
         .btn-fechar-modal:hover { border-color: #f85149; color: #f85149; }
         
-        .carregando {
-            text-align: center;
-            padding: 50px;
-            color: #8b949e;
-            font-family: 'JetBrains Mono', monospace;
-        }
         .login-container { max-width: 400px; margin: 80px auto; background: #161b22; border: 1px solid #30363d; border-radius: 20px; padding: 36px; text-align: center; }
         .login-container h2 { font-size: 22px; font-weight: 700; color: #f0f6fc; margin-bottom: 8px; }
         .login-container .subtitle { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
@@ -111,7 +103,7 @@
         .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
         .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
         .list-item .info { flex: 1; min-width: 0; }
-        .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; }
         .list-item .info small { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
         .list-item .actions { display: flex; gap: 6px; }
         .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
@@ -123,7 +115,7 @@
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
         .form-group textarea { min-height: 60px; resize: vertical; }
         .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; transition: all 0.2s; background: #0d1117; color: #c9d1d9; }
+        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; background: #0d1117; color: #c9d1d9; }
         .tema-preset:hover { border-color: #8b5cf6; }
         .tema-preset.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
         .cor-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
@@ -266,8 +258,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="auth.js"></script>
 <script>
-    // ========== TODAS AS FUNÇÕES DO ADMIN ==========
+    // ========== ADMIN.JS (TUDO EM UM ARQUIVO) ==========
     let userUID = null;
     let temaAtual = 'dev';
     let linksPagamentoUpgrade = { pro: '', premium: '' };
@@ -293,51 +286,9 @@
         premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true }
     };
 
-    // UPGRADE
-    async function carregarLinksPagamentoUpgrade() {
-        try {
-            const snap = await db.collection('config').doc('planos').get();
-            if (snap.exists) {
-                const d = snap.data();
-                if (d.pro) {
-                    linksPagamentoUpgrade.pro = d.pro.link || '';
-                    const precoEl = document.getElementById('preco-upgrade-pro');
-                    if (precoEl && d.pro.preco) precoEl.textContent = 'R$' + d.pro.preco;
-                }
-                if (d.premium) {
-                    linksPagamentoUpgrade.premium = d.premium.link || '';
-                    const precoEl = document.getElementById('preco-upgrade-premium');
-                    if (precoEl && d.premium.preco) precoEl.textContent = 'R$' + d.premium.preco;
-                }
-            }
-        } catch(e) { console.error("Erro:", e); }
-    }
-
-    function abrirModalUpgrade() { document.getElementById('modal-upgrade').classList.add('ativo'); }
-    function fecharModalUpgrade() { document.getElementById('modal-upgrade').classList.remove('ativo'); }
-    
-    function escolherPlanoUpgrade(plano) {
-        const link = linksPagamentoUpgrade[plano];
-        if (link && link !== '') {
-            window.open(link, '_blank');
-            alert(`✅ Você será redirecionado para o pagamento do plano ${plano.toUpperCase()}\n\nApós o pagamento, entre em contato com o Super Admin para ativação.`);
-            fecharModalUpgrade();
-        } else {
-            alert('⚠️ Link de pagamento não configurado. Entre em contato com o Super Admin.');
-            fecharModalUpgrade();
-        }
-    }
-
-    function copiarLinkPerfil() {
-        const linkEl = document.getElementById('perfil-link-preview');
-        if (linkEl && linkEl.textContent) {
-            navigator.clipboard.writeText(linkEl.textContent).then(() => alert('✅ Link copiado!'));
-        }
-    }
-
     function getTemasDisponiveis(plano) {
-        const todosTemas = ['dev', 'clean', 'dark', 'rosa', 'minimal', 'warm', 'cyber', 'ocean', 'sunset', 'forest', 'galaxy', 'coffee'];
-        return todosTemas.slice(0, LIMITES[plano]?.temas || 3);
+        const todos = ['dev', 'clean', 'dark', 'rosa', 'minimal', 'warm', 'cyber', 'ocean', 'sunset', 'forest', 'galaxy', 'coffee'];
+        return todos.slice(0, LIMITES[plano]?.temas || 3);
     }
 
     function aplicarPreset(nome) {
@@ -357,31 +308,67 @@
         const limite = LIMITES[plano][tipo];
         const snap = await db.collection('usuarios').doc(userUID).collection(tipo === 'midia' ? 'midia' : 'links').get();
         if (snap.size >= limite) {
-            const nomes = { links: 'links', midia: 'mídias' };
-            alert(`⚠️ Limite atingido! Seu plano (${plano}) permite até ${limite} ${nomes[tipo] || tipo}.\nFaça upgrade para liberar mais!`);
+            alert(`⚠️ Limite atingido! Seu plano permite ${limite} ${tipo === 'links' ? 'links' : 'mídias'}. Faça upgrade!`);
             return false;
         }
         return true;
     }
 
+    async function carregarLinksPagamentoUpgrade() {
+        try {
+            const snap = await db.collection('config').doc('planos').get();
+            if (snap.exists) {
+                const d = snap.data();
+                if (d.pro) {
+                    linksPagamentoUpgrade.pro = d.pro.link || '';
+                    const el = document.getElementById('preco-upgrade-pro');
+                    if (el && d.pro.preco) el.textContent = 'R$' + d.pro.preco;
+                }
+                if (d.premium) {
+                    linksPagamentoUpgrade.premium = d.premium.link || '';
+                    const el = document.getElementById('preco-upgrade-premium');
+                    if (el && d.premium.preco) el.textContent = 'R$' + d.premium.preco;
+                }
+            }
+        } catch(e) {}
+    }
+
+    function abrirModalUpgrade() { document.getElementById('modal-upgrade').classList.add('ativo'); }
+    function fecharModalUpgrade() { document.getElementById('modal-upgrade').classList.remove('ativo'); }
+
+    function escolherPlanoUpgrade(plano) {
+        const link = linksPagamentoUpgrade[plano];
+        if (link) {
+            window.open(link, '_blank');
+            alert(`✅ Redirecionando para pagamento do plano ${plano.toUpperCase()}. Após pagar, avise o Super Admin.`);
+            fecharModalUpgrade();
+        } else {
+            alert('⚠️ Link de pagamento não configurado. Entre em contato com o Super Admin.');
+            fecharModalUpgrade();
+        }
+    }
+
+    function copiarLinkPerfil() {
+        const link = document.getElementById('perfil-link-preview')?.textContent;
+        if (link) navigator.clipboard.writeText(link).then(() => alert('✅ Link copiado!'));
+    }
+
+    // ========== LINKS ==========
     async function carregarListaLinks() {
         const snap = await db.collection('usuarios').doc(userUID).collection('links').orderBy('ordem', 'asc').get();
         const lista = document.getElementById('lista-links');
-        if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link cadastrado.</p>'; return; }
+        if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
         lista.innerHTML = '';
         snap.forEach(doc => {
             const l = doc.data();
             const div = document.createElement('div'); div.className = 'list-item';
-            div.innerHTML = `<div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1} | ${(l.url||'').substring(0,50)}...</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
+            div.innerHTML = `<div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1}</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
             lista.appendChild(div);
         });
     }
 
     async function salvarLink() {
-        if (!document.getElementById('link-id').value) {
-            const pode = await verificarLimite('links');
-            if (!pode) return;
-        }
+        if (!document.getElementById('link-id').value) { if (!await verificarLimite('links')) return; }
         const id = document.getElementById('link-id').value;
         const dados = {
             titulo: document.getElementById('link-titulo').value.trim(),
@@ -391,8 +378,8 @@
         };
         if (!dados.titulo || !dados.url) { alert('⚠️ Título e URL obrigatórios!'); return; }
         const ref = db.collection('usuarios').doc(userUID).collection('links');
-        if (id) { await ref.doc(id).update(dados); }
-        else { await ref.add(dados); }
+        if (id) await ref.doc(id).update(dados);
+        else await ref.add(dados);
         limparFormLink(); carregarListaLinks(); mostrarSucesso('link-sucesso');
     }
 
@@ -408,48 +395,36 @@
         }
     }
 
-    async function removerLink(id) {
-        if (confirm('Remover este link?')) {
-            await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete();
-            carregarListaLinks();
-        }
-    }
+    async function removerLink(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete(); carregarListaLinks(); } }
+    function limparFormLink() { ['link-id','link-titulo','link-url','link-icone'].forEach(id => document.getElementById(id).value = ''); document.getElementById('link-ordem').value = '1'; }
 
-    function limparFormLink() {
-        ['link-id','link-titulo','link-url','link-icone'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('link-ordem').value = '1';
-    }
-
+    // ========== MÍDIA ==========
     async function carregarListaMidias() {
         const snap = await db.collection('usuarios').doc(userUID).collection('midia').orderBy('ordem', 'asc').get();
         const lista = document.getElementById('lista-midias');
-        if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhuma mídia cadastrada.</p>'; return; }
+        if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhuma mídia.</p>'; return; }
         lista.innerHTML = '';
         snap.forEach(doc => {
             const m = doc.data();
-            const tipoEmoji = { imagem: '🖼️', youtube: '▶️', mp4: '🎥' };
+            const tipoEmoji = { imagem:'🖼️', youtube:'▶️', mp4:'🎥' };
             const div = document.createElement('div'); div.className = 'list-item';
-            div.innerHTML = `<div class="info"><strong>${tipoEmoji[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1} | ${(m.url||'').substring(0,40)}...</small></div><div class="actions"><button class="btn-small-lt" onclick="editarMidia('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerMidia('${doc.id}')">🗑</button></div>`;
+            div.innerHTML = `<div class="info"><strong>${tipoEmoji[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1}</small></div><div class="actions"><button class="btn-small-lt" onclick="editarMidia('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerMidia('${doc.id}')">🗑</button></div>`;
             lista.appendChild(div);
         });
     }
 
     async function salvarMidia() {
-        if (!document.getElementById('midia-id').value) {
-            const pode = await verificarLimite('midia');
-            if (!pode) return;
-        }
+        if (!document.getElementById('midia-id').value) { if (!await verificarLimite('midia')) return; }
         const tipo = document.getElementById('midia-tipo').value;
         const plano = await getPlanoAtual();
-        const limites = LIMITES[plano];
-        if (tipo === 'youtube' && !limites.youtube) { alert('⚠️ Vídeos do YouTube disponíveis apenas nos planos Pro e Premium.'); return; }
-        if (tipo === 'mp4' && !limites.mp4) { alert('⚠️ Vídeos MP4 disponíveis apenas no plano Premium.'); return; }
+        if (tipo === 'youtube' && !LIMITES[plano].youtube) { alert('⚠️ YouTube disponível nos planos Pro/Premium.'); return; }
+        if (tipo === 'mp4' && !LIMITES[plano].mp4) { alert('⚠️ MP4 disponível apenas no Premium.'); return; }
         const id = document.getElementById('midia-id').value;
-        const dados = { tipo: tipo, url: document.getElementById('midia-url').value.trim(), ordem: parseInt(document.getElementById('midia-ordem').value) || 1 };
+        const dados = { tipo, url: document.getElementById('midia-url').value.trim(), ordem: parseInt(document.getElementById('midia-ordem').value) || 1 };
         if (!dados.url) { alert('⚠️ URL obrigatória!'); return; }
         const ref = db.collection('usuarios').doc(userUID).collection('midia');
-        if (id) { await ref.doc(id).update(dados); }
-        else { await ref.add(dados); }
+        if (id) await ref.doc(id).update(dados);
+        else await ref.add(dados);
         limparFormMidia(); carregarListaMidias(); mostrarSucesso('midia-sucesso');
     }
 
@@ -464,32 +439,15 @@
         }
     }
 
-    async function removerMidia(id) {
-        if (confirm('Remover esta mídia?')) {
-            await db.collection('usuarios').doc(userUID).collection('midia').doc(id).delete();
-            carregarListaMidias();
-        }
-    }
+    async function removerMidia(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('midia').doc(id).delete(); carregarListaMidias(); } }
+    function limparFormMidia() { document.getElementById('midia-id').value = ''; document.getElementById('midia-url').value = ''; document.getElementById('midia-ordem').value = '1'; }
 
-    function limparFormMidia() {
-        document.getElementById('midia-id').value = '';
-        document.getElementById('midia-url').value = '';
-        document.getElementById('midia-ordem').value = '1';
-    }
-
+    // ========== TEMA & PERFIL ==========
     async function salvarTema() {
         const plano = await getPlanoAtual();
-        const temasPermitidos = getTemasDisponiveis(plano);
-        if (!temasPermitidos.includes(temaAtual)) {
-            alert('⚠️ Este tema não está disponível no seu plano atual.');
-            return;
-        }
+        if (!getTemasDisponiveis(plano).includes(temaAtual)) { alert('⚠️ Tema não disponível no seu plano.'); return; }
         const tema = { ...TEMAS[temaAtual] };
-        if (LIMITES[plano].logo) {
-            tema.logo = document.getElementById('tema-logo').value.trim();
-        } else {
-            tema.logo = '';
-        }
+        tema.logo = LIMITES[plano].logo ? document.getElementById('tema-logo').value.trim() : '';
         await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set(tema);
         mostrarSucesso('tema-sucesso');
     }
@@ -502,73 +460,43 @@
                 foto: document.getElementById('perfil-foto').value.trim()
             }
         }, { merge: true });
-        
         const userDoc = await db.collection('usuarios').doc(userUID).get();
         if (userDoc.exists && userDoc.data().username) {
-            const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
-            const link = baseURL + '?u=' + userDoc.data().username;
-            const previewEl = document.getElementById('perfil-link-preview');
-            if (previewEl) previewEl.textContent = link;
+            const link = window.location.origin + window.location.pathname.replace('admin.html', 'index.html') + '?u=' + userDoc.data().username;
+            const el = document.getElementById('perfil-link-preview');
+            if (el) el.textContent = link;
         }
         mostrarSucesso('perfil-sucesso');
     }
 
     async function carregarDadosAdmin() {
-        console.log("🚀 carregarDadosAdmin iniciado");
-        
-        if (!auth.currentUser) {
-            console.log("❌ Nenhum usuário logado");
-            document.getElementById('tela-login').style.display = 'block';
-            document.getElementById('tela-admin').classList.add('hidden');
-            return;
-        }
-        
+        if (!auth.currentUser) return;
         userUID = auth.currentUser.uid;
-        console.log("✅ Usuário logado UID:", userUID);
-        
-        document.getElementById('tela-login').style.display = 'none';
+        document.getElementById('tela-login').classList.add('hidden');
         document.getElementById('tela-admin').classList.remove('hidden');
-        
         await carregarLinksPagamentoUpgrade();
         
         const btnUpgrade = document.getElementById('btn-upgrade');
         if (btnUpgrade) btnUpgrade.onclick = (e) => { e.preventDefault(); abrirModalUpgrade(); };
         
         const plano = await getPlanoAtual();
-        const limites = LIMITES[plano];
-        
         const badge = document.getElementById('plano-badge');
-        if (badge) {
-            badge.textContent = plano;
-            badge.className = 'badge-plano badge-' + plano;
-        }
+        if (badge) { badge.textContent = plano; badge.className = 'badge-plano badge-' + plano; }
         if (btnUpgrade) btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
         
         const campoTemaLogo = document.getElementById('tema-logo');
-        if (campoTemaLogo) {
-            campoTemaLogo.disabled = !limites.logo;
-            campoTemaLogo.placeholder = limites.logo ? 'https://... ou deixe vazio' : '🔒 Disponível nos planos Pro/Premium';
-        }
+        if (campoTemaLogo) { campoTemaLogo.disabled = !LIMITES[plano].logo; campoTemaLogo.placeholder = LIMITES[plano].logo ? 'https://...' : '🔒 Pro/Premium'; }
         
         const temasPermitidos = getTemasDisponiveis(plano);
         document.querySelectorAll('.tema-preset').forEach(el => {
-            if (!temasPermitidos.includes(el.dataset.tema)) {
-                el.style.opacity = '0.3';
-                el.style.pointerEvents = 'none';
-                el.title = '🔒 Upgrade necessário';
-            } else {
-                el.style.opacity = '1';
-                el.style.pointerEvents = 'auto';
-                el.title = '';
-            }
+            el.style.opacity = temasPermitidos.includes(el.dataset.tema) ? '1' : '0.3';
+            el.style.pointerEvents = temasPermitidos.includes(el.dataset.tema) ? 'auto' : 'none';
         });
         
         const selectMidia = document.getElementById('midia-tipo');
         if (selectMidia) {
-            const optYouTube = selectMidia.querySelector('option[value="youtube"]');
-            const optMP4 = selectMidia.querySelector('option[value="mp4"]');
-            if (optYouTube) optYouTube.disabled = !limites.youtube;
-            if (optMP4) optMP4.disabled = !limites.mp4;
+            selectMidia.querySelector('option[value="youtube"]').disabled = !LIMITES[plano].youtube;
+            selectMidia.querySelector('option[value="mp4"]').disabled = !LIMITES[plano].mp4;
         }
         
         const userDoc = await db.collection('usuarios').doc(userUID).get();
@@ -577,12 +505,9 @@
             document.getElementById('perfil-nome').value = d.perfil?.nome || '';
             document.getElementById('perfil-bio').value = d.perfil?.bio || '';
             document.getElementById('perfil-foto').value = d.perfil?.foto || '';
-            
             if (d.username) {
-                const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
-                const link = baseURL + '?u=' + d.username;
-                const previewEl = document.getElementById('perfil-link-preview');
-                if (previewEl) previewEl.textContent = link;
+                const link = window.location.origin + window.location.pathname.replace('admin.html', 'index.html') + '?u=' + d.username;
+                document.getElementById('perfil-link-preview').textContent = link;
                 document.getElementById('meu-link-admin').style.display = 'block';
             }
         }
@@ -594,10 +519,8 @@
             if (campoTemaLogo) campoTemaLogo.value = t.logo || '';
         }
         aplicarPreset(temaAtual);
-        
         carregarListaLinks();
         carregarListaMidias();
-        console.log("✅ Dashboard carregado com sucesso!");
     }
 
     function mostrarSucesso(id) {
@@ -610,37 +533,13 @@
         const senha = document.getElementById('login-senha').value;
         const erro = document.getElementById('login-erro');
         erro.style.display = 'none';
-        if (!email || !senha) { 
-            erro.textContent = '⚠️ Preencha email e senha'; 
-            erro.style.display = 'block'; 
-            return; 
-        }
-        auth.signInWithEmailAndPassword(email, senha)
-            .then(() => {
-                console.log("✅ Login realizado com sucesso");
-            })
-            .catch((error) => {
-                console.error("Erro:", error);
-                erro.textContent = '❌ Email ou senha incorretos'; 
-                erro.style.display = 'block';
-            });
+        if (!email || !senha) { erro.textContent = '⚠️ Preencha email e senha'; erro.style.display = 'block'; return; }
+        auth.signInWithEmailAndPassword(email, senha).catch(() => {
+            erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
+        });
     }
 
-    function logout() {
-        auth.signOut();
-        window.location.href = 'index.html';
-    }
-
-    // ========== INICIALIZAÇÃO ==========
-    auth.onAuthStateChanged((user) => {
-        console.log("🔥 auth.onAuthStateChanged:", user?.email);
-        if (user) {
-            carregarDadosAdmin();
-        } else {
-            document.getElementById('tela-login').style.display = 'block';
-            document.getElementById('tela-admin').classList.add('hidden');
-        }
-    });
+    function logout() { auth.signOut(); window.location.href = 'index.html'; }
 </script>
 </body>
-                </html>
+                        </html>
