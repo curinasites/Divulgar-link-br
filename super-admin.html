@@ -66,6 +66,7 @@
         .btn-unblock:hover { background: rgba(74,222,128,0.2); }
         .msg-sucesso { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
         .hidden { display: none !important; }
+        .carregando { text-align: center; padding: 40px; color: #8b949e; }
     </style>
 </head>
 <body>
@@ -80,6 +81,14 @@
         <p class="erro" id="sa-erro">Email ou senha incorretos</p>
         <button class="btn-entrar" onclick="loginSuperAdmin()">🔐 Entrar</button>
         <div class="voltar"><a href="index.html">← Voltar ao site</a></div>
+    </div>
+
+    <!-- TELA DE CARREGAMENTO -->
+    <div id="tela-carregando" class="container hidden">
+        <div class="carregando">
+            <p>⏳ Carregando dashboard...</p>
+            <p style="font-size:12px; margin-top:8px;">> aguarde</p>
+        </div>
     </div>
 
     <!-- DASHBOARD (escondido até login) -->
@@ -139,23 +148,75 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <!-- ⚠️ NÃO coloque auth.js aqui! Ele vai atrapalhar -->
     <script>
+        // ========== CONFIGURAÇÃO ==========
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
 
-        // Se já estiver logado com o email certo, mostra dashboard direto
-        auth.onAuthStateChanged((user) => {
+        // ========== FUNÇÃO QUE CRIA O SUPER ADMIN NO FIRESTORE AUTOMATICAMENTE ==========
+        async function garantirSuperAdminNoFirestore(user) {
+            const userRef = db.collection('usuarios').doc(user.uid);
+            const doc = await userRef.get();
+            
+            if (!doc.exists) {
+                console.log("📝 Criando registro do Super Admin no Firestore...");
+                await userRef.set({
+                    email: user.email,
+                    nome: "Super Admin",
+                    plano: "premium",
+                    status: "ativo",
+                    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                    perfil: {
+                        nome: "Super Admin",
+                        bio: "Super Administrador do Sistema 👑",
+                        foto: ""
+                    }
+                });
+                console.log("✅ Super Admin registrado no Firestore!");
+            } else {
+                console.log("✅ Super Admin já existe no Firestore");
+            }
+        }
+
+        // ========== VERIFICA AUTENTICAÇÃO ==========
+        auth.onAuthStateChanged(async (user) => {
+            console.log("🔍 onAuthStateChanged - Usuário:", user?.email);
+            
             if (user && user.email === SUPER_ADMIN_EMAIL) {
+                // Garante que existe no Firestore
+                await garantirSuperAdminNoFirestore(user);
+                
+                // Mostra dashboard
                 document.getElementById('tela-login').classList.add('hidden');
+                document.getElementById('tela-carregando').classList.remove('hidden');
+                document.getElementById('tela-dashboard').classList.add('hidden');
+                
+                // Carrega os dados
+                await carregarDashboard();
+                
+                document.getElementById('tela-carregando').classList.add('hidden');
                 document.getElementById('tela-dashboard').classList.remove('hidden');
-                carregarDashboard();
+            } else if (user) {
+                console.log("❌ Usuário não autorizado:", user.email);
+                // Se não for Super Admin, desloga
+                await auth.signOut();
+                document.getElementById('tela-login').classList.remove('hidden');
+                document.getElementById('tela-dashboard').classList.add('hidden');
+                document.getElementById('tela-carregando').classList.add('hidden');
+            } else {
+                console.log("🔴 Nenhum usuário logado");
+                document.getElementById('tela-login').classList.remove('hidden');
+                document.getElementById('tela-dashboard').classList.add('hidden');
+                document.getElementById('tela-carregando').classList.add('hidden');
             }
         });
 
-        function loginSuperAdmin() {
+        // ========== FUNÇÃO DE LOGIN ==========
+        async function loginSuperAdmin() {
             const email = document.getElementById('sa-email').value.trim();
             const senha = document.getElementById('sa-senha').value;
             const erro = document.getElementById('sa-erro');
+            
+            erro.style.display = 'none';
             
             if (!email || !senha) {
                 erro.textContent = '⚠️ Preencha email e senha';
@@ -163,77 +224,116 @@
                 return;
             }
             
-            auth.signInWithEmailAndPassword(email, senha)
-                .then((result) => {
-                    if (result.user.email === SUPER_ADMIN_EMAIL) {
-                        document.getElementById('tela-login').classList.add('hidden');
-                        document.getElementById('tela-dashboard').classList.remove('hidden');
-                        carregarDashboard();
-                    } else {
-                        erro.textContent = '⛔ Acesso negado. Apenas Super Admin.';
-                        erro.style.display = 'block';
-                        auth.signOut();
-                    }
-                })
-                .catch(() => {
-                    erro.textContent = '❌ Email ou senha incorretos';
+            // Mostra carregando
+            const btn = event.target;
+            const textoOriginal = btn.innerText;
+            btn.innerText = '⏳ Entrando...';
+            btn.disabled = true;
+            
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, senha);
+                console.log("✅ Login realizado:", result.user.email);
+                
+                if (result.user.email === SUPER_ADMIN_EMAIL) {
+                    // Garante que existe no Firestore
+                    await garantirSuperAdminNoFirestore(result.user);
+                    
+                    // Mostra dashboard
+                    document.getElementById('tela-login').classList.add('hidden');
+                    document.getElementById('tela-carregando').classList.remove('hidden');
+                    
+                    await carregarDashboard();
+                    
+                    document.getElementById('tela-carregando').classList.add('hidden');
+                    document.getElementById('tela-dashboard').classList.remove('hidden');
+                } else {
+                    erro.textContent = '⛔ Acesso negado. Apenas Super Admin.';
                     erro.style.display = 'block';
-                });
+                    await auth.signOut();
+                }
+            } catch (error) {
+                console.error("Erro no login:", error);
+                if (error.code === 'auth/user-not-found') {
+                    erro.textContent = '❌ Usuário não encontrado. Crie uma conta primeiro.';
+                } else if (error.code === 'auth/wrong-password') {
+                    erro.textContent = '❌ Senha incorreta.';
+                } else {
+                    erro.textContent = '❌ Email ou senha incorretos';
+                }
+                erro.style.display = 'block';
+            } finally {
+                btn.innerText = textoOriginal;
+                btn.disabled = false;
+            }
         }
 
-        function logoutSA() {
-            auth.signOut();
+        // ========== LOGOUT ==========
+        async function logoutSA() {
+            await auth.signOut();
             document.getElementById('tela-dashboard').classList.add('hidden');
             document.getElementById('tela-login').classList.remove('hidden');
+            document.getElementById('tela-carregando').classList.add('hidden');
+            // Limpa os campos
             document.getElementById('sa-email').value = '';
             document.getElementById('sa-senha').value = '';
         }
 
         // ========== DASHBOARD ==========
         async function carregarDashboard() {
+            console.log("📦 Carregando dashboard...");
+            
+            // Carrega usuários
             const snap = await db.collection('usuarios').get();
             const usuarios = [];
             snap.forEach(doc => usuarios.push({ id: doc.id, ...doc.data() }));
             
+            // Estatísticas
             const ativos = usuarios.filter(u => u.status !== 'excluido');
             document.getElementById('stat-total').textContent = ativos.length;
             document.getElementById('stat-gratis').textContent = ativos.filter(u => u.plano === 'gratis').length;
             document.getElementById('stat-pro').textContent = ativos.filter(u => u.plano === 'pro').length;
             document.getElementById('stat-premium').textContent = ativos.filter(u => u.plano === 'premium').length;
             
+            // Tabela
             const tabela = document.getElementById('tabela-usuarios');
-            tabela.innerHTML = usuarios.map(u => {
-                const planoClass = u.plano === 'premium' ? 'badge-premium' : u.plano === 'pro' ? 'badge-pro' : 'badge-gratis';
-                const status = u.status || 'ativo';
-                const statusClass = status === 'bloqueado' ? 'badge-bloqueado' : 'badge-gratis';
-                const isBloqueado = status === 'bloqueado';
-                
-                return `
-                    <tr style="${isBloqueado ? 'opacity:0.6;' : ''}">
-                        <td>${u.perfil?.nome || u.nome || '--'}</td>
-                        <td style="font-size:12px;color:#8b949e;">${u.email || '--'}</td>
-                        <td><span class="badge-plano ${planoClass}">${u.plano || 'gratis'}</span></td>
-                        <td><span class="badge-plano ${statusClass}">${status}</span></td>
-                        <td>
-                            <select onchange="alterarPlano('${u.id}', this.value)" ${isBloqueado ? 'disabled' : ''}>
-                                <option value="gratis" ${u.plano === 'gratis' ? 'selected' : ''}>🌱 Grátis</option>
-                                <option value="pro" ${u.plano === 'pro' ? 'selected' : ''}>⭐ Pro</option>
-                                <option value="premium" ${u.plano === 'premium' ? 'selected' : ''}>💎 Premium</option>
-                            </select>
-                        </td>
-                        <td>
-                            ${isBloqueado ? 
-                                `<button class="btn-unblock" onclick="toggleBloqueio('${u.id}', 'bloqueado')">🔓 Desbloquear</button>` :
-                                `<button class="btn-block" onclick="toggleBloqueio('${u.id}', 'ativo')">🔒 Bloquear</button>`
-                            }
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            if (usuarios.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
+            } else {
+                tabela.innerHTML = usuarios.map(u => {
+                    const planoClass = u.plano === 'premium' ? 'badge-premium' : u.plano === 'pro' ? 'badge-pro' : 'badge-gratis';
+                    const status = u.status || 'ativo';
+                    const statusClass = status === 'bloqueado' ? 'badge-bloqueado' : 'badge-gratis';
+                    const isBloqueado = status === 'bloqueado';
+                    
+                    return `
+                        <tr style="${isBloqueado ? 'opacity:0.6;' : ''}">
+                            <td>${u.perfil?.nome || u.nome || '--'}</td>
+                            <td style="font-size:12px;color:#8b949e;">${u.email || '--'}</td>
+                            <td><span class="badge-plano ${planoClass}">${u.plano || 'gratis'}</span></td>
+                            <td><span class="badge-plano ${statusClass}">${status}</span></td>
+                            <td>
+                                <select onchange="alterarPlano('${u.id}', this.value)" ${isBloqueado ? 'disabled' : ''}>
+                                    <option value="gratis" ${u.plano === 'gratis' ? 'selected' : ''}>🌱 Grátis</option>
+                                    <option value="pro" ${u.plano === 'pro' ? 'selected' : ''}>⭐ Pro</option>
+                                    <option value="premium" ${u.plano === 'premium' ? 'selected' : ''}>💎 Premium</option>
+                                </select>
+                            </td>
+                            <td>
+                                ${isBloqueado ? 
+                                    `<button class="btn-unblock" onclick="toggleBloqueio('${u.id}', 'bloqueado')">🔓 Desbloquear</button>` :
+                                    `<button class="btn-block" onclick="toggleBloqueio('${u.id}', 'ativo')">🔒 Bloquear</button>`
+                                }
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
             
-            // Carrega configs
+            // Carrega configurações
             const configSnap = await db.collection('config').doc('geral').get();
-            if (configSnap.exists) document.getElementById('config-logo').value = configSnap.data().logo || '';
+            if (configSnap.exists) {
+                document.getElementById('config-logo').value = configSnap.data().logo || '';
+            }
             
             const planosSnap = await db.collection('config').doc('planos').get();
             if (planosSnap.exists) {
@@ -243,38 +343,53 @@
                 document.getElementById('config-preco-premium').value = d.premium?.preco || '25';
                 document.getElementById('config-link-premium').value = d.premium?.link || '';
             }
+            
+            console.log("✅ Dashboard carregado com sucesso!");
         }
 
+        // ========== FUNÇÕES GLOBAIS ==========
         window.alterarPlano = async function(uid, novoPlano) {
             await db.collection('usuarios').doc(uid).update({ plano: novoPlano });
             mostrarSucesso('msg-planos-sucesso');
-            carregarDashboard();
+            await carregarDashboard();
         }
 
         window.toggleBloqueio = async function(uid, statusAtual) {
             const novoStatus = statusAtual === 'bloqueado' ? 'ativo' : 'bloqueado';
-            if (!confirm(`⚠️ ${novoStatus === 'bloqueado' ? 'BLOQUEAR' : 'DESBLOQUEAR'} este usuário?`)) return;
+            const acao = novoStatus === 'bloqueado' ? 'BLOQUEAR' : 'DESBLOQUEAR';
+            if (!confirm(`⚠️ Tem certeza que deseja ${acao} este usuário?`)) return;
             await db.collection('usuarios').doc(uid).update({ status: novoStatus });
-            carregarDashboard();
+            await carregarDashboard();
         }
 
         window.salvarConfigGeral = async function() {
-            await db.collection('config').doc('geral').set({ logo: document.getElementById('config-logo').value.trim() });
+            await db.collection('config').doc('geral').set({ 
+                logo: document.getElementById('config-logo').value.trim() 
+            });
             mostrarSucesso('msg-config-sucesso');
         }
 
         window.salvarConfigPlanos = async function() {
             await db.collection('config').doc('planos').set({
-                pro: { preco: document.getElementById('config-preco-pro').value.trim(), link: document.getElementById('config-link-pro').value.trim() },
-                premium: { preco: document.getElementById('config-preco-premium').value.trim(), link: document.getElementById('config-link-premium').value.trim() }
+                pro: { 
+                    preco: document.getElementById('config-preco-pro').value.trim(), 
+                    link: document.getElementById('config-link-pro').value.trim() 
+                },
+                premium: { 
+                    preco: document.getElementById('config-preco-premium').value.trim(), 
+                    link: document.getElementById('config-link-premium').value.trim() 
+                }
             });
             mostrarSucesso('msg-planos-sucesso');
         }
 
         function mostrarSucesso(id) {
             const el = document.getElementById(id);
-            if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
+            if (el) { 
+                el.style.display = 'block'; 
+                setTimeout(() => el.style.display = 'none', 2000); 
+            }
         }
     </script>
 </body>
-</html>
+    </html>
