@@ -20,9 +20,9 @@
         .admin-header .title span { color: #a78bfa; }
         .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
         .btn-logout:hover { background: rgba(248,81,73,0.2); }
-        .btn-ver-site { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; display: inline-block; white-space: nowrap; }
+        .btn-ver-site { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
         .btn-ver-site:hover { background: rgba(139,92,246,0.2); }
-        .btn-upgrade { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b !important; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 11px; text-decoration: none; white-space: nowrap; display: inline-block; }
+        .btn-upgrade { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b !important; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; display: inline-block; }
         .btn-upgrade:hover { background: rgba(245,158,11,0.2); }
         .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
         .admin-section h3 { font-size: 15px; font-weight: 600; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
@@ -32,14 +32,11 @@
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
         .form-group textarea { min-height: 60px; resize: vertical; }
-        .form-group select { cursor: pointer; }
-        .link-hint { font-size: 10px; color: #6a6a80; margin-top: 4px; }
         .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
         .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
         .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; white-space: nowrap; }
         .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
+        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
         .list-item .info { flex: 1; min-width: 0; }
         .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -48,8 +45,8 @@
         .login-container { max-width: 400px; margin: 80px auto; background: #161b22; border: 1px solid #30363d; border-radius: 20px; padding: 36px; text-align: center; }
         .login-container h2 { font-size: 22px; font-weight: 700; color: #f0f6fc; margin-bottom: 8px; }
         .login-container .subtitle { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
-        .msg-sucesso-lt { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
-        .msg-erro-lt { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .msg-sucesso { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .msg-erro { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
         .hidden { display: none !important; }
         .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
         .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; transition: all 0.2s; background: #0d1117; color: #c9d1d9; }
@@ -61,7 +58,6 @@
         .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
         .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
         
-        /* CARD DO LINK DE DIVULGAÇÃO */
         .link-card {
             background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.05));
             border: 1px solid rgba(245,158,11,0.3);
@@ -81,19 +77,9 @@
             display: inline-block;
             max-width: 100%;
         }
-        .link-card .btn-copiar {
-            background: #8b5cf6;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 12px;
-        }
-        .link-card .btn-copiar:hover { background: #7c3aed; }
+        .btn-copiar { background: #8b5cf6; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; margin-top: 12px; }
+        .btn-copiar:hover { background: #7c3aed; }
         
-        /* MODAL UPGRADE */
         .modal-upgrade {
             display: none;
             position: fixed;
@@ -119,13 +105,7 @@
         }
         .modal-upgrade-content h3 { color: #f59e0b; margin-bottom: 8px; font-size: 24px; }
         .modal-upgrade-content p { color: #8b949e; margin-bottom: 24px; font-size: 13px; }
-        .planos-upgrade {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
+        .planos-upgrade { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
         .plano-upgrade-btn {
             background: #0d1117;
             border: 2px solid #30363d;
@@ -141,15 +121,7 @@
         .plano-upgrade-btn .plano-icon { font-size: 32px; display: block; margin-bottom: 8px; }
         .plano-upgrade-btn .plano-nome { font-size: 18px; font-weight: 700; color: #f0f6fc; }
         .plano-upgrade-btn .plano-preco { font-size: 14px; color: #a78bfa; margin-top: 4px; }
-        .btn-fechar-modal {
-            background: transparent;
-            border: 1px solid #30363d;
-            color: #8b949e;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-        }
+        .btn-fechar-modal { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 10px 20px; border-radius: 10px; cursor: pointer; width: 100%; }
         .btn-fechar-modal:hover { border-color: #f85149; color: #f85149; }
         
         @media (max-width: 600px) { 
@@ -157,130 +129,537 @@
             .admin-section { padding: 16px; } 
             .tema-presets { grid-template-columns: 1fr; } 
             .admin-header { gap: 8px; }
-            .planos-upgrade { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <div class="admin-container">
-        <!-- TELA DE LOGIN -->
-        <div id="tela-login" class="login-container">
-            <h2>🔐 Divulga Link BR</h2>
-            <p class="subtitle">> authentication required</p>
-            <div class="form-group"><label>email</label><input type="email" id="login-email" placeholder="admin@email.com"></div>
-            <div class="form-group"><label>senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
-            <p class="msg-erro-lt" id="login-erro">Email ou senha incorretos</p>
-            <button class="btn-primary-lt" onclick="fazerLogin()" style="width:100%;">> entrar_</button>
-        </div>
-
-        <!-- PAINEL ADMIN -->
-        <div id="tela-admin" class="hidden">
-            <div class="admin-header">
-                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-                <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
-                <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
-                <button id="btn-upgrade" class="btn-upgrade">🔼 Fazer Upgrade</button>
-                <button id="btn-ver-site" class="btn-ver-site">🌐 ver site</button>
-                <button class="btn-logout" onclick="logout()">> exit</button>
-            </div>
-
-            <!-- CARD DO LINK DE DIVULGAÇÃO -->
-            <div id="meu-link-admin" class="link-card" style="display:none;">
-                <p>🔗 Seu link público - compartilhe em suas redes sociais:</p>
-                <code id="perfil-link-preview"></code>
-                <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
-            </div>
-
-            <!-- TEMA -->
-            <div class="admin-section">
-                <h3><span class="icon">🎨</span> Personalizar Tema</h3>
-                <div class="form-group"><label>Presets</label>
-                    <div class="tema-presets" id="tema-presets">
-                        <div class="tema-preset ativo" data-tema="dev" onclick="aplicarPreset('dev')"><span class="cor-preview" style="background:#8b5cf6;"></span>Dev Terminal</div>
-                        <div class="tema-preset" data-tema="clean" onclick="aplicarPreset('clean')"><span class="cor-preview" style="background:#3b82f6;"></span>Clean Blue</div>
-                        <div class="tema-preset" data-tema="dark" onclick="aplicarPreset('dark')"><span class="cor-preview" style="background:#10b981;"></span>Dark Green</div>
-                        <div class="tema-preset" data-tema="rosa" onclick="aplicarPreset('rosa')"><span class="cor-preview" style="background:#ec4899;"></span>Rose Pink</div>
-                        <div class="tema-preset" data-tema="minimal" onclick="aplicarPreset('minimal')"><span class="cor-preview" style="background:#6b7280;"></span>Minimal</div>
-                        <div class="tema-preset" data-tema="warm" onclick="aplicarPreset('warm')"><span class="cor-preview" style="background:#f59e0b;"></span>Warm Orange</div>
-                        <div class="tema-preset" data-tema="cyber" onclick="aplicarPreset('cyber')"><span class="cor-preview" style="background:#a855f7;"></span>Cyber Neon</div>
-                        <div class="tema-preset" data-tema="ocean" onclick="aplicarPreset('ocean')"><span class="cor-preview" style="background:#06b6d4;"></span>Ocean Blue</div>
-                        <div class="tema-preset" data-tema="sunset" onclick="aplicarPreset('sunset')"><span class="cor-preview" style="background:#f97316;"></span>Sunset</div>
-                        <div class="tema-preset" data-tema="forest" onclick="aplicarPreset('forest')"><span class="cor-preview" style="background:#22c55e;"></span>Forest</div>
-                        <div class="tema-preset" data-tema="galaxy" onclick="aplicarPreset('galaxy')"><span class="cor-preview" style="background:#7c3aed;"></span>Galaxy</div>
-                        <div class="tema-preset" data-tema="coffee" onclick="aplicarPreset('coffee')"><span class="cor-preview" style="background:#92400e;"></span>Coffee</div>
-                    </div>
-                </div>
-                <div class="form-group"><label>🖼️ Logo do Header (URL)</label><input type="text" id="tema-logo" placeholder="https://... ou deixe vazio"><div class="link-hint">💡 Substitui os pontinhos no topo do site</div></div>
-                <button class="btn-primary-lt" onclick="salvarTema()">💾 Salvar Tema</button>
-                <p class="msg-sucesso-lt" id="tema-sucesso">✅ Tema salvo!</p>
-            </div>
-
-            <!-- PERFIL -->
-            <div class="admin-section">
-                <h3><span class="icon">👤</span> Perfil</h3>
-                <div class="form-group"><label>Nome</label><input type="text" id="perfil-nome" placeholder="@dev"></div>
-                <div class="form-group"><label>Bio</label><textarea id="perfil-bio" placeholder="full-stack developer | open source"></textarea></div>
-                <div class="form-group"><label>URL da Foto</label><input type="text" id="perfil-foto" placeholder="https://..."></div>
-                <button class="btn-primary-lt" onclick="salvarPerfil()">💾 Salvar Perfil</button>
-                <p class="msg-sucesso-lt" id="perfil-sucesso">✅ Perfil atualizado!</p>
-            </div>
-
-            <!-- LINKS -->
-            <div class="admin-section">
-                <h3><span class="icon">🔗</span> Links</h3>
-                <div class="form-group"><label>Título</label><input type="text" id="link-titulo" placeholder="Meu GitHub"></div>
-                <div class="form-group"><label>URL</label><input type="text" id="link-url" placeholder="https://github.com/..."></div>
-                <div class="form-group"><label>Ícone (emoji)</label><input type="text" id="link-icone" placeholder="💻"></div>
-                <div class="form-group"><label>Ordem (número)</label><input type="number" id="link-ordem" placeholder="1" value="1"></div>
-                <input type="hidden" id="link-id" value="">
-                <button class="btn-primary-lt" onclick="salvarLink()">💾 Salvar Link</button>
-                <button class="btn-small-lt" onclick="limparFormLink()" style="margin-left:8px;">✕ Limpar</button>
-                <p class="msg-sucesso-lt" id="link-sucesso">✅ Link salvo!</p>
-                <div id="lista-links" style="margin-top:16px;"></div>
-            </div>
-
-            <!-- MÍDIA -->
-            <div class="admin-section">
-                <h3><span class="icon">🎬</span> Mídia</h3>
-                <div class="form-group"><label>Tipo</label><select id="midia-tipo"><option value="imagem">🖼️ Imagem</option><option value="youtube">▶️ YouTube</option><option value="mp4">🎥 MP4</option></select></div>
-                <div class="form-group"><label>URL</label><input type="text" id="midia-url" placeholder="https://..."></div>
-                <div class="form-group"><label>Ordem (número)</label><input type="number" id="midia-ordem" placeholder="1" value="1"></div>
-                <input type="hidden" id="midia-id" value="">
-                <button class="btn-primary-lt" onclick="salvarMidia()">💾 Salvar Mídia</button>
-                <button class="btn-small-lt" onclick="limparFormMidia()" style="margin-left:8px;">✕ Limpar</button>
-                <p class="msg-sucesso-lt" id="midia-sucesso">✅ Mídia salva!</p>
-                <div id="lista-midias" style="margin-top:16px;"></div>
-            </div>
-        </div>
+<div class="admin-container">
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" class="login-container">
+        <h2>🔐 Divulga Link BR</h2>
+        <p class="subtitle">> authentication required</p>
+        <div class="form-group"><label>email</label><input type="email" id="login-email" placeholder="admin@email.com"></div>
+        <div class="form-group"><label>senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
+        <p class="msg-erro" id="login-erro">Email ou senha incorretos</p>
+        <button class="btn-primary-lt" onclick="fazerLogin()" style="width:100%;">> entrar_</button>
     </div>
 
-    <!-- MODAL DE UPGRADE -->
-    <div id="modal-upgrade" class="modal-upgrade">
-        <div class="modal-upgrade-content">
-            <h3>🚀 Fazer Upgrade</h3>
-            <p>Escolha o plano que deseja:</p>
-            <div class="planos-upgrade">
-                <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('pro')">
-                    <div class="plano-icon">⭐</div>
-                    <div class="plano-nome">Plano Pro</div>
-                    <div class="plano-preco" id="preco-upgrade-pro">R$10</div>
-                </div>
-                <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('premium')">
-                    <div class="plano-icon">💎</div>
-                    <div class="plano-nome">Plano Premium</div>
-                    <div class="plano-preco" id="preco-upgrade-premium">R$25</div>
+    <!-- PAINEL ADMIN -->
+    <div id="tela-admin" class="hidden">
+        <div class="admin-header">
+            <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+            <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
+            <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
+            <button id="btn-upgrade" class="btn-upgrade">🔼 Fazer Upgrade</button>
+            <button id="btn-ver-site" class="btn-ver-site">🌐 ver site</button>
+            <button class="btn-logout" onclick="logout()">> exit</button>
+        </div>
+
+        <!-- CARD DO LINK DE DIVULGAÇÃO -->
+        <div id="meu-link-card" class="link-card" style="display:none;">
+            <p>🔗 Seu link público - compartilhe em suas redes sociais:</p>
+            <code id="perfil-link-preview"></code>
+            <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
+        </div>
+
+        <!-- TEMA -->
+        <div class="admin-section">
+            <h3><span class="icon">🎨</span> Personalizar Tema</h3>
+            <div class="form-group"><label>Presets</label>
+                <div class="tema-presets" id="tema-presets">
+                    <div class="tema-preset ativo" data-tema="dev" onclick="aplicarPreset('dev')"><span class="cor-preview" style="background:#8b5cf6;"></span>Dev Terminal</div>
+                    <div class="tema-preset" data-tema="clean" onclick="aplicarPreset('clean')"><span class="cor-preview" style="background:#3b82f6;"></span>Clean Blue</div>
+                    <div class="tema-preset" data-tema="dark" onclick="aplicarPreset('dark')"><span class="cor-preview" style="background:#10b981;"></span>Dark Green</div>
+                    <div class="tema-preset" data-tema="rosa" onclick="aplicarPreset('rosa')"><span class="cor-preview" style="background:#ec4899;"></span>Rose Pink</div>
+                    <div class="tema-preset" data-tema="minimal" onclick="aplicarPreset('minimal')"><span class="cor-preview" style="background:#6b7280;"></span>Minimal</div>
+                    <div class="tema-preset" data-tema="warm" onclick="aplicarPreset('warm')"><span class="cor-preview" style="background:#f59e0b;"></span>Warm Orange</div>
+                    <div class="tema-preset" data-tema="cyber" onclick="aplicarPreset('cyber')"><span class="cor-preview" style="background:#a855f7;"></span>Cyber Neon</div>
+                    <div class="tema-preset" data-tema="ocean" onclick="aplicarPreset('ocean')"><span class="cor-preview" style="background:#06b6d4;"></span>Ocean Blue</div>
+                    <div class="tema-preset" data-tema="sunset" onclick="aplicarPreset('sunset')"><span class="cor-preview" style="background:#f97316;"></span>Sunset</div>
+                    <div class="tema-preset" data-tema="forest" onclick="aplicarPreset('forest')"><span class="cor-preview" style="background:#22c55e;"></span>Forest</div>
+                    <div class="tema-preset" data-tema="galaxy" onclick="aplicarPreset('galaxy')"><span class="cor-preview" style="background:#7c3aed;"></span>Galaxy</div>
+                    <div class="tema-preset" data-tema="coffee" onclick="aplicarPreset('coffee')"><span class="cor-preview" style="background:#92400e;"></span>Coffee</div>
                 </div>
             </div>
-            <button class="btn-fechar-modal" onclick="fecharModalUpgrade()">Cancelar</button>
+            <div class="form-group"><label>🖼️ Logo do Header (URL)</label><input type="text" id="tema-logo" placeholder="https://..."><div class="link-hint">💡 Disponível nos planos Pro/Premium</div></div>
+            <button class="btn-primary-lt" onclick="salvarTema()">💾 Salvar Tema</button>
+            <p class="msg-sucesso" id="tema-sucesso">✅ Tema salvo!</p>
+        </div>
+
+        <!-- PERFIL -->
+        <div class="admin-section">
+            <h3><span class="icon">👤</span> Perfil</h3>
+            <div class="form-group"><label>Nome</label><input type="text" id="perfil-nome" placeholder="@dev"></div>
+            <div class="form-group"><label>Bio</label><textarea id="perfil-bio" placeholder="full-stack developer | open source"></textarea></div>
+            <div class="form-group"><label>URL da Foto</label><input type="text" id="perfil-foto" placeholder="https://..."></div>
+            <button class="btn-primary-lt" onclick="salvarPerfil()">💾 Salvar Perfil</button>
+            <p class="msg-sucesso" id="perfil-sucesso">✅ Perfil atualizado!</p>
+        </div>
+
+        <!-- LINKS -->
+        <div class="admin-section">
+            <h3><span class="icon">🔗</span> Links</h3>
+            <div class="form-group"><label>Título</label><input type="text" id="link-titulo" placeholder="Meu GitHub"></div>
+            <div class="form-group"><label>URL</label><input type="text" id="link-url" placeholder="https://github.com/..."></div>
+            <div class="form-group"><label>Ícone (emoji)</label><input type="text" id="link-icone" placeholder="💻"></div>
+            <div class="form-group"><label>Ordem (número)</label><input type="number" id="link-ordem" placeholder="1" value="1"></div>
+            <input type="hidden" id="link-id" value="">
+            <button class="btn-primary-lt" onclick="salvarLink()">💾 Salvar Link</button>
+            <button class="btn-small-lt" onclick="limparFormLink()" style="margin-left:8px;">✕ Limpar</button>
+            <p class="msg-sucesso" id="link-sucesso">✅ Link salvo!</p>
+            <div id="lista-links" style="margin-top:16px;"></div>
+        </div>
+
+        <!-- MÍDIA -->
+        <div class="admin-section">
+            <h3><span class="icon">🎬</span> Mídia</h3>
+            <div class="form-group"><label>Tipo</label><select id="midia-tipo"><option value="imagem">🖼️ Imagem</option><option value="youtube">▶️ YouTube</option><option value="mp4">🎥 MP4</option></select></div>
+            <div class="form-group"><label>URL</label><input type="text" id="midia-url" placeholder="https://..."></div>
+            <div class="form-group"><label>Ordem (número)</label><input type="number" id="midia-ordem" placeholder="1" value="1"></div>
+            <input type="hidden" id="midia-id" value="">
+            <button class="btn-primary-lt" onclick="salvarMidia()">💾 Salvar Mídia</button>
+            <button class="btn-small-lt" onclick="limparFormMidia()" style="margin-left:8px;">✕ Limpar</button>
+            <p class="msg-sucesso" id="midia-sucesso">✅ Mídia salva!</p>
+            <div id="lista-midias" style="margin-top:16px;"></div>
         </div>
     </div>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="admin.js"></script>
+<!-- MODAL UPGRADE -->
+<div id="modal-upgrade" class="modal-upgrade">
+    <div class="modal-upgrade-content">
+        <h3>🚀 Fazer Upgrade</h3>
+        <p>Escolha o plano que deseja:</p>
+        <div class="planos-upgrade">
+            <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('pro')">
+                <div class="plano-icon">⭐</div>
+                <div class="plano-nome">Plano Pro</div>
+                <div class="plano-preco" id="preco-upgrade-pro">R$10</div>
+            </div>
+            <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('premium')">
+                <div class="plano-icon">💎</div>
+                <div class="plano-nome">Plano Premium</div>
+                <div class="plano-preco" id="preco-upgrade-premium">R$25</div>
+            </div>
+        </div>
+        <button class="btn-fechar-modal" onclick="fecharModalUpgrade()">Cancelar</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+    // ========== VARIÁVEIS GLOBAIS ==========
+    let userUID = null;
+    let temaAtual = 'dev';
+    let linksPagamentoUpgrade = { pro: '', premium: '' };
+
+    const TEMAS = {
+        dev: { nome: 'Dev Terminal', bg: '#0d1117', bgCard: '#161b22', border: '#30363d', text: '#c9d1d9', textSecondary: '#8b949e', primary: '#8b5cf6', primaryLight: '#a78bfa', fontMain: "'Inter','JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
+        clean: { nome: 'Clean Blue', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0e0f0', textSecondary: '#9090b0', primary: '#3b82f6', primaryLight: '#60a5fa', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
+        dark: { nome: 'Dark Green', bg: '#0a0f0a', bgCard: '#1a2a1a', border: '#2a3a2a', text: '#d0e0d0', textSecondary: '#809080', primary: '#10b981', primaryLight: '#34d399', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' },
+        rosa: { nome: 'Rose Pink', bg: '#1a0a14', bgCard: '#2d1a24', border: '#3d2a34', text: '#f0d0e0', textSecondary: '#b090a0', primary: '#ec4899', primaryLight: '#f472b6', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '' },
+        minimal: { nome: 'Minimal', bg: '#0a0a0a', bgCard: '#1a1a1a', border: '#2a2a2a', text: '#d0d0d0', textSecondary: '#808080', primary: '#6b7280', primaryLight: '#9ca3af', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', logo: '' },
+        warm: { nome: 'Warm Orange', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#f59e0b', primaryLight: '#fbbf24', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
+        cyber: { nome: 'Cyber Neon', bg: '#0a0a0a', bgCard: '#1a0a2d', border: '#3d1a6e', text: '#e0d0ff', textSecondary: '#9070c0', primary: '#a855f7', primaryLight: '#c084fc', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
+        ocean: { nome: 'Ocean Blue', bg: '#0a1a2a', bgCard: '#1a2a3d', border: '#2a3a50', text: '#d0e8ff', textSecondary: '#80a8c0', primary: '#06b6d4', primaryLight: '#22d3ee', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
+        sunset: { nome: 'Sunset', bg: '#1a0a0a', bgCard: '#2d1a1a', border: '#3d2a2a', text: '#ffe0d0', textSecondary: '#c0a090', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
+        forest: { nome: 'Forest', bg: '#0a1a0a', bgCard: '#1a2d1a', border: '#2a3d2a', text: '#d0f0d0', textSecondary: '#80b080', primary: '#22c55e', primaryLight: '#4ade80', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' },
+        galaxy: { nome: 'Galaxy', bg: '#0d0d1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0d0ff', textSecondary: '#9080c0', primary: '#7c3aed', primaryLight: '#8b5cf6', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '' },
+        coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' }
+    };
+
+    const LIMITES = {
+        gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false },
+        pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true },
+        premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true }
+    };
+
+    // ========== FUNÇÕES DE TEMA ==========
+    function getTemasDisponiveis(plano) {
+        const todosTemas = ['dev', 'clean', 'dark', 'rosa', 'minimal', 'warm', 'cyber', 'ocean', 'sunset', 'forest', 'galaxy', 'coffee'];
+        return todosTemas.slice(0, LIMITES[plano]?.temas || 3);
+    }
+
+    function aplicarPreset(nome) {
+        temaAtual = nome;
+        document.querySelectorAll('.tema-preset').forEach(el => el.classList.remove('ativo'));
+        const el = document.querySelector(`[data-tema="${nome}"]`);
+        if (el) el.classList.add('ativo');
+    }
+
+    function aplicarTema(tema) {
+        const t = tema || TEMAS.dev;
+        const root = document.documentElement;
+        root.style.setProperty('--bg', t.bg);
+        root.style.setProperty('--bg-card', t.bgCard);
+        root.style.setProperty('--border', t.border);
+        root.style.setProperty('--text', t.text);
+        root.style.setProperty('--text-secondary', t.textSecondary);
+        root.style.setProperty('--primary', t.primary);
+        root.style.setProperty('--primary-light', t.primaryLight);
+        root.style.setProperty('--font-main', t.fontMain);
+        root.style.setProperty('--font-mono', t.fontMono);
+        root.style.setProperty('--border-radius', t.borderRadius);
+        root.style.setProperty('--card-radius', t.cardRadius);
+    }
+
+    // ========== UPGRADE ==========
+    async function carregarLinksPagamentoUpgrade() {
+        try {
+            const snap = await db.collection('config').doc('planos').get();
+            if (snap.exists) {
+                const d = snap.data();
+                if (d.pro) {
+                    linksPagamentoUpgrade.pro = d.pro.link || '';
+                    const precoEl = document.getElementById('preco-upgrade-pro');
+                    if (precoEl && d.pro.preco) precoEl.textContent = 'R$' + d.pro.preco;
+                }
+                if (d.premium) {
+                    linksPagamentoUpgrade.premium = d.premium.link || '';
+                    const precoEl = document.getElementById('preco-upgrade-premium');
+                    if (precoEl && d.premium.preco) precoEl.textContent = 'R$' + d.premium.preco;
+                }
+            }
+        } catch(e) { console.error("Erro:", e); }
+    }
+
+    function abrirModalUpgrade() {
+        document.getElementById('modal-upgrade').classList.add('ativo');
+    }
+
+    function fecharModalUpgrade() {
+        document.getElementById('modal-upgrade').classList.remove('ativo');
+    }
+
+    function escolherPlanoUpgrade(plano) {
+        const link = linksPagamentoUpgrade[plano];
+        if (link && link !== '') {
+            window.open(link, '_blank');
+            alert(`✅ Você será redirecionado para o pagamento do plano ${plano.toUpperCase()}\n\nApós o pagamento, entre em contato com o Super Admin para ativação.`);
+            fecharModalUpgrade();
+        } else {
+            alert('⚠️ Link de pagamento não configurado. Entre em contato com o Super Admin.');
+            fecharModalUpgrade();
+        }
+    }
+
+    // ========== LINK PÚBLICO ==========
+    function copiarLinkPerfil() {
+        const linkEl = document.getElementById('perfil-link-preview');
+        if (linkEl && linkEl.textContent) {
+            navigator.clipboard.writeText(linkEl.textContent).then(() => {
+                alert('✅ Link copiado! Compartilhe com seus seguidores.');
+            });
+        }
+    }
+
+    // ========== LIMITES ==========
+    async function getPlanoAtual() {
+        const userDoc = await db.collection('usuarios').doc(userUID).get();
+        return userDoc.exists ? (userDoc.data().plano || 'gratis') : 'gratis';
+    }
+
+    async function verificarLimite(tipo) {
+        const plano = await getPlanoAtual();
+        const limite = LIMITES[plano][tipo];
+        const snap = await db.collection('usuarios').doc(userUID).collection(tipo === 'midia' ? 'midia' : 'links').get();
+        if (snap.size >= limite) {
+            const nomes = { links: 'links', midia: 'mídias' };
+            alert(`⚠️ Limite atingido! Seu plano (${plano}) permite até ${limite} ${nomes[tipo] || tipo}.\nFaça upgrade para liberar mais!`);
+            return false;
+        }
+        return true;
+    }
+
+    // ========== CRUD LINKS ==========
+    async function carregarListaLinks() {
+        const snap = await db.collection('usuarios').doc(userUID).collection('links').orderBy('ordem', 'asc').get();
+        const lista = document.getElementById('lista-links');
+        if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link cadastrado.</p>'; return; }
+        lista.innerHTML = '';
+        snap.forEach(doc => {
+            const l = doc.data();
+            const div = document.createElement('div'); div.className = 'list-item';
+            div.innerHTML = `<div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1} | ${(l.url||'').substring(0,50)}...</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
+            lista.appendChild(div);
+        });
+    }
+
+    async function salvarLink() {
+        if (!document.getElementById('link-id').value) {
+            const pode = await verificarLimite('links');
+            if (!pode) return;
+        }
+        const id = document.getElementById('link-id').value;
+        const dados = {
+            titulo: document.getElementById('link-titulo').value.trim(),
+            url: document.getElementById('link-url').value.trim(),
+            icone: document.getElementById('link-icone').value.trim() || '🔗',
+            ordem: parseInt(document.getElementById('link-ordem').value) || 1
+        };
+        if (!dados.titulo || !dados.url) { alert('⚠️ Título e URL obrigatórios!'); return; }
+        const ref = db.collection('usuarios').doc(userUID).collection('links');
+        if (id) { await ref.doc(id).update(dados); }
+        else { await ref.add(dados); }
+        limparFormLink(); carregarListaLinks(); mostrarSucesso('link-sucesso');
+    }
+
+    async function editarLink(id) {
+        const doc = await db.collection('usuarios').doc(userUID).collection('links').doc(id).get();
+        if (doc.exists) {
+            const l = doc.data();
+            document.getElementById('link-id').value = id;
+            document.getElementById('link-titulo').value = l.titulo || '';
+            document.getElementById('link-url').value = l.url || '';
+            document.getElementById('link-icone').value = l.icone || '';
+            document.getElementById('link-ordem').value = l.ordem || 1;
+        }
+    }
+
+    async function removerLink(id) {
+        if (confirm('Remover este link?')) {
+            await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete();
+            carregarListaLinks();
+        }
+    }
+
+    function limparFormLink() {
+        ['link-id','link-titulo','link-url','link-icone'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('link-ordem').value = '1';
+    }
+
+    // ========== CRUD MÍDIA ==========
+    async function carregarListaMidias() {
+        const snap = await db.collection('usuarios').doc(userUID).collection('midia').orderBy('ordem', 'asc').get();
+        const lista = document.getElementById('lista-midias');
+        if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhuma mídia cadastrada.</p>'; return; }
+        lista.innerHTML = '';
+        snap.forEach(doc => {
+            const m = doc.data();
+            const tipoEmoji = { imagem: '🖼️', youtube: '▶️', mp4: '🎥' };
+            const div = document.createElement('div'); div.className = 'list-item';
+            div.innerHTML = `<div class="info"><strong>${tipoEmoji[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1} | ${(m.url||'').substring(0,40)}...</small></div><div class="actions"><button class="btn-small-lt" onclick="editarMidia('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerMidia('${doc.id}')">🗑</button></div>`;
+            lista.appendChild(div);
+        });
+    }
+
+    async function salvarMidia() {
+        if (!document.getElementById('midia-id').value) {
+            const pode = await verificarLimite('midia');
+            if (!pode) return;
+        }
+        const tipo = document.getElementById('midia-tipo').value;
+        const plano = await getPlanoAtual();
+        const limites = LIMITES[plano];
+        if (tipo === 'youtube' && !limites.youtube) { alert('⚠️ Vídeos do YouTube disponíveis apenas nos planos Pro e Premium.'); return; }
+        if (tipo === 'mp4' && !limites.mp4) { alert('⚠️ Vídeos MP4 disponíveis apenas no plano Premium.'); return; }
+        const id = document.getElementById('midia-id').value;
+        const dados = { tipo: tipo, url: document.getElementById('midia-url').value.trim(), ordem: parseInt(document.getElementById('midia-ordem').value) || 1 };
+        if (!dados.url) { alert('⚠️ URL obrigatória!'); return; }
+        const ref = db.collection('usuarios').doc(userUID).collection('midia');
+        if (id) { await ref.doc(id).update(dados); }
+        else { await ref.add(dados); }
+        limparFormMidia(); carregarListaMidias(); mostrarSucesso('midia-sucesso');
+    }
+
+    async function editarMidia(id) {
+        const doc = await db.collection('usuarios').doc(userUID).collection('midia').doc(id).get();
+        if (doc.exists) {
+            const m = doc.data();
+            document.getElementById('midia-id').value = id;
+            document.getElementById('midia-tipo').value = m.tipo || 'imagem';
+            document.getElementById('midia-url').value = m.url || '';
+            document.getElementById('midia-ordem').value = m.ordem || 1;
+        }
+    }
+
+    async function removerMidia(id) {
+        if (confirm('Remover esta mídia?')) {
+            await db.collection('usuarios').doc(userUID).collection('midia').doc(id).delete();
+            carregarListaMidias();
+        }
+    }
+
+    function limparFormMidia() {
+        document.getElementById('midia-id').value = '';
+        document.getElementById('midia-url').value = '';
+        document.getElementById('midia-ordem').value = '1';
+    }
+
+    // ========== SALVAR TEMA ==========
+    async function salvarTema() {
+        const plano = await getPlanoAtual();
+        const temasPermitidos = getTemasDisponiveis(plano);
+        if (!temasPermitidos.includes(temaAtual)) {
+            alert('⚠️ Este tema não está disponível no seu plano atual.');
+            return;
+        }
+        const tema = { ...TEMAS[temaAtual] };
+        const limites = LIMITES[plano];
+        if (limites.logo) {
+            tema.logo = document.getElementById('tema-logo').value.trim();
+        } else {
+            tema.logo = '';
+        }
+        await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set(tema);
+        mostrarSucesso('tema-sucesso');
+    }
+
+    // ========== SALVAR PERFIL ==========
+    async function salvarPerfil() {
+        await db.collection('usuarios').doc(userUID).set({
+            perfil: {
+                nome: document.getElementById('perfil-nome').value.trim(),
+                bio: document.getElementById('perfil-bio').value.trim(),
+                foto: document.getElementById('perfil-foto').value.trim()
+            }
+        }, { merge: true });
+        
+        const userDoc = await db.collection('usuarios').doc(userUID).get();
+        if (userDoc.exists && userDoc.data().username) {
+            const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+            const link = baseURL + '?u=' + userDoc.data().username;
+            const previewEl = document.getElementById('perfil-link-preview');
+            if (previewEl) previewEl.textContent = link;
+        }
+        mostrarSucesso('perfil-sucesso');
+    }
+
+    // ========== CARREGAR DADOS DO ADMIN ==========
+    async function carregarDadosAdmin() {
+        if (!usuarioAtual) return;
+        userUID = usuarioAtual.uid;
+        
+        document.getElementById('tela-login').classList.add('hidden');
+        document.getElementById('tela-admin').classList.remove('hidden');
+        
+        await carregarLinksPagamentoUpgrade();
+        
+        const btnUpgrade = document.getElementById('btn-upgrade');
+        if (btnUpgrade) {
+            btnUpgrade.onclick = (e) => {
+                e.preventDefault();
+                abrirModalUpgrade();
+            };
+        }
+        
+        const btnVerSite = document.getElementById('btn-ver-site');
+        if (btnVerSite) {
+            btnVerSite.onclick = () => {
+                const linkPreview = document.getElementById('perfil-link-preview');
+                if (linkPreview && linkPreview.textContent && linkPreview.textContent !== '') {
+                    window.open(linkPreview.textContent, '_blank');
+                } else {
+                    alert('⚠️ Salve seu perfil primeiro para gerar o link!');
+                }
+            };
+        }
+        
+        const plano = await getPlanoAtual();
+        const limites = LIMITES[plano];
+        
+        const badge = document.getElementById('plano-badge');
+        if (badge) {
+            badge.textContent = plano;
+            badge.className = 'badge-plano badge-' + plano;
+        }
+        
+        if (btnUpgrade) {
+            btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
+        }
+        
+        const campoTemaLogo = document.getElementById('tema-logo');
+        if (campoTemaLogo) {
+            campoTemaLogo.disabled = !limites.logo;
+            campoTemaLogo.placeholder = limites.logo ? 'https://... ou deixe vazio' : '🔒 Disponível nos planos Pro/Premium';
+        }
+        
+        const temasPermitidos = getTemasDisponiveis(plano);
+        document.querySelectorAll('.tema-preset').forEach(el => {
+            if (!temasPermitidos.includes(el.dataset.tema)) {
+                el.style.opacity = '0.3';
+                el.style.pointerEvents = 'none';
+                el.title = '🔒 Upgrade necessário';
+            } else {
+                el.style.opacity = '1';
+                el.style.pointerEvents = 'auto';
+                el.title = '';
+            }
+        });
+        
+        const selectMidia = document.getElementById('midia-tipo');
+        if (selectMidia) {
+            const optYouTube = selectMidia.querySelector('option[value="youtube"]');
+            const optMP4 = selectMidia.querySelector('option[value="mp4"]');
+            if (optYouTube) optYouTube.disabled = !limites.youtube;
+            if (optMP4) optMP4.disabled = !limites.mp4;
+        }
+        
+        const userDoc = await db.collection('usuarios').doc(userUID).get();
+        if (userDoc.exists) {
+            const d = userDoc.data();
+            document.getElementById('perfil-nome').value = d.perfil?.nome || '';
+            document.getElementById('perfil-bio').value = d.perfil?.bio || '';
+            document.getElementById('perfil-foto').value = d.perfil?.foto || '';
+            
+            if (d.username) {
+                const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+                const link = baseURL + '?u=' + d.username;
+                const previewEl = document.getElementById('perfil-link-preview');
+                if (previewEl) previewEl.textContent = link;
+                document.getElementById('meu-link-card').style.display = 'block';
+            }
+        }
+        
+        const temaSnap = await db.collection('usuarios').doc(userUID).collection('config').doc('tema').get();
+        if (temaSnap.exists) {
+            const t = temaSnap.data();
+            temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev';
+            if (campoTemaLogo) campoTemaLogo.value = t.logo || '';
+            aplicarTema(t);
+        } else {
+            aplicarTema(TEMAS.dev);
+        }
+        aplicarPreset(temaAtual);
+        
+        carregarListaLinks();
+        carregarListaMidias();
+    }
+
+    function mostrarSucesso(id) {
+        const el = document.getElementById(id);
+        if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
+    }
+
+    // ========== LOGIN E LOGOUT ==========
+    function fazerLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const senha = document.getElementById('login-senha').value;
+        const erro = document.getElementById('login-erro');
+        if (!email || !senha) { erro.textContent = '⚠️ Preencha email e senha'; erro.style.display = 'block'; return; }
+        auth.signInWithEmailAndPassword(email, senha).catch(() => {
+            erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
+        });
+    }
+
+    function logout() {
+        auth.signOut();
+        window.location.href = 'index.html';
+    }
+
+    // ========== OBSERVADOR DE AUTENTICAÇÃO ==========
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            await carregarDadosAdmin();
+        } else {
+            document.getElementById('tela-login').classList.remove('hidden');
+            document.getElementById('tela-admin').classList.add('hidden');
+        }
+    });
+</script>
 </body>
-</html>
+    </html>
