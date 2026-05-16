@@ -137,20 +137,19 @@
             </div>
         </div>
 
-        <!-- SEÇÃO DE CONFIGURAÇÃO DE PLANOS - CORRIGIDA -->
         <div class="section">
             <h3>💰 Configurar Planos e Pagamentos</h3>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                 <div>
                     <div class="form-group"><label>⭐ Preço Plano Pro (R$)</label><input type="text" id="config-preco-pro" placeholder="10"></div>
-                    <div class="form-group"><label>🔗 Link Checkout Pro (Kiwify/Hotmart)</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
+                    <div class="form-group"><label>🔗 Link Checkout Pro</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
                 </div>
                 <div>
                     <div class="form-group"><label>💎 Preço Plano Premium (R$)</label><input type="text" id="config-preco-premium" placeholder="25"></div>
                     <div class="form-group"><label>🔗 Link Checkout Premium</label><input type="text" id="config-link-premium" placeholder="https://kiwify.com/..."></div>
                 </div>
             </div>
-            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar Configurações</button>
+            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar</button>
             <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
         </div>
 
@@ -189,6 +188,12 @@
         }
 
         auth.onAuthStateChanged(async (user) => {
+            // 🔥 DURANTE LIBERAÇÃO, NÃO FAZ NADA
+            if (window.isLiberandoUsuario) {
+                console.log("🚀 Processo de liberação ativo, ignorando...");
+                return;
+            }
+            
             if (user && isSuperAdmin(user.email)) {
                 await garantirSuperAdminNoFirestore(user);
                 document.getElementById('tela-login').classList.add('hidden');
@@ -247,14 +252,21 @@
             document.getElementById('sa-senha').value = '';
         }
 
-        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE ==========
+        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE (COM FLAG) ==========
         window.liberarUsuario = async function(pendingId, dados) {
+            // 🔥 ATIVA A FLAG PARA O auth.js IGNORAR
+            window.isLiberandoUsuario = true;
+            
             if (!dados || !dados.email) {
                 alert('❌ Erro: Dados do usuário incompletos!');
+                window.isLiberandoUsuario = false;
                 return;
             }
             
-            if (!confirm(`✅ Liberar acesso para ${dados.nome} (${dados.email}) com plano ${dados.plano}?`)) return;
+            if (!confirm(`✅ Liberar acesso para ${dados.nome} (${dados.email}) com plano ${dados.plano}?`)) {
+                window.isLiberandoUsuario = false;
+                return;
+            }
             
             const btn = event.target;
             const textoOriginal = btn.innerText;
@@ -326,6 +338,8 @@
             } finally {
                 btn.innerText = textoOriginal;
                 btn.disabled = false;
+                // 🔥 DESATIVA A FLAG
+                window.isLiberandoUsuario = false;
             }
         };
 
@@ -336,16 +350,13 @@
             alert('🗑️ Cadastro recusado.');
         };
 
-        // ========== FUNÇÃO PARA SALVAR PLANOS (CORRIGIDA) ==========
         window.salvarConfigPlanos = async function() {
             const proPreco = document.getElementById('config-preco-pro').value.trim();
             const proLink = document.getElementById('config-link-pro').value.trim();
             const premiumPreco = document.getElementById('config-preco-premium').value.trim();
             const premiumLink = document.getElementById('config-link-premium').value.trim();
             
-            console.log("💾 Salvando planos no Firestore...");
-            console.log("Pro:", { preco: proPreco, link: proLink });
-            console.log("Premium:", { preco: premiumPreco, link: premiumLink });
+            console.log("💾 Salvando planos...");
             
             try {
                 await db.collection('config').doc('planos').set({
@@ -353,28 +364,24 @@
                     premium: { preco: premiumPreco, link: premiumLink },
                     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                console.log("✅ Planos salvos com sucesso!");
+                console.log("✅ Planos salvos!");
                 mostrarSucesso('msg-planos-sucesso');
             } catch (error) {
-                console.error("❌ Erro ao salvar planos:", error);
-                alert('❌ Erro ao salvar configurações: ' + error.message);
+                console.error("❌ Erro:", error);
+                alert('❌ Erro ao salvar: ' + error.message);
             }
         };
 
         window.salvarConfigGeral = async function() {
             const logo = document.getElementById('config-logo').value.trim();
-            console.log("💾 Salvando logo:", logo);
-            
             try {
                 await db.collection('config').doc('geral').set({ 
                     logo: logo,
                     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                console.log("✅ Logo salva com sucesso!");
                 mostrarSucesso('msg-config-sucesso');
             } catch (error) {
-                console.error("❌ Erro ao salvar logo:", error);
-                alert('❌ Erro ao salvar configurações: ' + error.message);
+                alert('❌ Erro ao salvar: ' + error.message);
             }
         };
 
@@ -400,7 +407,7 @@
             
             const tabela = document.getElementById('tabela-usuarios');
             if (usuarios.length === 0) {
-                tabela.innerHTML = '<td><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
+                tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
             } else {
                 tabela.innerHTML = usuarios.map(u => {
                     const planoClass = u.plano === 'premium' ? 'badge-premium' : u.plano === 'pro' ? 'badge-pro' : 'badge-gratis';
@@ -458,12 +465,10 @@
                 });
             }
             
-            // CARREGAR CONFIGURAÇÕES DOS PLANOS DO FIRESTORE
+            // Carrega configurações dos planos
             const planosSnap = await db.collection('config').doc('planos').get();
             if (planosSnap.exists) {
                 const d = planosSnap.data();
-                console.log("📦 Planos carregados do Firestore:", d);
-                
                 if (d.pro) {
                     document.getElementById('config-preco-pro').value = d.pro.preco || '10';
                     document.getElementById('config-link-pro').value = d.pro.link || '';
@@ -472,20 +477,12 @@
                     document.getElementById('config-preco-premium').value = d.premium.preco || '25';
                     document.getElementById('config-link-premium').value = d.premium.link || '';
                 }
-            } else {
-                console.log("⚠️ Documento 'config/planos' não encontrado, usando valores padrão");
-                document.getElementById('config-preco-pro').value = '10';
-                document.getElementById('config-link-pro').value = '';
-                document.getElementById('config-preco-premium').value = '25';
-                document.getElementById('config-link-premium').value = '';
             }
             
             const configSnap = await db.collection('config').doc('geral').get();
             if (configSnap.exists) {
                 document.getElementById('config-logo').value = configSnap.data().logo || '';
             }
-            
-            console.log("✅ Dashboard carregado!");
         }
 
         window.trocarAba = function(aba) {
