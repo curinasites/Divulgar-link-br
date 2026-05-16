@@ -33,6 +33,37 @@ body {
     margin: 0 auto;
 }
 
+/* ========== LOADING PREMIUM ========== */
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 16px;
+    animation: fadeInUp 0.4s ease;
+}
+
+.loading-spinner-premium {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(139, 92, 246, 0.15);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.loading-text-premium {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* ========== CONSOLE HEADER ========== */
 .header-lt { margin-bottom: 24px; }
 
@@ -275,32 +306,6 @@ body {
     animation: fadeInUp 0.6s ease;
 }
 
-.footer-tags {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-}
-
-.tag-lt {
-    background: rgba(139, 92, 246, 0.08);
-    border: 1px solid rgba(139, 92, 246, 0.15);
-    color: var(--primary-light);
-    padding: 5px 14px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-family: var(--font-mono);
-    letter-spacing: 0.5px;
-    backdrop-filter: blur(5px);
-    transition: all 0.2s;
-}
-
-.tag-lt:hover {
-    background: rgba(139, 92, 246, 0.15);
-    border-color: rgba(139, 92, 246, 0.3);
-}
-
 .footer-lt p {
     font-size: 11px;
     color: #484f58;
@@ -318,6 +323,80 @@ body {
     50% { box-shadow: 0 0 50px rgba(139, 92, 246, 0.5); }
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ========== MELHORIAS PREMIUM GERAIS ========== */
+input, textarea, select, button {
+    transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    transform: translateY(-1px);
+}
+
+/* ========== ANALYTICS CARDS ========== */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.analytics-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    animation: fadeInUp 0.4s ease both;
+    transition: all 0.3s;
+}
+
+.analytics-card:hover {
+    border-color: rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.1);
+}
+
+.analytics-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.analytics-numero {
+    font-size: 24px;
+    font-weight: 800;
+    color: #f0f6fc;
+}
+
+.analytics-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    margin-top: 4px;
+}
+
+.analytics-top-link {
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    animation: fadeInUp 0.4s ease both;
+}
+
+.analytics-top-link .link-cliques {
+    margin-left: auto;
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
 /* ========== RESPONSIVO ========== */
 @media (max-width: 480px) {
     body { padding: 12px; }
@@ -325,4 +404,5 @@ body {
     .profile-name { font-size: 22px; }
     .link-btn { padding: 13px 18px; font-size: 14px; }
     .profile-section { padding: 30px 16px 24px; }
+    .analytics-grid { grid-template-columns: 1fr 1fr; }
     }
