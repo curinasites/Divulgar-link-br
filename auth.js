@@ -1,5 +1,4 @@
 let usuarioAtual = null;
-const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com"; // 👈 TROQUE PELO SEU EMAIL
 
 auth.onAuthStateChanged(async (user) => {
     usuarioAtual = user;
@@ -15,28 +14,22 @@ auth.onAuthStateChanged(async (user) => {
             return;
         }
         
-        // 🔴 FORÇA Super Admin SEMPRE para o painel certo
-        if (user.email === SUPER_ADMIN_EMAIL) {
-            if (!path.includes('super-admin.html')) {
-                window.location.href = 'super-admin.html';
-                return;
-            } else {
-                if (typeof carregarSuperAdmin === 'function') carregarSuperAdmin();
-                return;
-            }
+        // Admin normal
+        if (path.includes('admin.html')) {
+            if (typeof carregarDadosAdmin === 'function') carregarDadosAdmin();
         }
         
-        // Usuário normal
-        if (path.includes('super-admin.html')) {
-            alert('⛔ Acesso restrito ao Super Admin');
-            auth.signOut();
-            window.location.href = 'index.html';
-        } else if (path.includes('admin.html')) {
-            if (typeof carregarDadosAdmin === 'function') carregarDadosAdmin();
-        } else if (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br')) {
+        // Página pública
+        if (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br')) {
             if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
         }
     } else {
+        // Se não estiver logado e tentar acessar admin, redireciona para cadastro
+        if (path.includes('admin.html')) {
+            window.location.href = 'cadastro.html';
+            return;
+        }
+        // Página pública carrega normal
         if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
     }
 });
