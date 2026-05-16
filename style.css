@@ -71,11 +71,7 @@ body {
 .header-lt { margin-bottom: 24px; }
 
 .console-line {
-    background: rgba(22, 27, 34, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--border-radius);
+    /* 🔥 Fundo removido - antes tinha background, backdrop-filter e border */
     padding: 10px 16px;
     display: flex;
     align-items: center;
@@ -392,4 +388,4 @@ input:focus, textarea:focus, select:focus {
     .link-btn { padding: 13px 18px; font-size: 14px; }
     .profile-section { padding: 30px 16px 24px; }
     .analytics-grid { grid-template-columns: 1fr 1fr; }
-    }
+              }
