@@ -154,7 +154,6 @@
         <div class="section">
             <h3>🏠 Editar Página Principal (Index)</h3>
             
-            <!-- Perfil -->
             <h4 style="color:#a78bfa;margin-bottom:12px;">👤 Perfil da Página Principal</h4>
             <div class="form-group"><label>Nome</label><input type="text" id="pp-nome" placeholder="Divulga Link BR"></div>
             <div class="form-group"><label>Bio</label><textarea id="pp-bio" placeholder="A plataforma definitiva..."></textarea></div>
@@ -162,7 +161,6 @@
             
             <hr style="border-color:#30363d;margin:16px 0;">
             
-            <!-- Links -->
             <h4 style="color:#a78bfa;margin-bottom:12px;">🔗 Links da Página Principal</h4>
             <div class="form-group"><label>Título do Link</label><input type="text" id="pp-link-titulo" placeholder="Criar Minha Conta"></div>
             <div class="form-group"><label>URL do Link</label><input type="text" id="pp-link-url" placeholder="cadastro.html"></div>
@@ -176,7 +174,6 @@
             
             <hr style="border-color:#30363d;margin:16px 0;">
             
-            <!-- Mídia -->
             <h4 style="color:#a78bfa;margin-bottom:12px;">🎬 Mídia da Página Principal</h4>
             <div class="form-group"><label>Tipo</label><select id="pp-midia-tipo"><option value="imagem">🖼️ Imagem</option><option value="youtube">▶️ YouTube</option><option value="mp4">🎥 MP4</option></select></div>
             <div class="form-group"><label>URL</label><input type="text" id="pp-midia-url" placeholder="https://..."></div>
@@ -208,11 +205,15 @@
             <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
         </div>
 
+        <!-- ⚙️ CONFIGURAÇÕES GERAIS DO SITE -->
         <div class="section">
             <h3>⚙️ Configurações Gerais do Site</h3>
             <div class="form-group"><label>🖼️ Logo do Site (URL)</label><input type="text" id="config-logo" placeholder="https://..."></div>
             <div class="form-group"><label>🌄 Imagem de Fundo (URL)</label><input type="text" id="config-bg" placeholder="https://... (deixe vazio para fundo escuro)"></div>
             <div class="form-group"><label>🎨 Cor do Overlay (rgba)</label><input type="text" id="config-overlay" placeholder="rgba(13,17,23,0.85)"></div>
+            <!-- 🆕 NOVOS CAMPOS DE COR -->
+            <div class="form-group"><label>✨ Cor das Partículas (rgba)</label><input type="text" id="config-cor-particulas" placeholder="rgba(139, 92, 246, 0.4)"></div>
+            <div class="form-group"><label>🎨 Cor dos Cards de Link (rgba)</label><input type="text" id="config-cor-cards" placeholder="rgba(139, 92, 246, 0.1)"></div>
             <button class="btn-small" onclick="salvarConfigGeral()">💾 Salvar Configurações</button>
             <p class="msg-sucesso" id="msg-config-sucesso">✅ Salvo!</p>
         </div>
@@ -371,7 +372,6 @@
             document.getElementById('pp-link-ordem').value = '1';
         }
 
-        // Mídia PP
         async function salvarMidiaPP() {
             const id = document.getElementById('pp-midia-id').value;
             const dados = {
@@ -521,9 +521,11 @@
                 document.getElementById('config-logo').value = d.logo || '';
                 document.getElementById('config-bg').value = d.backgroundImage || '';
                 document.getElementById('config-overlay').value = d.overlayColor || 'rgba(13,17,23,0.85)';
+                // 🆕 Carrega cores personalizadas
+                document.getElementById('config-cor-particulas').value = d.corParticulas || 'rgba(139, 92, 246, 0.4)';
+                document.getElementById('config-cor-cards').value = d.corCards || 'rgba(139, 92, 246, 0.1)';
             }
             
-            // Carrega dados da página principal
             const ppSnap = await db.collection('config').doc('paginaPrincipal').get();
             if (ppSnap.exists) {
                 const pp = ppSnap.data();
@@ -537,7 +539,6 @@
             carregarMidiasPP();
         }
 
-        // ========== FUNÇÕES GLOBAIS ==========
         window.trocarAba = function(aba) {
             document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
             document.querySelector(`.aba[data-aba="${aba}"]`).classList.add('ativa');
@@ -601,6 +602,9 @@
                 logo: document.getElementById('config-logo').value.trim(),
                 backgroundImage: document.getElementById('config-bg').value.trim(),
                 overlayColor: document.getElementById('config-overlay').value.trim() || 'rgba(13,17,23,0.85)',
+                // 🆕 Salva cores personalizadas
+                corParticulas: document.getElementById('config-cor-particulas').value.trim(),
+                corCards: document.getElementById('config-cor-cards').value.trim(),
                 atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
             });
             mostrarSucesso('msg-config-sucesso');
