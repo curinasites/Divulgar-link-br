@@ -1,4 +1,3 @@
-
 // ========== APP.JS - PÁGINA PÚBLICA DINÂMICA ==========
 
 // Pega o username da URL (ex: ?u=fulano)
@@ -46,21 +45,24 @@ function aplicarFundo(config) {
     }
 }
 
-// ========== APLICAR CORES PERSONALIZADAS (partículas + cards) ==========
+// ========== APLICAR CORES PERSONALIZADAS ==========
 function aplicarCoresPersonalizadas(config) {
     if (!config) return;
+    const root = document.documentElement;
     
-    // Cor das partículas
+    // Cor das partículas → variável CSS
     if (config.corParticulas) {
-        document.documentElement.style.setProperty('--particula-cor', config.corParticulas);
+        root.style.setProperty('--particula-cor', config.corParticulas);
     }
     
-    // Cor dos cards de link
-    if (config.corCards && linksSection) {
-        const links = linksSection.querySelectorAll('.link-btn');
-        links.forEach(link => {
-            link.style.background = config.corCards;
-        });
+    // Cor dos cards → variável CSS
+    if (config.corCards) {
+        root.style.setProperty('--link-card-bg', config.corCards);
+    }
+    
+    // Cor do overlay → variável CSS
+    if (config.overlayColor) {
+        root.style.setProperty('--overlay-cor', config.overlayColor);
     }
 }
 
@@ -94,7 +96,6 @@ async function carregarConfigGlobal() {
                     consoleLine.innerHTML = `<img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;"><span class="console-text"> Divulga Link BR 🇧🇷</span>`;
                 }
             }
-            // 🆕 Aplica cores personalizadas
             aplicarCoresPersonalizadas(config);
             return config;
         }
@@ -170,7 +171,6 @@ async function renderizarPaginaUsuario(uid, userData) {
         renderizarMidia(midias);
     } catch (error) { renderizarMidia([]); }
     
-    // 🔥 Contador de visualizações
     try {
         const userRef = db.collection('usuarios').doc(uid);
         const userDoc = await userRef.get();
