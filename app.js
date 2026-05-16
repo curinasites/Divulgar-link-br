@@ -31,42 +31,22 @@ const bgOverlay = document.getElementById('bg-overlay');
 let currentUserId = null;
 let currentUserData = null;
 
-// ========== CARREGAR CONFIG GLOBAL (logo, fundo, overlay) ==========
-async function carregarConfigGlobal() {
-    try {
-        const configSnap = await db.collection('config').doc('geral').get();
-        if (configSnap.exists) {
-            const config = configSnap.data();
-            
-            // Logo no header
-            if (config.logo && headerLt) {
-                const consoleLine = headerLt.querySelector('.console-line');
-                if (consoleLine) {
-                    consoleLine.innerHTML = `
-                        <img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:4px;object-fit:cover;">
-                        <span class="console-text">> Divulga Link BR | online</span>
-                    `;
-                }
-            }
-            
-            // Fundo personalizado
-            if (config.backgroundImage && bgCustom) {
-                bgCustom.style.backgroundImage = `url(${config.backgroundImage})`;
-                bgCustom.classList.add('visible');
-            }
-            
-            // Overlay
-            if (bgOverlay) {
-                const overlayColor = config.overlayColor || 'rgba(13,17,23,0.85)';
-                bgOverlay.style.background = overlayColor;
-            }
-            
-            return config;
-        }
-    } catch (error) {
-        console.error("❌ Erro ao carregar config global:", error);
+// ========== APLICAR FUNDO (imagem + overlay) ==========
+function aplicarFundo(config) {
+    // Fundo personalizado
+    if (config.backgroundImage && bgCustom) {
+        bgCustom.style.backgroundImage = `url(${config.backgroundImage})`;
+        bgCustom.classList.add('visible');
+    } else if (bgCustom) {
+        bgCustom.style.backgroundImage = '';
+        bgCustom.classList.remove('visible');
     }
-    return null;
+    
+    // Overlay
+    if (bgOverlay) {
+        const overlayColor = config.overlayColor || 'rgba(13,17,23,0.85)';
+        bgOverlay.style.background = overlayColor;
+    }
 }
 
 // ========== APLICAR TEMA ==========
@@ -84,15 +64,98 @@ function aplicarTema(tema) {
     root.style.setProperty('--font-mono', t.fontMono);
     root.style.setProperty('--border-radius', t.borderRadius);
     root.style.setProperty('--card-radius', t.cardRadius);
+    
+    // Aplica fundo do tema
+    aplicarFundo(t);
 }
 
-// ========== RENDERIZAR PÁGINA PRINCIPAL (SUPER ADMIN) ==========
-function renderizarPaginaPrincipal() {
-    console.log("🎨 Renderizando página principal");
+// ========== CARREGAR CONFIG GLOBAL (apenas para página principal) ==========
+async function carregarConfigGlobal() {
+    try {
+        const configSnap = await db.collection('config').doc('geral').get();
+        if (configSnap.exists) {
+            const config = configSnap.data();
+            
+            // Logo no header
+            if (config.logo && headerLt) {
+                const consoleLine = headerLt.querySelector('.console-line');
+                if (consoleLine) {
+                    consoleLine.innerHTML = `
+                        <img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;">
+                        <span class="console-text">> Divulga Link BR</span>
+                    `;
+                }
+            }
+            
+            return config;
+        }
+    } catch (error) {
+        console.error("❌ Erro ao carregar config global:", error);
+    }
+    return null;
+}
+
+// ========== RENDERIZAR PÁGINA PRINCIPAL (com dados do Firestore) ==========
+async function renderizarPaginaPrincipal() {
+    // Tenta carregar dados personalizados da página principal
+    try {
+        const snap = await db.collection('config').doc('paginaPrincipal').get();
+        if (snap.exists) {
+            const data = snap.data();
+            
+            // Aplica tema se existir
+            if (data.tema) {
+                aplicarTema(data.tema);
+            } else {
+                aplicarTema(TEMA_PADRAO);
+            }
+            
+            // Aplica fundo da página principal
+            const configGlobal = await carregarConfigGlobal();
+            if (configGlobal) {
+                aplicarFundo(configGlobal);
+            }
+            
+            // Perfil
+            if (data.perfil && profileSection) {
+                renderizarPerfil(data.perfil);
+            } else if (profileSection) {
+                profileSection.innerHTML = `
+                    <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div>
+                    <h1 class="profile-name">Divulga Link BR</h1>
+                    <p class="profile-bio">// A plataforma definitiva para divulgar seus links</p>
+                `;
+            }
+            
+            // Links
+            if (data.links && data.links.length > 0 && linksSection) {
+                renderizarLinks(data.links);
+            } else if (linksSection) {
+                linksSection.innerHTML = `
+                    <a href="cadastro.html" class="link-btn" style="background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1)); border:1px solid rgba(139,92,246,0.2);">
+                        <span class="link-icon">🚀</span><span>Criar Minha Conta Gratuita</span><span class="link-arrow">→</span>
+                    </a>
+                    <a href="admin.html" class="link-btn">
+                        <span class="link-icon">🔐</span><span>Acessar Painel Admin</span><span class="link-arrow">→</span>
+                    </a>
+                `;
+            }
+            
+            // Mídia
+            if (data.midias && data.midias.length > 0 && mediaSection) {
+                renderizarMidia(data.midias);
+            } else if (mediaSection) {
+                mediaSection.innerHTML = '';
+            }
+            
+            return;
+        }
+    } catch(e) {}
     
+    // Fallback: página padrão
+    await carregarConfigGlobal();
     aplicarTema(TEMA_PADRAO);
     
-    // Perfil do Super Admin (você)
     if (profileSection) {
         profileSection.innerHTML = `
             <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div>
@@ -101,41 +164,36 @@ function renderizarPaginaPrincipal() {
         `;
     }
     
-    // Links de exemplo
     if (linksSection) {
         linksSection.innerHTML = `
             <a href="cadastro.html" class="link-btn" style="background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1)); border:1px solid rgba(139,92,246,0.2);">
-                <span class="link-icon">🚀</span>
-                <span>Criar Minha Conta Gratuita</span>
-                <span class="link-arrow">→</span>
+                <span class="link-icon">🚀</span><span>Criar Minha Conta Gratuita</span><span class="link-arrow">→</span>
             </a>
             <a href="admin.html" class="link-btn">
-                <span class="link-icon">🔐</span>
-                <span>Acessar Painel Admin</span>
-                <span class="link-arrow">→</span>
-            </a>
-            <a href="#" class="link-btn" onclick="abrirModalLogin(); return false;">
-                <span class="link-icon">👤</span>
-                <span>Fazer Login</span>
-                <span class="link-arrow">→</span>
+                <span class="link-icon">🔐</span><span>Acessar Painel Admin</span><span class="link-arrow">→</span>
             </a>
         `;
     }
     
-    // Mídia vazia na página principal
     if (mediaSection) mediaSection.innerHTML = '';
-    
     if (botoesAdminDiv) botoesAdminDiv.style.display = 'none';
     if (meuLinkDiv) meuLinkDiv.innerHTML = '';
 }
 
 // ========== RENDERIZAR PÁGINA DO USUÁRIO ==========
 async function renderizarPaginaUsuario(uid, userData) {
-    console.log("👤 Renderizando página do usuário:", uid);
+    // 🔥 Não carrega config global - usa APENAS o tema do usuário
+    // Limpa fundo global
+    if (bgCustom) {
+        bgCustom.style.backgroundImage = '';
+        bgCustom.classList.remove('visible');
+    }
     
     try {
         const temaSnap = await db.collection('usuarios').doc(uid).collection('config').doc('tema').get();
-        aplicarTema(temaSnap.exists ? temaSnap.data() : TEMA_PADRAO);
+        const tema = temaSnap.exists ? temaSnap.data() : TEMA_PADRAO;
+        aplicarTema(tema);
+        aplicarFundo(tema); // Aplica fundo do USUÁRIO, não do Super Admin
     } catch (error) {
         aplicarTema(TEMA_PADRAO);
     }
@@ -157,7 +215,6 @@ async function renderizarPaginaUsuario(uid, userData) {
     
     document.title = `${perfil.nome || 'Perfil'} | Divulga Link BR`;
     
-    // Botões admin
     if (botoesAdminDiv && usuarioAtual && usuarioAtual.uid === uid) {
         botoesAdminDiv.style.display = 'flex';
         botoesAdminDiv.innerHTML = `
@@ -169,7 +226,6 @@ async function renderizarPaginaUsuario(uid, userData) {
         botoesAdminDiv.style.display = 'none';
     }
     
-    // Link de divulgação
     if (meuLinkDiv && usuarioAtual && usuarioAtual.uid === uid && userData?.username) {
         const baseURL = window.location.origin + window.location.pathname;
         meuLinkDiv.innerHTML = `
@@ -230,35 +286,27 @@ function renderizarMidia(midias) {
 
 // ========== FUNÇÃO PRINCIPAL ==========
 async function carregarPaginaPublica() {
-    console.log("🔍 Carregando página pública, userParam:", userParam);
-    
-    // Carrega config global (fundo, overlay, logo)
-    await carregarConfigGlobal();
-    
-    // Se NÃO tem username na URL → página principal da plataforma
-    if (!userParam) {
-        renderizarPaginaPrincipal();
-        return;
-    }
-    
-    // Tem username → carrega página do usuário
-    try {
-        const userSnapshot = await db.collection('usuarios').where('username', '==', userParam).get();
-        
-        if (userSnapshot.empty) {
-            renderizarUsuarioNaoEncontrado();
+    // 🔥 Se tem username, carrega DIRETO sem delay
+    if (userParam) {
+        try {
+            const userSnapshot = await db.collection('usuarios').where('username', '==', userParam).get();
+            if (userSnapshot.empty) {
+                renderizarUsuarioNaoEncontrado();
+                return;
+            }
+            const userDoc = userSnapshot.docs[0];
+            currentUserId = userDoc.id;
+            currentUserData = userDoc.data();
+            await renderizarPaginaUsuario(currentUserId, currentUserData);
+            return;
+        } catch (error) {
+            renderizarErro();
             return;
         }
-        
-        const userDoc = userSnapshot.docs[0];
-        currentUserId = userDoc.id;
-        currentUserData = userDoc.data();
-        
-        await renderizarPaginaUsuario(currentUserId, currentUserData);
-    } catch (error) {
-        console.error("❌ Erro:", error);
-        renderizarErro();
     }
+    
+    // Sem username → página principal
+    await renderizarPaginaPrincipal();
 }
 
 function renderizarUsuarioNaoEncontrado() {
@@ -295,15 +343,10 @@ function escapeHtml(text) {
 }
 
 function copiarLink(link) {
-    navigator.clipboard.writeText(link).then(() => {
-        alert('✅ Link copiado!');
-    }).catch(() => {
-        prompt('Copie seu link:', link);
-    });
+    navigator.clipboard.writeText(link).then(() => alert('✅ Link copiado!')).catch(() => prompt('Copie seu link:', link));
 }
 
 window.copiarLink = copiarLink;
 
-document.addEventListener('DOMContentLoaded', () => {
-    carregarPaginaPublica();
-});
+// 🔥 INICIA IMEDIATAMENTE (sem esperar DOMContentLoaded)
+carregarPaginaPublica();
