@@ -251,6 +251,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="auth.js"></script>
 <script>
     // ========== VARIÁVEIS GLOBAIS ==========
     let userUID = null;
@@ -652,12 +653,17 @@
     }
 
     // ========== OBSERVADOR DE AUTENTICAÇÃO ==========
-    auth.onAuthStateChanged(async (user) => {
+    let authObserverUnsubscribe = null;
+    
+    if (authObserverUnsubscribe) authObserverUnsubscribe();
+    authObserverUnsubscribe = auth.onAuthStateChanged(async (user) => {
         if (user) {
             await carregarDadosAdmin();
         } else {
-            document.getElementById('tela-login').classList.remove('hidden');
-            document.getElementById('tela-admin').classList.add('hidden');
+            const loginScreen = document.getElementById('tela-login');
+            const adminScreen = document.getElementById('tela-admin');
+            if (loginScreen) loginScreen.classList.remove('hidden');
+            if (adminScreen) adminScreen.classList.add('hidden');
         }
     });
 </script>
