@@ -58,7 +58,85 @@
         .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
         .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
         .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
-        @media (max-width: 600px) { .admin-container { padding: 12px; } .admin-section { padding: 16px; } .tema-presets { grid-template-columns: 1fr; } .admin-header { gap: 8px; } }
+        .btn-ver-perfil {
+            background: rgba(139,92,246,0.1);
+            border: 1px solid rgba(139,92,246,0.3);
+            color: #a78bfa;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-ver-perfil:hover { background: rgba(139,92,246,0.2); }
+        
+        /* MODAL UPGRADE */
+        .modal-upgrade {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-upgrade.ativo { display: flex !important; }
+        .modal-upgrade-content {
+            background: #161b22;
+            border: 1px solid #f59e0b;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-upgrade-content h3 { color: #f59e0b; margin-bottom: 8px; font-size: 24px; }
+        .modal-upgrade-content p { color: #8b949e; margin-bottom: 24px; font-size: 13px; }
+        .planos-upgrade {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .plano-upgrade-btn {
+            background: #0d1117;
+            border: 2px solid #30363d;
+            border-radius: 16px;
+            padding: 20px 24px;
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            transition: all 0.2s;
+        }
+        .plano-upgrade-btn:hover { border-color: #8b5cf6; transform: translateY(-2px); }
+        .plano-upgrade-btn .plano-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+        .plano-upgrade-btn .plano-nome { font-size: 18px; font-weight: 700; color: #f0f6fc; }
+        .plano-upgrade-btn .plano-preco { font-size: 14px; color: #a78bfa; margin-top: 4px; }
+        .btn-fechar-modal {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-fechar-modal:hover { border-color: #f85149; color: #f85149; }
+        
+        @media (max-width: 600px) { 
+            .admin-container { padding: 12px; } 
+            .admin-section { padding: 16px; } 
+            .tema-presets { grid-template-columns: 1fr; } 
+            .admin-header { gap: 8px; }
+            .planos-upgrade { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -80,9 +158,18 @@
                 <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
                 <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
                 <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
-                <a href="#" id="btn-upgrade" class="btn-upgrade" target="_blank">🔼 Fazer Upgrade</a>
+                <button id="btn-upgrade" class="btn-upgrade">🔼 Fazer Upgrade</button>
+                <a href="#" id="btn-ver-perfil" class="btn-ver-perfil" target="_blank">🌐 Ver Meu Perfil</a>
                 <a href="index.html" class="btn-small-lt" style="text-decoration:none;">🏠 ver site</a>
                 <button class="btn-logout" onclick="logout()">> exit</button>
+            </div>
+
+            <!-- AVISO DE PERFIL PÚBLICO -->
+            <div class="admin-section" id="aviso-perfil" style="background:rgba(139,92,246,0.05); border-color:#8b5cf6;">
+                <h3><span class="icon">🌐</span> Seu Perfil Público</h3>
+                <p style="font-size:13px; color:#8b949e; margin-bottom:12px;">Qualquer alteração que você fizer aqui aparecerá no seu link público:</p>
+                <code id="perfil-link-preview" style="background:#0d1117; padding:10px; border-radius:8px; display:block; word-break:break-all; font-size:12px; color:#a78bfa;"></code>
+                <button class="btn-small-lt" onclick="copiarLinkPerfil()" style="margin-top:12px;">📋 Copiar Link</button>
             </div>
 
             <!-- TEMA -->
@@ -145,6 +232,27 @@
                 <p class="msg-sucesso-lt" id="midia-sucesso">✅ Mídia salva!</p>
                 <div id="lista-midias" style="margin-top:16px;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE UPGRADE -->
+    <div id="modal-upgrade" class="modal-upgrade">
+        <div class="modal-upgrade-content">
+            <h3>🚀 Fazer Upgrade</h3>
+            <p>Escolha o plano que deseja:</p>
+            <div class="planos-upgrade">
+                <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('pro')">
+                    <div class="plano-icon">⭐</div>
+                    <div class="plano-nome">Plano Pro</div>
+                    <div class="plano-preco" id="preco-upgrade-pro">R$10</div>
+                </div>
+                <div class="plano-upgrade-btn" onclick="escolherPlanoUpgrade('premium')">
+                    <div class="plano-icon">💎</div>
+                    <div class="plano-nome">Plano Premium</div>
+                    <div class="plano-preco" id="preco-upgrade-premium">R$25</div>
+                </div>
+            </div>
+            <button class="btn-fechar-modal" onclick="fecharModalUpgrade()">Cancelar</button>
         </div>
     </div>
 
