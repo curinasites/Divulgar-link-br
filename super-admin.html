@@ -139,6 +139,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <!-- ⚠️ NÃO coloque auth.js aqui! Ele vai atrapalhar -->
     <script>
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
 
@@ -184,6 +185,8 @@
             auth.signOut();
             document.getElementById('tela-dashboard').classList.add('hidden');
             document.getElementById('tela-login').classList.remove('hidden');
+            document.getElementById('sa-email').value = '';
+            document.getElementById('sa-senha').value = '';
         }
 
         // ========== DASHBOARD ==========
@@ -242,25 +245,25 @@
             }
         }
 
-        async function alterarPlano(uid, novoPlano) {
+        window.alterarPlano = async function(uid, novoPlano) {
             await db.collection('usuarios').doc(uid).update({ plano: novoPlano });
-            mostrarSucesso('msg-sucesso');
+            mostrarSucesso('msg-planos-sucesso');
             carregarDashboard();
         }
 
-        async function toggleBloqueio(uid, statusAtual) {
+        window.toggleBloqueio = async function(uid, statusAtual) {
             const novoStatus = statusAtual === 'bloqueado' ? 'ativo' : 'bloqueado';
             if (!confirm(`⚠️ ${novoStatus === 'bloqueado' ? 'BLOQUEAR' : 'DESBLOQUEAR'} este usuário?`)) return;
             await db.collection('usuarios').doc(uid).update({ status: novoStatus });
             carregarDashboard();
         }
 
-        async function salvarConfigGeral() {
+        window.salvarConfigGeral = async function() {
             await db.collection('config').doc('geral').set({ logo: document.getElementById('config-logo').value.trim() });
             mostrarSucesso('msg-config-sucesso');
         }
 
-        async function salvarConfigPlanos() {
+        window.salvarConfigPlanos = async function() {
             await db.collection('config').doc('planos').set({
                 pro: { preco: document.getElementById('config-preco-pro').value.trim(), link: document.getElementById('config-link-pro').value.trim() },
                 premium: { preco: document.getElementById('config-preco-premium').value.trim(), link: document.getElementById('config-link-premium').value.trim() }
