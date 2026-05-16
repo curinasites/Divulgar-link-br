@@ -144,6 +144,11 @@
         // ========== SEU EMAIL SUPER ADMIN ==========
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
 
+        // ========== FUNÇÃO PARA COMPARAR EMAIS (IGNORA MAIÚSCULAS/MINÚSCULAS) ==========
+        function isSuperAdmin(email) {
+            return email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+        }
+
         // ========== CRIA AUTOMATICAMENTE NO FIRESTORE ==========
         async function garantirSuperAdminNoFirestore(user) {
             const userRef = db.collection('usuarios').doc(user.uid);
@@ -167,9 +172,9 @@
             }
         }
 
-        // ========== VERIFICA LOGIN ==========
+        // ========== VERIFICA LOGIN (CORRIGIDO) ==========
         auth.onAuthStateChanged(async (user) => {
-            if (user && user.email === SUPER_ADMIN_EMAIL) {
+            if (user && isSuperAdmin(user.email)) {
                 await garantirSuperAdminNoFirestore(user);
                 document.getElementById('tela-login').classList.add('hidden');
                 document.getElementById('tela-carregando').classList.remove('hidden');
@@ -182,7 +187,7 @@
             }
         });
 
-        // ========== FUNÇÃO DE LOGIN ==========
+        // ========== FUNÇÃO DE LOGIN (CORRIGIDO) ==========
         async function loginSuperAdmin() {
             const email = document.getElementById('sa-email').value.trim();
             const senha = document.getElementById('sa-senha').value;
@@ -204,7 +209,7 @@
             try {
                 const result = await auth.signInWithEmailAndPassword(email, senha);
                 
-                if (result.user.email === SUPER_ADMIN_EMAIL) {
+                if (isSuperAdmin(result.user.email)) {
                     await garantirSuperAdminNoFirestore(result.user);
                     document.getElementById('tela-login').classList.add('hidden');
                     document.getElementById('tela-carregando').classList.remove('hidden');
