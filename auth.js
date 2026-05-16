@@ -6,6 +6,12 @@ auth.onAuthStateChanged(async (user) => {
     
     console.log("🔍 Auth State - Usuário:", user?.email, "Path:", path);
     
+    // 🔥 DURANTE LIBERAÇÃO, NÃO FAZ NADA
+    if (window.isLiberandoUsuario) {
+        console.log("🚀 Processo de liberação ativo, ignorando...");
+        return;
+    }
+    
     if (user) {
         // Verifica se está bloqueado
         try {
@@ -21,12 +27,6 @@ auth.onAuthStateChanged(async (user) => {
         // ========== SUPER ADMIN ==========
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
         const isSuperAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
-        
-        // 🔥 VERIFICA SE É PROCESSO DE LIBERAÇÃO (IGNORA BLOQUEIO)
-        if (window.isLiberandoUsuario) {
-            console.log("🚀 Processo de liberação ativo, ignorando verificações");
-            return;
-        }
         
         if (isSuperAdmin && path.includes('admin.html')) {
             window.location.href = 'super-admin.html';
@@ -57,14 +57,7 @@ auth.onAuthStateChanged(async (user) => {
             }
         }
     } else {
-        // ========== USUÁRIO NÃO LOGADO ==========
         console.log("🔴 Usuário não logado");
-        
-        // 🔥 DURANTE LIBERAÇÃO, NÃO REDIRECIONA
-        if (window.isLiberandoUsuario) {
-            console.log("🚀 Processo de liberação ativo, ignorando redirecionamento");
-            return;
-        }
         
         if (path.includes('admin.html')) {
             window.location.href = 'index.html';
