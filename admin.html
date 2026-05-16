@@ -311,7 +311,6 @@
     // ========== UPGRADE ==========
     async function carregarLinksPagamentoUpgrade() {
         try {
-            console.log("🔄 Carregando links de pagamento do Firestore...");
             const snap = await db.collection('config').doc('planos').get();
             if (snap.exists) {
                 const d = snap.data();
@@ -533,8 +532,13 @@
 
     // ========== CARREGAR DADOS DO ADMIN ==========
     async function carregarDadosAdmin() {
-        if (!usuarioAtual) return;
-        userUID = usuarioAtual.uid;
+        if (!window.usuarioAtual) {
+            console.log("⏳ Aguardando usuarioAtual...");
+            setTimeout(() => carregarDadosAdmin(), 500);
+            return;
+        }
+        
+        userUID = window.usuarioAtual.uid;
         
         console.log("📦 Carregando dados do Admin, UID:", userUID);
         
@@ -654,7 +658,6 @@
         
         try {
             await auth.signInWithEmailAndPassword(email, senha);
-            // O auth.onAuthStateChanged vai lidar com o redirecionamento
         } catch (error) {
             erro.textContent = '❌ Email ou senha incorretos'; 
             erro.style.display = 'block';
@@ -686,16 +689,18 @@
     window.fecharModalUpgrade = fecharModalUpgrade;
     window.escolherPlanoUpgrade = escolherPlanoUpgrade;
 
-    // ========== OBSERVADOR DE AUTENTICAÇÃO ==========
-    // Aguarda o auth.js carregar e o usuarioAtual ser definido
-    const checkUserInterval = setInterval(() => {
-        if (typeof usuarioAtual !== 'undefined') {
-            clearInterval(checkUserInterval);
-            if (usuarioAtual) {
+    // ========== INICIALIZAR ==========
+    // Aguarda o auth.js carregar
+    if (window.usuarioAtual) {
+        carregarDadosAdmin();
+    } else {
+        // Tenta novamente em 500ms
+        setTimeout(() => {
+            if (window.usuarioAtual) {
                 carregarDadosAdmin();
             }
-        }
-    }, 100);
+        }, 500);
+    }
 </script>
 </body>
-</html>
+    </html>
