@@ -311,6 +311,7 @@
     // ========== UPGRADE ==========
     async function carregarLinksPagamentoUpgrade() {
         try {
+            console.log("🔄 Carregando links de pagamento do Firestore...");
             const snap = await db.collection('config').doc('planos').get();
             if (snap.exists) {
                 const d = snap.data();
@@ -535,6 +536,8 @@
         if (!usuarioAtual) return;
         userUID = usuarioAtual.uid;
         
+        console.log("📦 Carregando dados do Admin, UID:", userUID);
+        
         document.getElementById('tela-login').classList.add('hidden');
         document.getElementById('tela-admin').classList.remove('hidden');
         
@@ -636,15 +639,26 @@
         if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
     }
 
-    // ========== LOGIN E LOGOUT ==========
-    function fazerLogin() {
+    // ========== LOGIN ==========
+    async function fazerLogin() {
         const email = document.getElementById('login-email').value.trim();
         const senha = document.getElementById('login-senha').value;
         const erro = document.getElementById('login-erro');
-        if (!email || !senha) { erro.textContent = '⚠️ Preencha email e senha'; erro.style.display = 'block'; return; }
-        auth.signInWithEmailAndPassword(email, senha).catch(() => {
-            erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
-        });
+        erro.style.display = 'none';
+        
+        if (!email || !senha) { 
+            erro.textContent = '⚠️ Preencha email e senha'; 
+            erro.style.display = 'block'; 
+            return; 
+        }
+        
+        try {
+            await auth.signInWithEmailAndPassword(email, senha);
+            // O auth.onAuthStateChanged vai lidar com o redirecionamento
+        } catch (error) {
+            erro.textContent = '❌ Email ou senha incorretos'; 
+            erro.style.display = 'block';
+        }
     }
 
     function logout() {
@@ -652,20 +666,36 @@
         window.location.href = 'index.html';
     }
 
+    // ========== EXPOR FUNÇÕES GLOBAIS ==========
+    window.carregarDadosAdmin = carregarDadosAdmin;
+    window.copiarLinkPerfil = copiarLinkPerfil;
+    window.salvarTema = salvarTema;
+    window.salvarPerfil = salvarPerfil;
+    window.salvarLink = salvarLink;
+    window.salvarMidia = salvarMidia;
+    window.editarLink = editarLink;
+    window.removerLink = removerLink;
+    window.limparFormLink = limparFormLink;
+    window.editarMidia = editarMidia;
+    window.removerMidia = removerMidia;
+    window.limparFormMidia = limparFormMidia;
+    window.aplicarPreset = aplicarPreset;
+    window.fazerLogin = fazerLogin;
+    window.logout = logout;
+    window.abrirModalUpgrade = abrirModalUpgrade;
+    window.fecharModalUpgrade = fecharModalUpgrade;
+    window.escolherPlanoUpgrade = escolherPlanoUpgrade;
+
     // ========== OBSERVADOR DE AUTENTICAÇÃO ==========
-    let authObserverUnsubscribe = null;
-    
-    if (authObserverUnsubscribe) authObserverUnsubscribe();
-    authObserverUnsubscribe = auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            await carregarDadosAdmin();
-        } else {
-            const loginScreen = document.getElementById('tela-login');
-            const adminScreen = document.getElementById('tela-admin');
-            if (loginScreen) loginScreen.classList.remove('hidden');
-            if (adminScreen) adminScreen.classList.add('hidden');
+    // Aguarda o auth.js carregar e o usuarioAtual ser definido
+    const checkUserInterval = setInterval(() => {
+        if (typeof usuarioAtual !== 'undefined') {
+            clearInterval(checkUserInterval);
+            if (usuarioAtual) {
+                carregarDadosAdmin();
+            }
         }
-    });
+    }, 100);
 </script>
 </body>
-    </html>
+</html>
