@@ -31,7 +31,7 @@
         .voltar a { color: #8b949e; font-size: 12px; text-decoration: none; }
         .voltar a:hover { color: #a78bfa; }
         
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .header {
             background: #161b22; border: 1px solid #f59e0b; border-radius: 12px;
             padding: 14px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
@@ -54,6 +54,7 @@
         .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
         .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
         .badge-bloqueado { background: rgba(248,81,73,0.2); color: #f87171; }
+        .badge-pendente { background: rgba(245,158,11,0.2); color: #f59e0b; }
         select { padding: 6px 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 12px; cursor: pointer; }
         select:focus { border-color: #f59e0b; outline: none; }
         .btn-small { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
@@ -62,9 +63,17 @@
         .btn-block:hover { background: rgba(248,81,73,0.2); }
         .btn-unblock { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .btn-unblock:hover { background: rgba(74,222,128,0.2); }
+        .btn-success { background: rgba(74,222,128,0.2); border: 1px solid #4ade80; color: #4ade80; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-success:hover { background: rgba(74,222,128,0.4); }
+        .btn-danger { background: rgba(248,81,73,0.2); border: 1px solid #f87171; color: #f87171; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-danger:hover { background: rgba(248,81,73,0.4); }
         .msg-sucesso { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
         .hidden { display: none !important; }
         .carregando { text-align: center; padding: 40px; color: #8b949e; }
+        .abas { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #30363d; }
+        .aba { padding: 10px 20px; cursor: pointer; color: #8b949e; border-bottom: 2px solid transparent; }
+        .aba.ativa { color: #f59e0b; border-bottom-color: #f59e0b; }
+        .aba:hover { color: #f0f6fc; }
     </style>
 </head>
 <body>
@@ -99,15 +108,34 @@
                 <div class="stat-card"><div class="stat-numero" id="stat-gratis">0</div><div class="stat-label">Plano Grátis</div></div>
                 <div class="stat-card"><div class="stat-numero" id="stat-pro">0</div><div class="stat-label">Plano Pro</div></div>
                 <div class="stat-card"><div class="stat-numero" id="stat-premium">0</div><div class="stat-label">Plano Premium</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-pendentes">0</div><div class="stat-label">⏳ Pendentes</div></div>
             </div>
         </div>
 
-        <div class="section">
+        <!-- ABAS -->
+        <div class="abas">
+            <div class="aba ativa" data-aba="usuarios" onclick="trocarAba('usuarios')">👥 Usuários Ativos</div>
+            <div class="aba" data-aba="pendentes" onclick="trocarAba('pendentes')">🕐 Pendentes (${document.getElementById('stat-pendentes')?.textContent || 0})</div>
+        </div>
+
+        <!-- TABELA DE USUÁRIOS ATIVOS -->
+        <div id="aba-usuarios" class="section">
             <h3>👥 Gerenciar Usuários</h3>
             <div style="overflow-x:auto;">
                 <table class="tabela">
                     <thead><tr><th>Usuário</th><th>Email</th><th>Plano</th><th>Status</th><th>Alterar Plano</th><th>Ações</th></tr></thead>
                     <tbody id="tabela-usuarios"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TABELA DE USUÁRIOS PENDENTES -->
+        <div id="aba-pendentes" class="section hidden">
+            <h3>🕐 Usuários Aguardando Liberação</h3>
+            <div style="overflow-x:auto;">
+                <table class="tabela">
+                    <thead><tr><th>Nome</th><th>Email</th><th>Username</th><th>Plano</th><th>Data</th><th>Ações</th></tr></thead>
+                    <tbody id="tabela-pendentes"></tbody>
                 </table>
             </div>
         </div>
@@ -144,35 +172,25 @@
         // ========== SEU EMAIL SUPER ADMIN ==========
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
 
-        // ========== FUNÇÃO PARA COMPARAR EMAIS (IGNORA MAIÚSCULAS/MINÚSCULAS) ==========
         function isSuperAdmin(email) {
             return email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
         }
 
-        // ========== CRIA AUTOMATICAMENTE NO FIRESTORE ==========
         async function garantirSuperAdminNoFirestore(user) {
             const userRef = db.collection('usuarios').doc(user.uid);
             const doc = await userRef.get();
-            
             if (!doc.exists) {
-                console.log("📝 Criando Super Admin no Firestore...");
                 await userRef.set({
                     email: user.email,
                     nome: "Super Admin",
                     plano: "premium",
                     status: "ativo",
                     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
-                    perfil: {
-                        nome: "Super Admin",
-                        bio: "Super Administrador do Sistema 👑",
-                        foto: ""
-                    }
+                    perfil: { nome: "Super Admin", bio: "Super Administrador do Sistema 👑", foto: "" }
                 });
-                console.log("✅ Super Admin criado com sucesso!");
             }
         }
 
-        // ========== VERIFICA LOGIN (CORRIGIDO) ==========
         auth.onAuthStateChanged(async (user) => {
             if (user && isSuperAdmin(user.email)) {
                 await garantirSuperAdminNoFirestore(user);
@@ -187,28 +205,22 @@
             }
         });
 
-        // ========== FUNÇÃO DE LOGIN (CORRIGIDO) ==========
         async function loginSuperAdmin() {
             const email = document.getElementById('sa-email').value.trim();
             const senha = document.getElementById('sa-senha').value;
             const erro = document.getElementById('sa-erro');
-            
             erro.style.display = 'none';
-            
             if (!email || !senha) {
                 erro.textContent = '⚠️ Preencha email e senha';
                 erro.style.display = 'block';
                 return;
             }
-            
             const btn = event.target;
             const textoOriginal = btn.innerText;
             btn.innerText = '⏳ Entrando...';
             btn.disabled = true;
-            
             try {
                 const result = await auth.signInWithEmailAndPassword(email, senha);
-                
                 if (isSuperAdmin(result.user.email)) {
                     await garantirSuperAdminNoFirestore(result.user);
                     document.getElementById('tela-login').classList.add('hidden');
@@ -230,7 +242,6 @@
             }
         }
 
-        // ========== LOGOUT ==========
         async function logoutSA() {
             await auth.signOut();
             document.getElementById('tela-dashboard').classList.add('hidden');
@@ -240,18 +251,76 @@
             document.getElementById('sa-senha').value = '';
         }
 
+        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE ==========
+        window.liberarUsuario = async function(pendingId, dados) {
+            if (!confirm(`✅ Liberar acesso para ${dados.nome} (${dados.email}) com plano ${dados.plano}?`)) return;
+            
+            try {
+                // 1. Cria conta no Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(dados.email, dados.senha);
+                const uid = userCredential.user.uid;
+                
+                // 2. Cria documento no Firestore
+                await db.collection('usuarios').doc(uid).set({
+                    nome: dados.nome,
+                    email: dados.email,
+                    plano: dados.plano,
+                    username: dados.username,
+                    status: 'ativo',
+                    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                    perfil: { nome: dados.nome, bio: '✨ Bem-vindo!', foto: '' }
+                });
+                
+                // 3. Remove da lista de pendentes
+                await db.collection('usuarios_pendentes').doc(pendingId).delete();
+                
+                alert(`✅ Usuário ${dados.nome} liberado com sucesso!`);
+                await carregarDashboard();
+                
+            } catch (error) {
+                console.error("Erro ao liberar:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    alert('❌ Este email já está cadastrado! Verifique se já foi liberado.');
+                } else {
+                    alert('❌ Erro ao liberar usuário: ' + error.message);
+                }
+            }
+        };
+
+        // ========== FUNÇÃO PARA RECUSAR/DELETAR PENDENTE ==========
+        window.recusarUsuario = async function(pendingId, nome) {
+            if (!confirm(`❌ Tem certeza que deseja RECUSAR o cadastro de ${nome}?`)) return;
+            await db.collection('usuarios_pendentes').doc(pendingId).delete();
+            await carregarDashboard();
+            alert('🗑️ Cadastro recusado e removido.');
+        };
+
         // ========== CARREGAR DASHBOARD ==========
         async function carregarDashboard() {
+            // Carrega usuários ativos
             const snap = await db.collection('usuarios').get();
             const usuarios = [];
             snap.forEach(doc => usuarios.push({ id: doc.id, ...doc.data() }));
+            
+            // Carrega pendentes
+            const pendingSnap = await db.collection('usuarios_pendentes').get();
+            const pendentes = [];
+            pendingSnap.forEach(doc => pendentes.push({ id: doc.id, ...doc.data() }));
             
             const ativos = usuarios.filter(u => u.status !== 'excluido');
             document.getElementById('stat-total').textContent = ativos.length;
             document.getElementById('stat-gratis').textContent = ativos.filter(u => u.plano === 'gratis').length;
             document.getElementById('stat-pro').textContent = ativos.filter(u => u.plano === 'pro').length;
             document.getElementById('stat-premium').textContent = ativos.filter(u => u.plano === 'premium').length;
+            document.getElementById('stat-pendentes').textContent = pendentes.length;
             
+            // Atualiza contador da aba
+            const abaPendentes = document.querySelector('[data-aba="pendentes"]');
+            if (abaPendentes) {
+                abaPendentes.innerHTML = `🕐 Pendentes (${pendentes.length})`;
+            }
+            
+            // TABELA DE USUÁRIOS ATIVOS
             const tabela = document.getElementById('tabela-usuarios');
             if (usuarios.length === 0) {
                 tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
@@ -261,7 +330,6 @@
                     const status = u.status || 'ativo';
                     const statusClass = status === 'bloqueado' ? 'badge-bloqueado' : 'badge-gratis';
                     const isBloqueado = status === 'bloqueado';
-                    
                     return `
                         <tr style="${isBloqueado ? 'opacity:0.6;' : ''}">
                             <td>${u.perfil?.nome || u.nome || '--'}</td>
@@ -286,6 +354,31 @@
                 }).join('');
             }
             
+            // TABELA DE PENDENTES
+            const tabelaPendentes = document.getElementById('tabela-pendentes');
+            if (pendentes.length === 0) {
+                tabelaPendentes.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário pendente</td></tr>';
+            } else {
+                tabelaPendentes.innerHTML = pendentes.map(p => {
+                    const data = p.criadoEm?.toDate ? p.criadoEm.toDate().toLocaleDateString('pt-BR') : 'Nova';
+                    const planoClass = p.plano === 'premium' ? 'badge-premium' : 'badge-pro';
+                    return `
+                        <tr>
+                            <td>${p.nome || '--'}</td>
+                            <td style="font-size:12px;color:#8b949e;">${p.email || '--'}</td>
+                            <td><code style="font-size:11px;">${p.username || '--'}</code></td>
+                            <td><span class="badge-plano ${planoClass}">${p.plano === 'pro' ? '⭐ Pro' : '💎 Premium'}</span></td>
+                            <td><span style="font-size:11px;color:#8b949e;">${data}</span></td>
+                            <td>
+                                <button class="btn-success" onclick="liberarUsuario('${p.id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})">✅ Liberar</button>
+                                <button class="btn-danger" onclick="recusarUsuario('${p.id}', '${p.nome}')">❌ Recusar</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            // Configurações
             const configSnap = await db.collection('config').doc('geral').get();
             if (configSnap.exists) document.getElementById('config-logo').value = configSnap.data().logo || '';
             
@@ -300,6 +393,14 @@
         }
 
         // ========== FUNÇÕES GLOBAIS ==========
+        window.trocarAba = function(aba) {
+            document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
+            document.querySelector(`.aba[data-aba="${aba}"]`).classList.add('ativa');
+            document.getElementById('aba-usuarios').classList.add('hidden');
+            document.getElementById('aba-pendentes').classList.add('hidden');
+            document.getElementById(`aba-${aba}`).classList.remove('hidden');
+        };
+
         window.alterarPlano = async function(uid, novoPlano) {
             await db.collection('usuarios').doc(uid).update({ plano: novoPlano });
             mostrarSucesso('msg-planos-sucesso');
