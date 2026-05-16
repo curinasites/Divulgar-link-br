@@ -11,6 +11,28 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #0d1117; font-family: 'Inter', 'JetBrains Mono', monospace; color: #c9d1d9; }
+        
+        /* TELA DE LOGIN */
+        .login-box {
+            background: #161b22; border: 1px solid #30363d; border-radius: 20px;
+            padding: 40px; max-width: 400px; width: 100%; text-align: center;
+            margin: 80px auto;
+        }
+        .login-box .icon { font-size: 48px; margin-bottom: 10px; }
+        .login-box h2 { font-size: 22px; font-weight: 700; color: #f59e0b; margin-bottom: 6px; }
+        .login-box .sub { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+        .form-group input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+        .form-group input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+        .btn-entrar { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 6px; }
+        .btn-entrar:hover { opacity: 0.9; }
+        .erro { color: #f85149; font-size: 12px; margin-top: 10px; display: none; }
+        .voltar { margin-top: 16px; }
+        .voltar a { color: #8b949e; font-size: 12px; text-decoration: none; }
+        .voltar a:hover { color: #a78bfa; }
+        
+        /* DASHBOARD */
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         .header {
             background: #161b22; border: 1px solid #f59e0b; border-radius: 12px;
@@ -19,88 +41,237 @@
         .header .title { flex: 1; font-size: 14px; color: #f59e0b; font-family: 'JetBrains Mono', monospace; }
         .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; }
         .btn-logout:hover { background: rgba(248,81,73,0.2); }
-        .section {
-            background: #161b22; border: 1px solid #30363d; border-radius: 16px;
-            padding: 24px; margin-bottom: 20px;
-        }
+        .section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
         .section h3 { font-size: 15px; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .stat-card {
-            background: #0d1117; border: 1px solid #30363d; border-radius: 12px;
-            padding: 16px; text-align: center;
-        }
+        .stat-card { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 16px; text-align: center; }
         .stat-numero { font-size: 28px; font-weight: 800; color: #f59e0b; }
         .stat-label { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
         .tabela { width: 100%; border-collapse: collapse; }
-        .tabela th {
-            text-align: left; padding: 10px 14px; font-size: 11px; color: #8b949e;
-            font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid #30363d;
-        }
-        .tabela td {
-            padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #21262d;
-        }
+        .tabela th { text-align: left; padding: 10px 14px; font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid #30363d; }
+        .tabela td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #21262d; }
         .tabela tr:hover { background: rgba(255,255,255,0.02); }
-        .badge-plano {
-            display: inline-block; padding: 3px 10px; border-radius: 8px;
-            font-size: 11px; font-weight: 600;
-        }
+        .badge-plano { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
         .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
         .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
         .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
         .badge-bloqueado { background: rgba(248,81,73,0.2); color: #f87171; }
-        select {
-            padding: 6px 10px; border-radius: 8px; border: 1px solid #30363d;
-            background: #0d1117; color: #c9d1d9; font-size: 12px; cursor: pointer;
-        }
+        select { padding: 6px 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 12px; cursor: pointer; }
         select:focus { border-color: #f59e0b; outline: none; }
-        .btn-small {
-            background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
-            color: #f59e0b; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;
-        }
+        .btn-small { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .btn-small:hover { background: rgba(245,158,11,0.2); }
-        .btn-block {
-            background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3);
-            color: #f87171; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;
-        }
+        .btn-block { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f87171; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .btn-block:hover { background: rgba(248,81,73,0.2); }
-        .btn-unblock {
-            background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3);
-            color: #4ade80; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;
-        }
+        .btn-unblock { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .btn-unblock:hover { background: rgba(74,222,128,0.2); }
         .msg-sucesso { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
-        .form-group input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
-        .form-group input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
-        /* Tela de login */
-        .login-box {
-            max-width: 400px; margin: 80px auto;
-            background: #161b22; border: 1px solid #30363d;
-            border-radius: 20px; padding: 36px; text-align: center;
-        }
-        .login-box h2 { font-size: 22px; font-weight: 700; color: #f59e0b; margin-bottom: 6px; }
-        .login-box .subtitulo { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 20px; }
-        .btn-entrar {
-            width: 100%; padding: 13px; border-radius: 10px; border: none;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000; font-weight: 700; font-size: 15px; cursor: pointer;
-            font-family: 'Inter', sans-serif;
-        }
-        .btn-entrar:hover { opacity: 0.9; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Tudo aqui é controlado pelo super-admin.js -->
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" class="login-box">
+        <div class="icon">👑</div>
+        <h2>Super Admin</h2>
+        <p class="sub">> acesso restrito</p>
+        <div class="form-group"><label>Email</label><input type="email" id="sa-email" placeholder="super@admin.com"></div>
+        <div class="form-group"><label>Senha</label><input type="password" id="sa-senha" placeholder="••••••••"></div>
+        <p class="erro" id="sa-erro">Email ou senha incorretos</p>
+        <button class="btn-entrar" onclick="loginSuperAdmin()">🔐 Entrar</button>
+        <div class="voltar"><a href="index.html">← Voltar ao site</a></div>
+    </div>
+
+    <!-- DASHBOARD (escondido até login) -->
+    <div id="tela-dashboard" class="container hidden">
+        <div class="header">
+            <span>👑</span>
+            <div class="title">> super-admin@divulgalinkbr:~$ dashboard</div>
+            <a href="index.html" class="btn-small" style="text-decoration:none;margin-right:8px;">🏠 Site</a>
+            <button class="btn-logout" onclick="logoutSA()">> exit</button>
+        </div>
+
+        <div class="section">
+            <h3>📊 Estatísticas Gerais</h3>
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card"><div class="stat-numero" id="stat-total">0</div><div class="stat-label">Total de Usuários</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-gratis">0</div><div class="stat-label">Plano Grátis</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-pro">0</div><div class="stat-label">Plano Pro</div></div>
+                <div class="stat-card"><div class="stat-numero" id="stat-premium">0</div><div class="stat-label">Plano Premium</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>👥 Gerenciar Usuários</h3>
+            <div style="overflow-x:auto;">
+                <table class="tabela">
+                    <thead><tr><th>Usuário</th><th>Email</th><th>Plano</th><th>Status</th><th>Alterar Plano</th><th>Ações</th></tr></thead>
+                    <tbody id="tabela-usuarios"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>⚙️ Configurações Gerais</h3>
+            <div class="form-group"><label>🖼️ Logo do Site (URL)</label><input type="text" id="config-logo" placeholder="https://..."></div>
+            <button class="btn-small" onclick="salvarConfigGeral()">💾 Salvar</button>
+            <p class="msg-sucesso" id="msg-config-sucesso">✅ Salvo!</p>
+        </div>
+
+        <div class="section">
+            <h3>💰 Configurar Planos</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <div>
+                    <div class="form-group"><label>⭐ Preço Pro (R$)</label><input type="text" id="config-preco-pro" placeholder="10"></div>
+                    <div class="form-group"><label>🔗 Link Checkout Pro</label><input type="text" id="config-link-pro" placeholder="https://kiwify.com/..."></div>
+                </div>
+                <div>
+                    <div class="form-group"><label>💎 Preço Premium (R$)</label><input type="text" id="config-preco-premium" placeholder="25"></div>
+                    <div class="form-group"><label>🔗 Link Checkout Premium</label><input type="text" id="config-link-premium" placeholder="https://kiwify.com/..."></div>
+                </div>
+            </div>
+            <button class="btn-small" onclick="salvarConfigPlanos()" style="margin-top:10px;">💾 Salvar</button>
+            <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="super-admin.js"></script>
+    <script>
+        const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
+
+        // Se já estiver logado com o email certo, mostra dashboard direto
+        auth.onAuthStateChanged((user) => {
+            if (user && user.email === SUPER_ADMIN_EMAIL) {
+                document.getElementById('tela-login').classList.add('hidden');
+                document.getElementById('tela-dashboard').classList.remove('hidden');
+                carregarDashboard();
+            }
+        });
+
+        function loginSuperAdmin() {
+            const email = document.getElementById('sa-email').value.trim();
+            const senha = document.getElementById('sa-senha').value;
+            const erro = document.getElementById('sa-erro');
+            
+            if (!email || !senha) {
+                erro.textContent = '⚠️ Preencha email e senha';
+                erro.style.display = 'block';
+                return;
+            }
+            
+            auth.signInWithEmailAndPassword(email, senha)
+                .then((result) => {
+                    if (result.user.email === SUPER_ADMIN_EMAIL) {
+                        document.getElementById('tela-login').classList.add('hidden');
+                        document.getElementById('tela-dashboard').classList.remove('hidden');
+                        carregarDashboard();
+                    } else {
+                        erro.textContent = '⛔ Acesso negado. Apenas Super Admin.';
+                        erro.style.display = 'block';
+                        auth.signOut();
+                    }
+                })
+                .catch(() => {
+                    erro.textContent = '❌ Email ou senha incorretos';
+                    erro.style.display = 'block';
+                });
+        }
+
+        function logoutSA() {
+            auth.signOut();
+            document.getElementById('tela-dashboard').classList.add('hidden');
+            document.getElementById('tela-login').classList.remove('hidden');
+        }
+
+        // ========== DASHBOARD ==========
+        async function carregarDashboard() {
+            const snap = await db.collection('usuarios').get();
+            const usuarios = [];
+            snap.forEach(doc => usuarios.push({ id: doc.id, ...doc.data() }));
+            
+            const ativos = usuarios.filter(u => u.status !== 'excluido');
+            document.getElementById('stat-total').textContent = ativos.length;
+            document.getElementById('stat-gratis').textContent = ativos.filter(u => u.plano === 'gratis').length;
+            document.getElementById('stat-pro').textContent = ativos.filter(u => u.plano === 'pro').length;
+            document.getElementById('stat-premium').textContent = ativos.filter(u => u.plano === 'premium').length;
+            
+            const tabela = document.getElementById('tabela-usuarios');
+            tabela.innerHTML = usuarios.map(u => {
+                const planoClass = u.plano === 'premium' ? 'badge-premium' : u.plano === 'pro' ? 'badge-pro' : 'badge-gratis';
+                const status = u.status || 'ativo';
+                const statusClass = status === 'bloqueado' ? 'badge-bloqueado' : 'badge-gratis';
+                const isBloqueado = status === 'bloqueado';
+                
+                return `
+                    <tr style="${isBloqueado ? 'opacity:0.6;' : ''}">
+                        <td>${u.perfil?.nome || u.nome || '--'}</td>
+                        <td style="font-size:12px;color:#8b949e;">${u.email || '--'}</td>
+                        <td><span class="badge-plano ${planoClass}">${u.plano || 'gratis'}</span></td>
+                        <td><span class="badge-plano ${statusClass}">${status}</span></td>
+                        <td>
+                            <select onchange="alterarPlano('${u.id}', this.value)" ${isBloqueado ? 'disabled' : ''}>
+                                <option value="gratis" ${u.plano === 'gratis' ? 'selected' : ''}>🌱 Grátis</option>
+                                <option value="pro" ${u.plano === 'pro' ? 'selected' : ''}>⭐ Pro</option>
+                                <option value="premium" ${u.plano === 'premium' ? 'selected' : ''}>💎 Premium</option>
+                            </select>
+                        </td>
+                        <td>
+                            ${isBloqueado ? 
+                                `<button class="btn-unblock" onclick="toggleBloqueio('${u.id}', 'bloqueado')">🔓 Desbloquear</button>` :
+                                `<button class="btn-block" onclick="toggleBloqueio('${u.id}', 'ativo')">🔒 Bloquear</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Carrega configs
+            const configSnap = await db.collection('config').doc('geral').get();
+            if (configSnap.exists) document.getElementById('config-logo').value = configSnap.data().logo || '';
+            
+            const planosSnap = await db.collection('config').doc('planos').get();
+            if (planosSnap.exists) {
+                const d = planosSnap.data();
+                document.getElementById('config-preco-pro').value = d.pro?.preco || '10';
+                document.getElementById('config-link-pro').value = d.pro?.link || '';
+                document.getElementById('config-preco-premium').value = d.premium?.preco || '25';
+                document.getElementById('config-link-premium').value = d.premium?.link || '';
+            }
+        }
+
+        async function alterarPlano(uid, novoPlano) {
+            await db.collection('usuarios').doc(uid).update({ plano: novoPlano });
+            mostrarSucesso('msg-sucesso');
+            carregarDashboard();
+        }
+
+        async function toggleBloqueio(uid, statusAtual) {
+            const novoStatus = statusAtual === 'bloqueado' ? 'ativo' : 'bloqueado';
+            if (!confirm(`⚠️ ${novoStatus === 'bloqueado' ? 'BLOQUEAR' : 'DESBLOQUEAR'} este usuário?`)) return;
+            await db.collection('usuarios').doc(uid).update({ status: novoStatus });
+            carregarDashboard();
+        }
+
+        async function salvarConfigGeral() {
+            await db.collection('config').doc('geral').set({ logo: document.getElementById('config-logo').value.trim() });
+            mostrarSucesso('msg-config-sucesso');
+        }
+
+        async function salvarConfigPlanos() {
+            await db.collection('config').doc('planos').set({
+                pro: { preco: document.getElementById('config-preco-pro').value.trim(), link: document.getElementById('config-link-pro').value.trim() },
+                premium: { preco: document.getElementById('config-preco-premium').value.trim(), link: document.getElementById('config-link-premium').value.trim() }
+            });
+            mostrarSucesso('msg-planos-sucesso');
+        }
+
+        function mostrarSucesso(id) {
+            const el = document.getElementById(id);
+            if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
+        }
+    </script>
 </body>
 </html>
