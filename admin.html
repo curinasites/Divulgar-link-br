@@ -142,7 +142,7 @@
 <body>
 
 <div class="admin-container">
-    <!-- TELA DE LOGIN -->
+    <!-- TELA DE LOGIN (só aparece se não estiver logado) -->
     <div id="tela-login" class="login-container">
         <h2>🔐 Divulga Link BR</h2>
         <p class="subtitle">> authentication required</p>
@@ -260,7 +260,7 @@
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
 <script>
-    // ========== ADMIN.JS (TUDO EM UM ARQUIVO) ==========
+    // ========== ADMIN.JS ==========
     let userUID = null;
     let temaAtual = 'dev';
     let linksPagamentoUpgrade = { pro: '', premium: '' };
@@ -343,7 +343,7 @@
             alert(`✅ Redirecionando para pagamento do plano ${plano.toUpperCase()}. Após pagar, avise o Super Admin.`);
             fecharModalUpgrade();
         } else {
-            alert('⚠️ Link de pagamento não configurado. Entre em contato com o Super Admin.');
+            alert('⚠️ Link de pagamento não configurado.');
             fecharModalUpgrade();
         }
     }
@@ -495,8 +495,10 @@
         
         const selectMidia = document.getElementById('midia-tipo');
         if (selectMidia) {
-            selectMidia.querySelector('option[value="youtube"]').disabled = !LIMITES[plano].youtube;
-            selectMidia.querySelector('option[value="mp4"]').disabled = !LIMITES[plano].mp4;
+            const optY = selectMidia.querySelector('option[value="youtube"]');
+            const optM = selectMidia.querySelector('option[value="mp4"]');
+            if (optY) optY.disabled = !LIMITES[plano].youtube;
+            if (optM) optM.disabled = !LIMITES[plano].mp4;
         }
         
         const userDoc = await db.collection('usuarios').doc(userUID).get();
@@ -540,6 +542,11 @@
     }
 
     function logout() { auth.signOut(); window.location.href = 'index.html'; }
+
+    // ========== VERIFICA LOGIN IMEDIATO (evita tela de login parada) ==========
+    if (auth.currentUser) {
+        carregarDadosAdmin();
+    }
 </script>
 </body>
-                        </html>
+                                                                                                      </html>
