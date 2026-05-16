@@ -112,13 +112,11 @@
             </div>
         </div>
 
-        <!-- ABAS -->
         <div class="abas">
             <div class="aba ativa" data-aba="usuarios" onclick="trocarAba('usuarios')">👥 Usuários Ativos</div>
-            <div class="aba" data-aba="pendentes" onclick="trocarAba('pendentes')">🕐 Pendentes (${document.getElementById('stat-pendentes')?.textContent || 0})</div>
+            <div class="aba" data-aba="pendentes" onclick="trocarAba('pendentes')">🕐 Pendentes (<span id="pendentes-count">0</span>)</div>
         </div>
 
-        <!-- TABELA DE USUÁRIOS ATIVOS -->
         <div id="aba-usuarios" class="section">
             <h3>👥 Gerenciar Usuários</h3>
             <div style="overflow-x:auto;">
@@ -129,7 +127,6 @@
             </div>
         </div>
 
-        <!-- TABELA DE USUÁRIOS PENDENTES -->
         <div id="aba-pendentes" class="section hidden">
             <h3>🕐 Usuários Aguardando Liberação</h3>
             <div style="overflow-x:auto;">
@@ -169,7 +166,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script>
-        // ========== SEU EMAIL SUPER ADMIN ==========
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
 
         function isSuperAdmin(email) {
@@ -251,39 +247,100 @@
             document.getElementById('sa-senha').value = '';
         }
 
-        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE ==========
+        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE (CORRIGIDA) ==========
         window.liberarUsuario = async function(pendingId, dados) {
             if (!confirm(`✅ Liberar acesso para ${dados.nome} (${dados.email}) com plano ${dados.plano}?`)) return;
             
+            const btn = event.target;
+            const textoOriginal = btn.innerText;
+            btn.innerText = '⏳ Verificando...';
+            btn.disabled = true;
+            
             try {
-                // 1. Cria conta no Firebase Auth
-                const userCredential = await auth.createUserWithEmailAndPassword(dados.email, dados.senha);
-                const uid = userCredential.user.uid;
+                // 1. VERIFICAR SE O USUÁRIO JÁ EXISTE
+                let uid = null;
+                let usuarioJaExiste = false;
                 
-                // 2. Cria documento no Firestore
-                await db.collection('usuarios').doc(uid).set({
-                    nome: dados.nome,
-                    email: dados.email,
-                    plano: dados.plano,
-                    username: dados.username,
-                    status: 'ativo',
-                    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
-                    perfil: { nome: dados.nome, bio: '✨ Bem-vindo!', foto: '' }
-                });
+                try {
+                    // Tenta fazer login para ver se já existe conta
+                    const userCredential = await auth.signInWithEmailAndPassword(dados.email, dados.senha);
+                    uid = userCredential.user.uid;
+                    usuarioJaExiste = true;
+                    await auth.signOut(); // Faz logout depois da verificação
+                    console.log("⚠️ Usuário já existe no Auth");
+                } catch (loginError) {
+                    if (loginError.code === 'auth/user-not-found') {
+                        // Usuário não existe, vamos criar
+                        console.log("✅ Usuário não existe, criando...");
+                        const newUser = await auth.createUserWithEmailAndPassword(dados.email, dados.senha);
+                        uid = newUser.user.uid;
+                        usuarioJaExiste = false;
+                    } else if (loginError.code === 'auth/wrong-password') {
+                        // Email existe mas senha diferente
+                        usuarioJaExiste = true;
+                        // Tenta buscar UID pelo Firestore
+                        const userSnapshot = await db.collection('usuarios').where('email', '==', dados.email).get();
+                        if (!userSnapshot.empty) {
+                            uid = userSnapshot.docs[0].id;
+                        }
+                        alert('⚠️ Este email já está cadastrado com outra senha!\n\nO usuário precisa recuperar a senha ou usar outro email.');
+                        btn.innerText = textoOriginal;
+                        btn.disabled = false;
+                        return;
+                    } else {
+                        throw loginError;
+                    }
+                }
                 
-                // 3. Remove da lista de pendentes
-                await db.collection('usuarios_pendentes').doc(pendingId).delete();
+                // 2. VERIFICAR/ATUALIZAR FIRESTORE
+                const userDoc = await db.collection('usuarios').doc(uid).get();
+                if (!userDoc.exists) {
+                    await db.collection('usuarios').doc(uid).set({
+                        nome: dados.nome,
+                        email: dados.email,
+                        plano: dados.plano,
+                        username: dados.username,
+                        status: 'ativo',
+                        criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                        perfil: { nome: dados.nome, bio: '✨ Bem-vindo!', foto: '' }
+                    });
+                    console.log("✅ Documento criado no Firestore");
+                } else if (usuarioJaExiste) {
+                    // Se já existia, atualiza o plano
+                    await db.collection('usuarios').doc(uid).update({
+                        plano: dados.plano,
+                        status: 'ativo'
+                    });
+                    console.log("✅ Plano atualizado no Firestore");
+                }
                 
-                alert(`✅ Usuário ${dados.nome} liberado com sucesso!`);
+                // 3. REMOVER DA LISTA DE PENDENTES
+                const pendingRef = db.collection('usuarios_pendentes').doc(pendingId);
+                const pendingDoc = await pendingRef.get();
+                if (pendingDoc.exists) {
+                    await pendingRef.delete();
+                    console.log("✅ Pendente removido");
+                }
+                
+                alert(`✅ ${dados.nome} foi ${usuarioJaExiste ? 'ATUALIZADO' : 'LIBERADO'} com sucesso!\n\nPlano: ${dados.plano}`);
+                
+                // 4. RECARREGAR DASHBOARD
                 await carregarDashboard();
                 
+                // 5. IR PARA ABA DE USUÁRIOS ATIVOS
+                trocarAba('usuarios');
+                
             } catch (error) {
-                console.error("Erro ao liberar:", error);
+                console.error("Erro detalhado:", error);
                 if (error.code === 'auth/email-already-in-use') {
-                    alert('❌ Este email já está cadastrado! Verifique se já foi liberado.');
+                    alert('❌ Este email já está cadastrado!\n\nSe já foi liberado, remova manualmente da lista de pendentes.');
                 } else {
-                    alert('❌ Erro ao liberar usuário: ' + error.message);
+                    alert('❌ Erro ao liberar: ' + (error.message || 'Tente novamente'));
                 }
+                await carregarDashboard();
+            } finally {
+                btn.innerText = textoOriginal;
+                btn.disabled = false;
             }
         };
 
@@ -297,12 +354,10 @@
 
         // ========== CARREGAR DASHBOARD ==========
         async function carregarDashboard() {
-            // Carrega usuários ativos
             const snap = await db.collection('usuarios').get();
             const usuarios = [];
             snap.forEach(doc => usuarios.push({ id: doc.id, ...doc.data() }));
             
-            // Carrega pendentes
             const pendingSnap = await db.collection('usuarios_pendentes').get();
             const pendentes = [];
             pendingSnap.forEach(doc => pendentes.push({ id: doc.id, ...doc.data() }));
@@ -313,14 +368,8 @@
             document.getElementById('stat-pro').textContent = ativos.filter(u => u.plano === 'pro').length;
             document.getElementById('stat-premium').textContent = ativos.filter(u => u.plano === 'premium').length;
             document.getElementById('stat-pendentes').textContent = pendentes.length;
+            document.getElementById('pendentes-count').textContent = pendentes.length;
             
-            // Atualiza contador da aba
-            const abaPendentes = document.querySelector('[data-aba="pendentes"]');
-            if (abaPendentes) {
-                abaPendentes.innerHTML = `🕐 Pendentes (${pendentes.length})`;
-            }
-            
-            // TABELA DE USUÁRIOS ATIVOS
             const tabela = document.getElementById('tabela-usuarios');
             if (usuarios.length === 0) {
                 tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário encontrado</td></tr>';
@@ -354,7 +403,6 @@
                 }).join('');
             }
             
-            // TABELA DE PENDENTES
             const tabelaPendentes = document.getElementById('tabela-pendentes');
             if (pendentes.length === 0) {
                 tabelaPendentes.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário pendente</td></tr>';
@@ -362,6 +410,7 @@
                 tabelaPendentes.innerHTML = pendentes.map(p => {
                     const data = p.criadoEm?.toDate ? p.criadoEm.toDate().toLocaleDateString('pt-BR') : 'Nova';
                     const planoClass = p.plano === 'premium' ? 'badge-premium' : 'badge-pro';
+                    const dadosStr = JSON.stringify(p).replace(/"/g, '&quot;');
                     return `
                         <tr>
                             <td>${p.nome || '--'}</td>
@@ -370,7 +419,7 @@
                             <td><span class="badge-plano ${planoClass}">${p.plano === 'pro' ? '⭐ Pro' : '💎 Premium'}</span></td>
                             <td><span style="font-size:11px;color:#8b949e;">${data}</span></td>
                             <td>
-                                <button class="btn-success" onclick="liberarUsuario('${p.id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})">✅ Liberar</button>
+                                <button class="btn-success" onclick="liberarUsuario('${p.id}', '${dadosStr.replace(/'/g, "\\'")}')">✅ Liberar</button>
                                 <button class="btn-danger" onclick="recusarUsuario('${p.id}', '${p.nome}')">❌ Recusar</button>
                             </td>
                         </tr>
@@ -378,7 +427,6 @@
                 }).join('');
             }
             
-            // Configurações
             const configSnap = await db.collection('config').doc('geral').get();
             if (configSnap.exists) document.getElementById('config-logo').value = configSnap.data().logo || '';
             
@@ -392,7 +440,6 @@
             }
         }
 
-        // ========== FUNÇÕES GLOBAIS ==========
         window.trocarAba = function(aba) {
             document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
             document.querySelector(`.aba[data-aba="${aba}"]`).classList.add('ativa');
@@ -433,4 +480,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
