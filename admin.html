@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos adicionais */
         .admin-header .btn-upgrade {
             background: rgba(245,158,11,0.1);
             border: 1px solid rgba(245,158,11,0.3);
@@ -24,9 +23,8 @@
             white-space: nowrap;
             display: inline-block;
         }
-        .admin-header .btn-upgrade:hover {
-            background: rgba(245,158,11,0.2);
-        }
+        .admin-header .btn-upgrade:hover { background: rgba(245,158,11,0.2); }
+        
         .link-card {
             background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.05));
             border: 1px solid rgba(245,158,11,0.3);
@@ -99,13 +97,61 @@
             color: #8b949e;
             font-family: 'JetBrains Mono', monospace;
         }
+        .login-container { max-width: 400px; margin: 80px auto; background: #161b22; border: 1px solid #30363d; border-radius: 20px; padding: 36px; text-align: center; }
+        .login-container h2 { font-size: 22px; font-weight: 700; color: #f0f6fc; margin-bottom: 8px; }
+        .login-container .subtitle { font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
+        .msg-erro-lt { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .msg-sucesso-lt { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        .hidden { display: none !important; }
+        .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; white-space: nowrap; text-decoration: none; display: inline-block; }
+        .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
+        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
+        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
+        .list-item .info { flex: 1; min-width: 0; }
+        .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-item .info small { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
+        .list-item .actions { display: flex; gap: 6px; }
+        .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+        .admin-section h3 { font-size: 15px; font-weight: 600; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .admin-section h3 .icon { color: #8b5cf6; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .form-group textarea { min-height: 60px; resize: vertical; }
+        .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; transition: all 0.2s; background: #0d1117; color: #c9d1d9; }
+        .tema-preset:hover { border-color: #8b5cf6; }
+        .tema-preset.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
+        .cor-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
+        .badge-plano { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
+        .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
+        .admin-header { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; }
+        .admin-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .admin-header .dot.red { background: #f85149; } .admin-header .dot.yellow { background: #d2991d; } .admin-header .dot.green { background: #3fb950; }
+        .admin-header .title { flex: 1; font-size: 13px; color: #8b949e; min-width: 150px; }
+        .admin-header .title span { color: #a78bfa; }
+        .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+        .btn-logout:hover { background: rgba(248,81,73,0.2); }
+        .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        @media (max-width: 600px) { 
+            .admin-container { padding: 12px; } 
+            .admin-section { padding: 16px; } 
+            .tema-presets { grid-template-columns: 1fr; } 
+            .admin-header { gap: 8px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
-    <!-- TELA DE LOGIN (só aparece se não estiver logado) -->
-    <div id="tela-login" class="login-container" style="display:none;">
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" class="login-container">
         <h2>🔐 Divulga Link BR</h2>
         <p class="subtitle">> authentication required</p>
         <div class="form-group"><label>email</label><input type="email" id="login-email" placeholder="admin@email.com"></div>
@@ -114,13 +160,7 @@
         <button class="btn-primary-lt" onclick="fazerLogin()" style="width:100%;">> entrar_</button>
     </div>
 
-    <!-- TELA DE CARREGAMENTO -->
-    <div id="tela-carregando" class="carregando" style="display:none;">
-        <p>⏳ Carregando painel...</p>
-        <p style="font-size:12px; margin-top:8px;">> aguarde</p>
-    </div>
-
-    <!-- PAINEL ADMIN (só aparece se estiver logado) -->
+    <!-- PAINEL ADMIN -->
     <div id="tela-admin" class="hidden">
         <div class="admin-header">
             <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
@@ -226,25 +266,25 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="auth.js"></script>
 <script>
-    // ========== ADMIN.JS - TODAS AS FUNÇÕES DENTRO DO HTML ==========
+    // ========== TODAS AS FUNÇÕES DO ADMIN ==========
     let userUID = null;
     let temaAtual = 'dev';
+    let linksPagamentoUpgrade = { pro: '', premium: '' };
 
     const TEMAS = {
-        dev: { nome: 'Dev Terminal', bg: '#0d1117', bgCard: '#161b22', border: '#30363d', text: '#c9d1d9', textSecondary: '#8b949e', primary: '#8b5cf6', primaryLight: '#a78bfa', fontMain: "'Inter','JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloHeader: 'console', logo: '' },
-        clean: { nome: 'Clean Blue', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0e0f0', textSecondary: '#9090b0', primary: '#3b82f6', primaryLight: '#60a5fa', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloHeader: 'clean', logo: '' },
-        dark: { nome: 'Dark Green', bg: '#0a0f0a', bgCard: '#1a2a1a', border: '#2a3a2a', text: '#d0e0d0', textSecondary: '#809080', primary: '#10b981', primaryLight: '#34d399', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloHeader: 'console', logo: '' },
-        rosa: { nome: 'Rose Pink', bg: '#1a0a14', bgCard: '#2d1a24', border: '#3d2a34', text: '#f0d0e0', textSecondary: '#b090a0', primary: '#ec4899', primaryLight: '#f472b6', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', estiloHeader: 'clean', logo: '' },
-        minimal: { nome: 'Minimal', bg: '#0a0a0a', bgCard: '#1a1a1a', border: '#2a2a2a', text: '#d0d0d0', textSecondary: '#808080', primary: '#6b7280', primaryLight: '#9ca3af', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', estiloHeader: 'minimal', logo: '' },
-        warm: { nome: 'Warm Orange', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#f59e0b', primaryLight: '#fbbf24', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloHeader: 'console', logo: '' },
-        cyber: { nome: 'Cyber Neon', bg: '#0a0a0a', bgCard: '#1a0a2d', border: '#3d1a6e', text: '#e0d0ff', textSecondary: '#9070c0', primary: '#a855f7', primaryLight: '#c084fc', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloHeader: 'console', logo: '' },
-        ocean: { nome: 'Ocean Blue', bg: '#0a1a2a', bgCard: '#1a2a3d', border: '#2a3a50', text: '#d0e8ff', textSecondary: '#80a8c0', primary: '#06b6d4', primaryLight: '#22d3ee', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloHeader: 'clean', logo: '' },
-        sunset: { nome: 'Sunset', bg: '#1a0a0a', bgCard: '#2d1a1a', border: '#3d2a2a', text: '#ffe0d0', textSecondary: '#c0a090', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloHeader: 'console', logo: '' },
-        forest: { nome: 'Forest', bg: '#0a1a0a', bgCard: '#1a2d1a', border: '#2a3d2a', text: '#d0f0d0', textSecondary: '#80b080', primary: '#22c55e', primaryLight: '#4ade80', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloHeader: 'minimal', logo: '' },
-        galaxy: { nome: 'Galaxy', bg: '#0d0d1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0d0ff', textSecondary: '#9080c0', primary: '#7c3aed', primaryLight: '#8b5cf6', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', estiloHeader: 'console', logo: '' },
-        coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloHeader: 'clean', logo: '' }
+        dev: { nome: 'Dev Terminal', bg: '#0d1117', bgCard: '#161b22', border: '#30363d', text: '#c9d1d9', textSecondary: '#8b949e', primary: '#8b5cf6', primaryLight: '#a78bfa', fontMain: "'Inter','JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
+        clean: { nome: 'Clean Blue', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0e0f0', textSecondary: '#9090b0', primary: '#3b82f6', primaryLight: '#60a5fa', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
+        dark: { nome: 'Dark Green', bg: '#0a0f0a', bgCard: '#1a2a1a', border: '#2a3a2a', text: '#d0e0d0', textSecondary: '#809080', primary: '#10b981', primaryLight: '#34d399', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' },
+        rosa: { nome: 'Rose Pink', bg: '#1a0a14', bgCard: '#2d1a24', border: '#3d2a34', text: '#f0d0e0', textSecondary: '#b090a0', primary: '#ec4899', primaryLight: '#f472b6', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '' },
+        minimal: { nome: 'Minimal', bg: '#0a0a0a', bgCard: '#1a1a1a', border: '#2a2a2a', text: '#d0d0d0', textSecondary: '#808080', primary: '#6b7280', primaryLight: '#9ca3af', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', logo: '' },
+        warm: { nome: 'Warm Orange', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#f59e0b', primaryLight: '#fbbf24', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
+        cyber: { nome: 'Cyber Neon', bg: '#0a0a0a', bgCard: '#1a0a2d', border: '#3d1a6e', text: '#e0d0ff', textSecondary: '#9070c0', primary: '#a855f7', primaryLight: '#c084fc', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
+        ocean: { nome: 'Ocean Blue', bg: '#0a1a2a', bgCard: '#1a2a3d', border: '#2a3a50', text: '#d0e8ff', textSecondary: '#80a8c0', primary: '#06b6d4', primaryLight: '#22d3ee', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
+        sunset: { nome: 'Sunset', bg: '#1a0a0a', bgCard: '#2d1a1a', border: '#3d2a2a', text: '#ffe0d0', textSecondary: '#c0a090', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
+        forest: { nome: 'Forest', bg: '#0a1a0a', bgCard: '#1a2d1a', border: '#2a3d2a', text: '#d0f0d0', textSecondary: '#80b080', primary: '#22c55e', primaryLight: '#4ade80', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' },
+        galaxy: { nome: 'Galaxy', bg: '#0d0d1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0d0ff', textSecondary: '#9080c0', primary: '#7c3aed', primaryLight: '#8b5cf6', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '' },
+        coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' }
     };
 
     const LIMITES = {
@@ -253,9 +293,7 @@
         premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true }
     };
 
-    // ========== UPGRADE ==========
-    let linksPagamentoUpgrade = { pro: '', premium: '' };
-
+    // UPGRADE
     async function carregarLinksPagamentoUpgrade() {
         try {
             const snap = await db.collection('config').doc('planos').get();
@@ -275,14 +313,9 @@
         } catch(e) { console.error("Erro:", e); }
     }
 
-    function abrirModalUpgrade() {
-        document.getElementById('modal-upgrade').classList.add('ativo');
-    }
-
-    function fecharModalUpgrade() {
-        document.getElementById('modal-upgrade').classList.remove('ativo');
-    }
-
+    function abrirModalUpgrade() { document.getElementById('modal-upgrade').classList.add('ativo'); }
+    function fecharModalUpgrade() { document.getElementById('modal-upgrade').classList.remove('ativo'); }
+    
     function escolherPlanoUpgrade(plano) {
         const link = linksPagamentoUpgrade[plano];
         if (link && link !== '') {
@@ -295,17 +328,13 @@
         }
     }
 
-    // ========== LINK PÚBLICO ==========
     function copiarLinkPerfil() {
         const linkEl = document.getElementById('perfil-link-preview');
         if (linkEl && linkEl.textContent) {
-            navigator.clipboard.writeText(linkEl.textContent).then(() => {
-                alert('✅ Link copiado! Compartilhe com seus seguidores.');
-            });
+            navigator.clipboard.writeText(linkEl.textContent).then(() => alert('✅ Link copiado!'));
         }
     }
 
-    // ========== FUNÇÕES DE TEMA ==========
     function getTemasDisponiveis(plano) {
         const todosTemas = ['dev', 'clean', 'dark', 'rosa', 'minimal', 'warm', 'cyber', 'ocean', 'sunset', 'forest', 'galaxy', 'coffee'];
         return todosTemas.slice(0, LIMITES[plano]?.temas || 3);
@@ -335,7 +364,6 @@
         return true;
     }
 
-    // ========== LINKS ==========
     async function carregarListaLinks() {
         const snap = await db.collection('usuarios').doc(userUID).collection('links').orderBy('ordem', 'asc').get();
         const lista = document.getElementById('lista-links');
@@ -392,7 +420,6 @@
         document.getElementById('link-ordem').value = '1';
     }
 
-    // ========== MÍDIA ==========
     async function carregarListaMidias() {
         const snap = await db.collection('usuarios').doc(userUID).collection('midia').orderBy('ordem', 'asc').get();
         const lista = document.getElementById('lista-midias');
@@ -450,7 +477,6 @@
         document.getElementById('midia-ordem').value = '1';
     }
 
-    // ========== SALVAR TEMA ==========
     async function salvarTema() {
         const plano = await getPlanoAtual();
         const temasPermitidos = getTemasDisponiveis(plano);
@@ -468,7 +494,6 @@
         mostrarSucesso('tema-sucesso');
     }
 
-    // ========== SALVAR PERFIL ==========
     async function salvarPerfil() {
         await db.collection('usuarios').doc(userUID).set({
             perfil: {
@@ -488,32 +513,26 @@
         mostrarSucesso('perfil-sucesso');
     }
 
-    // ========== CARREGAR DADOS DO ADMIN ==========
     async function carregarDadosAdmin() {
-        console.log("🔄 carregarDadosAdmin chamado, usuarioAtual:", usuarioAtual);
+        console.log("🚀 carregarDadosAdmin iniciado");
         
-        if (!usuarioAtual) {
-            console.log("⚠️ usuarioAtual vazio, redirecionando para login?");
+        if (!auth.currentUser) {
+            console.log("❌ Nenhum usuário logado");
             document.getElementById('tela-login').style.display = 'block';
-            document.getElementById('tela-carregando').style.display = 'none';
             document.getElementById('tela-admin').classList.add('hidden');
             return;
         }
         
-        userUID = usuarioAtual.uid;
+        userUID = auth.currentUser.uid;
+        console.log("✅ Usuário logado UID:", userUID);
         
         document.getElementById('tela-login').style.display = 'none';
-        document.getElementById('tela-carregando').style.display = 'block';
+        document.getElementById('tela-admin').classList.remove('hidden');
         
         await carregarLinksPagamentoUpgrade();
         
         const btnUpgrade = document.getElementById('btn-upgrade');
-        if (btnUpgrade) {
-            btnUpgrade.onclick = (e) => {
-                e.preventDefault();
-                abrirModalUpgrade();
-            };
-        }
+        if (btnUpgrade) btnUpgrade.onclick = (e) => { e.preventDefault(); abrirModalUpgrade(); };
         
         const plano = await getPlanoAtual();
         const limites = LIMITES[plano];
@@ -523,20 +542,12 @@
             badge.textContent = plano;
             badge.className = 'badge-plano badge-' + plano;
         }
-        
-        if (btnUpgrade) {
-            btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
-        }
+        if (btnUpgrade) btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
         
         const campoTemaLogo = document.getElementById('tema-logo');
         if (campoTemaLogo) {
-            if (!limites.logo) {
-                campoTemaLogo.disabled = true;
-                campoTemaLogo.placeholder = '🔒 Disponível nos planos Pro/Premium';
-            } else {
-                campoTemaLogo.disabled = false;
-                campoTemaLogo.placeholder = 'https://... ou deixe vazio';
-            }
+            campoTemaLogo.disabled = !limites.logo;
+            campoTemaLogo.placeholder = limites.logo ? 'https://... ou deixe vazio' : '🔒 Disponível nos planos Pro/Premium';
         }
         
         const temasPermitidos = getTemasDisponiveis(plano);
@@ -586,9 +597,7 @@
         
         carregarListaLinks();
         carregarListaMidias();
-        
-        document.getElementById('tela-carregando').style.display = 'none';
-        document.getElementById('tela-admin').classList.remove('hidden');
+        console.log("✅ Dashboard carregado com sucesso!");
     }
 
     function mostrarSucesso(id) {
@@ -596,15 +605,25 @@
         if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
     }
 
-    // ========== LOGIN ==========
     function fazerLogin() {
         const email = document.getElementById('login-email').value.trim();
         const senha = document.getElementById('login-senha').value;
         const erro = document.getElementById('login-erro');
-        if (!email || !senha) { erro.textContent = '⚠️ Preencha email e senha'; erro.style.display = 'block'; return; }
-        auth.signInWithEmailAndPassword(email, senha).catch(() => {
-            erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
-        });
+        erro.style.display = 'none';
+        if (!email || !senha) { 
+            erro.textContent = '⚠️ Preencha email e senha'; 
+            erro.style.display = 'block'; 
+            return; 
+        }
+        auth.signInWithEmailAndPassword(email, senha)
+            .then(() => {
+                console.log("✅ Login realizado com sucesso");
+            })
+            .catch((error) => {
+                console.error("Erro:", error);
+                erro.textContent = '❌ Email ou senha incorretos'; 
+                erro.style.display = 'block';
+            });
     }
 
     function logout() {
@@ -613,38 +632,15 @@
     }
 
     // ========== INICIALIZAÇÃO ==========
-    // Aguarda o auth.js carregar
-    function inicializar() {
-        console.log("🔧 Inicializando admin.html, usuarioAtual:", usuarioAtual);
-        
-        if (usuarioAtual) {
-            // Já está logado, carrega direto
+    auth.onAuthStateChanged((user) => {
+        console.log("🔥 auth.onAuthStateChanged:", user?.email);
+        if (user) {
             carregarDadosAdmin();
         } else {
-            // Mostra tela de login e aguarda
             document.getElementById('tela-login').style.display = 'block';
-            document.getElementById('tela-carregando').style.display = 'none';
-            
-            // Observa mudança de autenticação
-            auth.onAuthStateChanged((user) => {
-                console.log("🔥 auth.onAuthStateChanged:", user?.email);
-                if (user) {
-                    carregarDadosAdmin();
-                } else {
-                    document.getElementById('tela-login').style.display = 'block';
-                    document.getElementById('tela-admin').classList.add('hidden');
-                    document.getElementById('tela-carregando').style.display = 'none';
-                }
-            });
+            document.getElementById('tela-admin').classList.add('hidden');
         }
-    }
-    
-    // Espera o auth.js carregar
-    if (typeof auth !== 'undefined') {
-        inicializar();
-    } else {
-        setTimeout(inicializar, 500);
-    }
+    });
 </script>
 </body>
-    </html>
+                </html>
