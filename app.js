@@ -1,3 +1,4 @@
+
 // ========== APP.JS - PÁGINA PÚBLICA DINÂMICA ==========
 
 // Pega o username da URL (ex: ?u=fulano)
@@ -45,6 +46,24 @@ function aplicarFundo(config) {
     }
 }
 
+// ========== APLICAR CORES PERSONALIZADAS (partículas + cards) ==========
+function aplicarCoresPersonalizadas(config) {
+    if (!config) return;
+    
+    // Cor das partículas
+    if (config.corParticulas) {
+        document.documentElement.style.setProperty('--particula-cor', config.corParticulas);
+    }
+    
+    // Cor dos cards de link
+    if (config.corCards && linksSection) {
+        const links = linksSection.querySelectorAll('.link-btn');
+        links.forEach(link => {
+            link.style.background = config.corCards;
+        });
+    }
+}
+
 // ========== APLICAR TEMA ==========
 function aplicarTema(tema) {
     const t = tema || TEMA_PADRAO;
@@ -75,6 +94,8 @@ async function carregarConfigGlobal() {
                     consoleLine.innerHTML = `<img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;"><span class="console-text"> Divulga Link BR 🇧🇷</span>`;
                 }
             }
+            // 🆕 Aplica cores personalizadas
+            aplicarCoresPersonalizadas(config);
             return config;
         }
     } catch (error) {}
@@ -101,7 +122,10 @@ async function renderizarPaginaPrincipal() {
             const data = snap.data();
             aplicarTema(data.tema || TEMA_PADRAO);
             const configGlobal = await carregarConfigGlobal();
-            if (configGlobal) aplicarFundo(configGlobal);
+            if (configGlobal) {
+                aplicarFundo(configGlobal);
+                aplicarCoresPersonalizadas(configGlobal);
+            }
             if (data.perfil && profileSection) renderizarPerfil(data.perfil);
             else if (profileSection) profileSection.innerHTML = `<div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div><h1 class="profile-name">Divulga Link BR</h1><p class="profile-bio">// A plataforma definitiva para divulgar seus links</p>`;
             if (data.links && data.links.length > 0 && linksSection) renderizarLinks(data.links);
@@ -112,8 +136,9 @@ async function renderizarPaginaPrincipal() {
         }
     } catch(e) {}
     
-    await carregarConfigGlobal();
+    const configGlobal = await carregarConfigGlobal();
     aplicarTema(TEMA_PADRAO);
+    if (configGlobal) aplicarCoresPersonalizadas(configGlobal);
     if (profileSection) profileSection.innerHTML = `<div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div><h1 class="profile-name">Divulga Link BR</h1><p class="profile-bio">// A plataforma definitiva para divulgar seus links</p>`;
     if (linksSection) linksSection.innerHTML = `<a href="cadastro.html" class="link-btn" style="background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1)); border:1px solid rgba(139,92,246,0.2);"><span class="link-icon">🚀</span><span>Criar Minha Conta Gratuita</span><span class="link-arrow">→</span></a><a href="admin.html" class="link-btn"><span class="link-icon">🔐</span><span>Acessar Painel Admin</span><span class="link-arrow">→</span></a>`;
     if (mediaSection) mediaSection.innerHTML = '';
