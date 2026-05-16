@@ -19,12 +19,16 @@ auth.onAuthStateChanged(async (user) => {
         } catch(e) { console.error("Erro ao verificar bloqueio:", e); }
         
         // ========== SUPER ADMIN ==========
-        // Verifica se é Super Admin (email específico)
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
         const isSuperAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
         
+        // 🔥 VERIFICA SE É PROCESSO DE LIBERAÇÃO (IGNORA BLOQUEIO)
+        if (window.isLiberandoUsuario) {
+            console.log("🚀 Processo de liberação ativo, ignorando verificações");
+            return;
+        }
+        
         if (isSuperAdmin && path.includes('admin.html')) {
-            // Super Admin tentando acessar admin.html -> redireciona para super-admin.html
             window.location.href = 'super-admin.html';
             return;
         }
@@ -44,7 +48,6 @@ auth.onAuthStateChanged(async (user) => {
                 window.location.href = 'index.html';
                 return;
             }
-            // Se chegou aqui, é Super Admin - já carrega no próprio super-admin.html
         }
         
         // ========== PÁGINA PÚBLICA (index.html) ==========
@@ -57,9 +60,13 @@ auth.onAuthStateChanged(async (user) => {
         // ========== USUÁRIO NÃO LOGADO ==========
         console.log("🔴 Usuário não logado");
         
-        // Se tentar acessar admin.html ou super-admin.html sem login
+        // 🔥 DURANTE LIBERAÇÃO, NÃO REDIRECIONA
+        if (window.isLiberandoUsuario) {
+            console.log("🚀 Processo de liberação ativo, ignorando redirecionamento");
+            return;
+        }
+        
         if (path.includes('admin.html')) {
-            // Redireciona para index.html (que tem o formulário de login)
             window.location.href = 'index.html';
             return;
         }
@@ -69,7 +76,6 @@ auth.onAuthStateChanged(async (user) => {
             return;
         }
         
-        // Página pública carrega normal (index.html, cadastro.html, etc)
         if (typeof carregarPaginaPublica === 'function' && (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br'))) {
             carregarPaginaPublica();
         }
