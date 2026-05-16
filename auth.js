@@ -28,26 +28,26 @@ auth.onAuthStateChanged(async (user) => {
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
         const isSuperAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
         
-        if (isSuperAdmin && path.includes('admin.html')) {
+        // Se for Super Admin e estiver tentando acessar admin.html, redireciona
+        if (isSuperAdmin && (path.includes('admin.html') || path === '/' || path === '')) {
+            console.log("👑 Super Admin detectado, redirecionando para super-admin.html");
             window.location.href = 'super-admin.html';
             return;
         }
         
-        // ========== ADMIN NORMAL ==========
-        if (path.includes('admin.html')) {
-            if (typeof carregarDadosAdmin === 'function') {
-                carregarDadosAdmin();
-            }
+        // Se for Super Admin e estiver no super-admin.html, deixa o próprio super-admin.html lidar
+        if (isSuperAdmin && path.includes('super-admin.html')) {
+            console.log("👑 Super Admin no super-admin.html - deixando o script dele agir");
+            return;
         }
         
-        // ========== SUPER ADMIN NO SUPER-ADMIN.HTML ==========
-        if (path.includes('super-admin.html')) {
-            if (!isSuperAdmin) {
-                alert('⛔ Acesso negado! Apenas Super Admin.');
-                await auth.signOut();
-                window.location.href = 'index.html';
-                return;
-            }
+        // ========== ADMIN NORMAL ==========
+        // Se estiver no admin.html, apenas recarrega a página (o próprio admin.html gerencia o login)
+        if (path.includes('admin.html')) {
+            console.log("📦 Admin normal no admin.html - página já está carregada");
+            // O admin.html já tem seu próprio observador de autenticação
+            // Só precisamos garantir que a página foi carregada
+            return;
         }
         
         // ========== PÁGINA PÚBLICA (index.html) ==========
@@ -59,16 +59,13 @@ auth.onAuthStateChanged(async (user) => {
     } else {
         console.log("🔴 Usuário não logado");
         
-        if (path.includes('admin.html')) {
+        // Se tentar acessar admin.html ou super-admin.html sem login
+        if (path.includes('admin.html') || path.includes('super-admin.html')) {
             window.location.href = 'index.html';
             return;
         }
         
-        if (path.includes('super-admin.html')) {
-            window.location.href = 'index.html';
-            return;
-        }
-        
+        // Página pública carrega normal
         if (typeof carregarPaginaPublica === 'function' && (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br'))) {
             carregarPaginaPublica();
         }
@@ -79,7 +76,14 @@ function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
         .then(() => {
-            window.location.href = 'admin.html';
+            // Após login, verifica se é Super Admin
+            const user = auth.currentUser;
+            const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
+            if (user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+                window.location.href = 'super-admin.html';
+            } else {
+                window.location.href = 'admin.html';
+            }
         })
         .catch((error) => {
             console.error("Erro Google:", error);
@@ -107,4 +111,4 @@ function getLimitesPlano(plano) {
         premium: { links: 999, midia: 999 }
     };
     return limites[plano] || limites.gratis;
-}
+                        }
