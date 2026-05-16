@@ -17,7 +17,7 @@
         .cadastro-container .subtitulo { font-size: 13px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-bottom: 28px; }
         
         .btn-google { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-        .btn-google:hover { border-color: #8b5cf6; background: #1c2230; }
+        .btn-google:hover { border-color: #8b5cf6; background: #1c2230; transform: translateY(-1px); }
         .btn-google img { width: 20px; height: 20px; }
         
         .divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; color: #484f58; font-size: 12px; }
@@ -25,11 +25,11 @@
         
         .form-group { margin-bottom: 14px; text-align: left; }
         .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
-        .form-group input { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
-        .form-group input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .form-group input { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: all 0.2s ease; }
+        .form-group input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); transform: translateY(-1px); }
         
-        .btn-cadastrar { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
-        .btn-cadastrar:hover { opacity: 0.9; }
+        .btn-cadastrar { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.3s; }
+        .btn-cadastrar:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.4); }
         
         .msg-erro { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
         .link-login { margin-top: 16px; font-size: 13px; color: #8b949e; }
@@ -37,13 +37,15 @@
         
         .planos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
         .plano-card { background: #0d1117; border: 2px solid #30363d; border-radius: 10px; padding: 14px 8px; cursor: pointer; text-align: center; transition: all 0.2s; }
-        .plano-card:hover { border-color: #8b5cf6; }
+        .plano-card:hover { border-color: #8b5cf6; transform: translateY(-2px); }
         .plano-card.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
         .plano-card .plano-nome { font-size: 13px; font-weight: 700; color: #f0f6fc; }
         .plano-card .plano-preco { font-size: 18px; font-weight: 800; color: #a78bfa; margin: 4px 0; }
         .plano-card .plano-desc { font-size: 10px; color: #8b949e; }
         
-        .loading { display: none; margin-top: 16px; font-size: 12px; color: #8b949e; }
+        .loading { display: none; margin-top: 16px; font-size: 12px; color: #8b949e; align-items: center; justify-content: center; gap: 8px; }
+        .loading-spinner-mini { width: 16px; height: 16px; border: 2px solid rgba(139,92,246,0.15); border-top-color: #8b5cf6; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -126,7 +128,7 @@
         <p class="msg-erro" id="cad-erro">Preencha todos os campos</p>
         <button class="btn-cadastrar" onclick="cadastrarComEmail()">Criar Conta</button>
         <div class="link-login">Já tem conta? <a href="admin.html">Fazer login</a></div>
-        <div class="loading" id="loading">⏳ Processando...</div>
+        <div class="loading" id="loading"><div class="loading-spinner-mini"></div> Processando...</div>
     </div>
 
     <div id="modalConfirmacao" class="modal">
@@ -162,6 +164,16 @@
         let dadosPendentes = null;
         let linksPagamento = { pro: '', premium: '' };
         
+        // 🔥 GERA LINK CURTO ALEATÓRIO
+        function gerarLinkCurto() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
         function selecionarPlano(p) { 
             planoSelecionado = p; 
             document.querySelectorAll('.plano-card').forEach(el => el.classList.remove('ativo')); 
@@ -170,7 +182,6 @@
         
         async function carregarPrecosELinks() {
             try {
-                console.log("🔄 Carregando preços...");
                 const snap = await db.collection('config').doc('planos').get();
                 if (snap.exists) {
                     const d = snap.data();
@@ -183,7 +194,7 @@
                         if (d.premium.link) linksPagamento.premium = d.premium.link;
                     }
                 }
-            } catch(e) { console.error("Erro:", e); }
+            } catch(e) {}
         }
         
         function mostrarModal(plano, email, senha, nome) {
@@ -241,17 +252,17 @@
             const erro = document.getElementById('cad-erro');
             
             erro.style.display = 'none';
-            loading.style.display = 'block';
+            loading.style.display = 'flex';
             
             try {
                 const result = await auth.signInWithPopup(provider);
                 const user = result.user;
-                const username = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
+                const linkCurto = gerarLinkCurto();
                 await db.collection('usuarios').doc(user.uid).set({
                     nome: user.displayName || user.email.split('@')[0], 
                     email: user.email, 
                     plano: 'gratis',
-                    username: username,
+                    username: linkCurto,
                     status: 'ativo',
                     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
                     perfil: { nome: user.displayName || '@' + user.email.split('@')[0], bio: 'Novo por aqui! ✨', foto: user.photoURL || '' }
@@ -267,7 +278,7 @@
         
         async function cadastrarComEmail() {
             const nome = document.getElementById('cad-nome').value.trim();
-            const username = document.getElementById('cad-username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            const usernameInput = document.getElementById('cad-username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
             const email = document.getElementById('cad-email').value.trim();
             const senha = document.getElementById('cad-senha').value;
             const erro = document.getElementById('cad-erro');
@@ -275,12 +286,12 @@
             
             erro.style.display = 'none';
             
-            if (!nome || !username || !email || !senha) { 
+            if (!nome || !usernameInput || !email || !senha) { 
                 erro.textContent = 'Preencha todos os campos'; 
                 erro.style.display = 'block'; 
                 return; 
             }
-            if (username.length < 3) { 
+            if (usernameInput.length < 3) { 
                 erro.textContent = 'Nome de usuário deve ter pelo menos 3 caracteres'; 
                 erro.style.display = 'block'; 
                 return; 
@@ -291,16 +302,16 @@
                 return;
             }
             
-            // 🔥 REMOVE REGISTROS PENDENTES ANTIGOS DO MESMO EMAIL
+            // 🔥 GERA LINK CURTO BASEADO NO USERNAME DIGITADO
+            const linkCurto = usernameInput.substring(0, 8) + gerarLinkCurto().substring(0, 4);
+            
             const pendingSnap = await db.collection('usuarios_pendentes').where('email', '==', email).get();
             if (!pendingSnap.empty) {
                 for (const doc of pendingSnap.docs) {
                     await db.collection('usuarios_pendentes').doc(doc.id).delete();
-                    console.log("🗑️ Registro pendente antigo removido:", email);
                 }
             }
             
-            // Verifica se email já está cadastrado (usuário ativo)
             const emailSnap = await db.collection('usuarios').where('email', '==', email).get();
             if (!emailSnap.empty) {
                 erro.textContent = 'Este email já está cadastrado e ativo';
@@ -308,20 +319,18 @@
                 return;
             }
             
-            // Verifica se username já existe
-            const snap = await db.collection('usuarios').where('username', '==', username).get();
+            const snap = await db.collection('usuarios').where('username', '==', linkCurto).get();
             if (!snap.empty) { 
-                erro.textContent = 'Este @username já está em uso'; 
+                erro.textContent = 'Erro ao gerar link. Tente novamente.'; 
                 erro.style.display = 'block'; 
                 return; 
             }
             
-            // PLANOS PAGOS
             if (planoSelecionado !== 'gratis') {
                 const pendingRef = db.collection('usuarios_pendentes').doc();
                 await pendingRef.set({
                     nome: nome,
-                    username: username,
+                    username: linkCurto,
                     email: email,
                     senha: senha,
                     plano: planoSelecionado,
@@ -332,15 +341,14 @@
                 return;
             }
             
-            // PLANO GRÁTIS
-            loading.style.display = 'block';
+            loading.style.display = 'flex';
             try {
                 const result = await auth.createUserWithEmailAndPassword(email, senha);
                 await db.collection('usuarios').doc(result.user.uid).set({
                     nome: nome, 
                     email: email, 
                     plano: 'gratis',
-                    username: username,
+                    username: linkCurto,
                     status: 'ativo',
                     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
                     perfil: { nome: nome, bio: 'Novo por aqui! ✨', foto: '' }
