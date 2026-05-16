@@ -20,20 +20,26 @@ auth.onAuthStateChanged(async (user) => {
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
         const isSuperAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
         
+        // 🔥 SUPER ADMIN - redireciona para super-admin.html
         if (isSuperAdmin && !path.includes('super-admin.html')) {
             window.location.href = 'super-admin.html';
             return;
         }
         
+        // 🔥 SUPER ADMIN - já está no super-admin.html
         if (isSuperAdmin && path.includes('super-admin.html')) {
             return;
         }
         
-        // Admin normal - não faz nada, deixa o admin.html gerenciar
+        // 🔥 ADMIN NORMAL - força carregar o dashboard
         if (path.includes('admin.html')) {
+            if (typeof carregarDadosAdmin === 'function') {
+                carregarDadosAdmin();
+            }
             return;
         }
         
+        // 🔥 PÁGINA PÚBLICA
         if (path.includes('index.html') || path === '/' || path.includes('Divulgar-link-br')) {
             if (typeof carregarPaginaPublica === 'function') carregarPaginaPublica();
         }
