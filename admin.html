@@ -58,18 +58,38 @@
         .badge-gratis { background: rgba(107,114,128,0.2); color: #9ca3af; }
         .badge-pro { background: rgba(59,130,246,0.2); color: #60a5fa; }
         .badge-premium { background: rgba(139,92,246,0.2); color: #a78bfa; }
-        .btn-ver-perfil {
-            background: rgba(139,92,246,0.1);
-            border: 1px solid rgba(139,92,246,0.3);
+        
+        /* CARD DO LINK DE DIVULGAÇÃO */
+        .link-card {
+            background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .link-card p { font-size: 12px; color: #8b949e; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; }
+        .link-card code {
+            background: #0d1117;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
             color: #a78bfa;
-            padding: 6px 14px;
+            word-break: break-all;
+            display: inline-block;
+            max-width: 100%;
+        }
+        .link-card .btn-copiar {
+            background: #8b5cf6;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
-            text-decoration: none;
-            white-space: nowrap;
+            margin-top: 12px;
         }
-        .btn-ver-perfil:hover { background: rgba(139,92,246,0.2); }
+        .link-card .btn-copiar:hover { background: #7c3aed; }
         
         /* MODAL UPGRADE */
         .modal-upgrade {
@@ -159,17 +179,14 @@
                 <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
                 <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
                 <button id="btn-upgrade" class="btn-upgrade">🔼 Fazer Upgrade</button>
-                <a href="#" id="btn-ver-perfil" class="btn-ver-perfil" target="_blank">🌐 Ver Meu Perfil</a>
-                <a href="index.html" class="btn-small-lt" style="text-decoration:none;">🏠 ver site</a>
                 <button class="btn-logout" onclick="logout()">> exit</button>
             </div>
 
-            <!-- AVISO DE PERFIL PÚBLICO -->
-            <div class="admin-section" id="aviso-perfil" style="background:rgba(139,92,246,0.05); border-color:#8b5cf6;">
-                <h3><span class="icon">🌐</span> Seu Perfil Público</h3>
-                <p style="font-size:13px; color:#8b949e; margin-bottom:12px;">Qualquer alteração que você fizer aqui aparecerá no seu link público:</p>
-                <code id="perfil-link-preview" style="background:#0d1117; padding:10px; border-radius:8px; display:block; word-break:break-all; font-size:12px; color:#a78bfa;"></code>
-                <button class="btn-small-lt" onclick="copiarLinkPerfil()" style="margin-top:12px;">📋 Copiar Link</button>
+            <!-- CARD DO LINK DE DIVULGAÇÃO (ÚNICO LUGAR) -->
+            <div id="meu-link-admin" class="link-card" style="display:none;">
+                <p>🔗 Seu link público - compartilhe em suas redes sociais:</p>
+                <code id="perfil-link-preview"></code>
+                <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
             </div>
 
             <!-- TEMA -->
@@ -263,4 +280,4 @@
     <script src="auth.js"></script>
     <script src="admin.js"></script>
 </body>
-</html>
+                                                                 </html>
