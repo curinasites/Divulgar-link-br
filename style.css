@@ -157,8 +157,6 @@ body {
     line-height: 1.6;
 }
 
-.profile-bio::before { content: '// '; color: var(--primary); }
-
 /* ========== LINKS PREMIUM ========== */
 .links-section {
     display: flex;
