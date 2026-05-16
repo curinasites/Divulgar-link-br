@@ -76,6 +76,17 @@
         .aba:hover { color: #f0f6fc; }
         textarea { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; resize: vertical; min-height: 60px; }
         textarea:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
+        .list-item .info { flex: 1; min-width: 0; }
+        .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; }
+        .list-item .info small { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
+        .list-item .actions { display: flex; gap: 6px; }
+        .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
+        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
     </style>
 </head>
 <body>
@@ -139,6 +150,48 @@
             </div>
         </div>
 
+        <!-- 🆕 EDITAR PÁGINA PRINCIPAL -->
+        <div class="section">
+            <h3>🏠 Editar Página Principal (Index)</h3>
+            
+            <!-- Perfil -->
+            <h4 style="color:#a78bfa;margin-bottom:12px;">👤 Perfil da Página Principal</h4>
+            <div class="form-group"><label>Nome</label><input type="text" id="pp-nome" placeholder="Divulga Link BR"></div>
+            <div class="form-group"><label>Bio</label><textarea id="pp-bio" placeholder="A plataforma definitiva..."></textarea></div>
+            <div class="form-group"><label>URL da Foto</label><input type="text" id="pp-foto" placeholder="https://..."></div>
+            
+            <hr style="border-color:#30363d;margin:16px 0;">
+            
+            <!-- Links -->
+            <h4 style="color:#a78bfa;margin-bottom:12px;">🔗 Links da Página Principal</h4>
+            <div class="form-group"><label>Título do Link</label><input type="text" id="pp-link-titulo" placeholder="Criar Minha Conta"></div>
+            <div class="form-group"><label>URL do Link</label><input type="text" id="pp-link-url" placeholder="cadastro.html"></div>
+            <div class="form-group"><label>Ícone (emoji)</label><input type="text" id="pp-link-icone" placeholder="🚀"></div>
+            <div class="form-group"><label>Ordem</label><input type="number" id="pp-link-ordem" value="1"></div>
+            <input type="hidden" id="pp-link-id" value="">
+            <button class="btn-primary-lt" onclick="salvarLinkPP()">💾 Salvar Link</button>
+            <button class="btn-small-lt" onclick="limparFormLinkPP()" style="margin-left:8px;">✕ Limpar</button>
+            <p class="msg-sucesso" id="pp-link-sucesso">✅ Link salvo!</p>
+            <div id="lista-links-pp" style="margin-top:16px;"></div>
+            
+            <hr style="border-color:#30363d;margin:16px 0;">
+            
+            <!-- Mídia -->
+            <h4 style="color:#a78bfa;margin-bottom:12px;">🎬 Mídia da Página Principal</h4>
+            <div class="form-group"><label>Tipo</label><select id="pp-midia-tipo"><option value="imagem">🖼️ Imagem</option><option value="youtube">▶️ YouTube</option><option value="mp4">🎥 MP4</option></select></div>
+            <div class="form-group"><label>URL</label><input type="text" id="pp-midia-url" placeholder="https://..."></div>
+            <div class="form-group"><label>Ordem</label><input type="number" id="pp-midia-ordem" value="1"></div>
+            <input type="hidden" id="pp-midia-id" value="">
+            <button class="btn-primary-lt" onclick="salvarMidiaPP()">💾 Salvar Mídia</button>
+            <button class="btn-small-lt" onclick="limparFormMidiaPP()" style="margin-left:8px;">✕ Limpar</button>
+            <p class="msg-sucesso" id="pp-midia-sucesso">✅ Mídia salva!</p>
+            <div id="lista-midias-pp" style="margin-top:16px;"></div>
+            
+            <hr style="border-color:#30363d;margin:16px 0;">
+            <button class="btn-primary-lt" onclick="salvarPerfilPP()">💾 Salvar Perfil da Página Principal</button>
+            <p class="msg-sucesso" id="pp-perfil-sucesso">✅ Perfil salvo!</p>
+        </div>
+
         <div class="section">
             <h3>💰 Configurar Planos</h3>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
@@ -155,7 +208,6 @@
             <p class="msg-sucesso" id="msg-planos-sucesso">✅ Salvo!</p>
         </div>
 
-        <!-- ⚙️ CONFIGURAÇÕES GERAIS (LOGO + FUNDO + OVERLAY) -->
         <div class="section">
             <h3>⚙️ Configurações Gerais do Site</h3>
             <div class="form-group"><label>🖼️ Logo do Site (URL)</label><input type="text" id="config-logo" placeholder="https://..."></div>
@@ -235,6 +287,159 @@
             document.getElementById('tela-carregando').classList.add('hidden');
         }
 
+        // ========== PÁGINA PRINCIPAL ==========
+        async function salvarPerfilPP() {
+            const dados = {
+                perfil: {
+                    nome: document.getElementById('pp-nome').value.trim(),
+                    bio: document.getElementById('pp-bio').value.trim(),
+                    foto: document.getElementById('pp-foto').value.trim()
+                }
+            };
+            await db.collection('config').doc('paginaPrincipal').set(dados, { merge: true });
+            mostrarSucesso('pp-perfil-sucesso');
+        }
+
+        async function salvarLinkPP() {
+            const id = document.getElementById('pp-link-id').value;
+            const dados = {
+                titulo: document.getElementById('pp-link-titulo').value.trim(),
+                url: document.getElementById('pp-link-url').value.trim(),
+                icone: document.getElementById('pp-link-icone').value.trim() || '🔗',
+                ordem: parseInt(document.getElementById('pp-link-ordem').value) || 1
+            };
+            if (!dados.titulo) { alert('⚠️ Título obrigatório!'); return; }
+            
+            const snap = await db.collection('config').doc('paginaPrincipal').get();
+            const links = snap.exists && snap.data().links ? snap.data().links : [];
+            
+            if (id) {
+                const index = links.findIndex(l => l.id === id);
+                if (index >= 0) { dados.id = id; links[index] = dados; }
+            } else {
+                dados.id = 'link_' + Date.now();
+                links.push(dados);
+            }
+            
+            await db.collection('config').doc('paginaPrincipal').set({ links }, { merge: true });
+            limparFormLinkPP(); carregarLinksPP(); mostrarSucesso('pp-link-sucesso');
+        }
+
+        async function carregarLinksPP() {
+            const snap = await db.collection('config').doc('paginaPrincipal').get();
+            const links = snap.exists && snap.data().links ? snap.data().links : [];
+            const lista = document.getElementById('lista-links-pp');
+            if (links.length === 0) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
+            lista.innerHTML = links.map(l => `
+                <div class="list-item">
+                    <div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1}</small></div>
+                    <div class="actions">
+                        <button class="btn-small-lt" onclick="editarLinkPP('${l.id}')">✏️</button>
+                        <button class="btn-danger-lt" onclick="removerLinkPP('${l.id}')">🗑</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editarLinkPP(id) {
+            db.collection('config').doc('paginaPrincipal').get().then(snap => {
+                const links = snap.exists && snap.data().links ? snap.data().links : [];
+                const l = links.find(link => link.id === id);
+                if (l) {
+                    document.getElementById('pp-link-id').value = l.id;
+                    document.getElementById('pp-link-titulo').value = l.titulo || '';
+                    document.getElementById('pp-link-url').value = l.url || '';
+                    document.getElementById('pp-link-icone').value = l.icone || '';
+                    document.getElementById('pp-link-ordem').value = l.ordem || 1;
+                }
+            });
+        }
+
+        async function removerLinkPP(id) {
+            if (!confirm('Remover?')) return;
+            const snap = await db.collection('config').doc('paginaPrincipal').get();
+            const links = snap.exists && snap.data().links ? snap.data().links : [];
+            await db.collection('config').doc('paginaPrincipal').set({ links: links.filter(l => l.id !== id) }, { merge: true });
+            carregarLinksPP();
+        }
+
+        function limparFormLinkPP() {
+            document.getElementById('pp-link-id').value = '';
+            document.getElementById('pp-link-titulo').value = '';
+            document.getElementById('pp-link-url').value = '';
+            document.getElementById('pp-link-icone').value = '';
+            document.getElementById('pp-link-ordem').value = '1';
+        }
+
+        // Mídia PP
+        async function salvarMidiaPP() {
+            const id = document.getElementById('pp-midia-id').value;
+            const dados = {
+                tipo: document.getElementById('pp-midia-tipo').value,
+                url: document.getElementById('pp-midia-url').value.trim(),
+                ordem: parseInt(document.getElementById('pp-midia-ordem').value) || 1
+            };
+            if (!dados.url) { alert('⚠️ URL obrigatória!'); return; }
+            
+            const snap = await db.collection('config').doc('paginaPrincipal').get();
+            const midias = snap.exists && snap.data().midias ? snap.data().midias : [];
+            
+            if (id) {
+                const index = midias.findIndex(m => m.id === id);
+                if (index >= 0) { dados.id = id; midias[index] = dados; }
+            } else {
+                dados.id = 'midia_' + Date.now();
+                midias.push(dados);
+            }
+            
+            await db.collection('config').doc('paginaPrincipal').set({ midias }, { merge: true });
+            limparFormMidiaPP(); carregarMidiasPP(); mostrarSucesso('pp-midia-sucesso');
+        }
+
+        async function carregarMidiasPP() {
+            const snap = await db.collection('config').doc('paginaPrincipal').get();
+            const midias = snap.exists && snap.data().midias ? snap.data().midias : [];
+            const lista = document.getElementById('lista-midias-pp');
+            if (midias.length === 0) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhuma mídia.</p>'; return; }
+            lista.innerHTML = midias.map(m => `
+                <div class="list-item">
+                    <div class="info"><strong>${({imagem:'🖼️',youtube:'▶️',mp4:'🎥'})[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1}</small></div>
+                    <div class="actions">
+                        <button class="btn-small-lt" onclick="editarMidiaPP('${m.id}')">✏️</button>
+                        <button class="btn-danger-lt" onclick="removerMidiaPP('${m.id}')">🗑</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editarMidiaPP(id) {
+            db.collection('config').doc('paginaPrincipal').get().then(snap => {
+                const midias = snap.exists && snap.data().midias ? snap.data().midias : [];
+                const m = midias.find(midia => midia.id === id);
+                if (m) {
+                    document.getElementById('pp-midia-id').value = m.id;
+                    document.getElementById('pp-midia-tipo').value = m.tipo || 'imagem';
+                    document.getElementById('pp-midia-url').value = m.url || '';
+                    document.getElementById('pp-midia-ordem').value = m.ordem || 1;
+                }
+            });
+        }
+
+        async function removerMidiaPP(id) {
+            if (!confirm('Remover?')) return;
+            const snap = await db.collection('config').doc('paginaPrincipal').get();
+            const midias = snap.exists && snap.data().midias ? snap.data().midias : [];
+            await db.collection('config').doc('paginaPrincipal').set({ midias: midias.filter(m => m.id !== id) }, { merge: true });
+            carregarMidiasPP();
+        }
+
+        function limparFormMidiaPP() {
+            document.getElementById('pp-midia-id').value = '';
+            document.getElementById('pp-midia-url').value = '';
+            document.getElementById('pp-midia-ordem').value = '1';
+        }
+
+        // ========== DASHBOARD ==========
         async function carregarDashboard() {
             const snap = await db.collection('usuarios').get();
             const usuarios = []; snap.forEach(doc => usuarios.push({ id: doc.id, ...doc.data() }));
@@ -301,7 +506,6 @@
                     `;
                 }).join('');
             
-            // Carrega configs
             const planosSnap = await db.collection('config').doc('planos').get();
             if (planosSnap.exists) {
                 const d = planosSnap.data();
@@ -318,6 +522,19 @@
                 document.getElementById('config-bg').value = d.backgroundImage || '';
                 document.getElementById('config-overlay').value = d.overlayColor || 'rgba(13,17,23,0.85)';
             }
+            
+            // Carrega dados da página principal
+            const ppSnap = await db.collection('config').doc('paginaPrincipal').get();
+            if (ppSnap.exists) {
+                const pp = ppSnap.data();
+                if (pp.perfil) {
+                    document.getElementById('pp-nome').value = pp.perfil.nome || '';
+                    document.getElementById('pp-bio').value = pp.perfil.bio || '';
+                    document.getElementById('pp-foto').value = pp.perfil.foto || '';
+                }
+            }
+            carregarLinksPP();
+            carregarMidiasPP();
         }
 
         // ========== FUNÇÕES GLOBAIS ==========
@@ -395,4 +612,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
