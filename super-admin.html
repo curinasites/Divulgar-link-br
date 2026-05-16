@@ -247,8 +247,13 @@
             document.getElementById('sa-senha').value = '';
         }
 
-        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE (CORRIGIDA) ==========
+        // ========== FUNÇÃO PARA LIBERAR USUÁRIO PENDENTE (CORRIGIDA - PEDE SENHA) ==========
         window.liberarUsuario = async function(pendingId, dados) {
+            if (!dados || !dados.email) {
+                alert('❌ Erro: Dados do usuário incompletos!');
+                return;
+            }
+            
             if (!confirm(`✅ Liberar acesso para ${dados.nome} (${dados.email}) com plano ${dados.plano}?`)) return;
             
             const btn = event.target;
@@ -257,33 +262,38 @@
             btn.disabled = true;
             
             try {
-                // 1. VERIFICAR SE O USUÁRIO JÁ EXISTE
+                // Pede a senha do Super Admin para continuar
+                const senhaSuperAdmin = prompt('🔐 Digite sua senha de Super Admin para liberar o usuário:');
+                if (!senhaSuperAdmin) {
+                    alert('Operação cancelada.');
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                    return;
+                }
+                
+                // Relogia como Super Admin
+                await auth.signInWithEmailAndPassword(SUPER_ADMIN_EMAIL, senhaSuperAdmin);
+                
                 let uid = null;
                 let usuarioJaExiste = false;
                 
+                // Verifica se o usuário já existe
                 try {
-                    // Tenta fazer login para ver se já existe conta
                     const userCredential = await auth.signInWithEmailAndPassword(dados.email, dados.senha);
                     uid = userCredential.user.uid;
                     usuarioJaExiste = true;
-                    await auth.signOut(); // Faz logout depois da verificação
-                    console.log("⚠️ Usuário já existe no Auth");
+                    await auth.signOut();
                 } catch (loginError) {
                     if (loginError.code === 'auth/user-not-found') {
-                        // Usuário não existe, vamos criar
-                        console.log("✅ Usuário não existe, criando...");
                         const newUser = await auth.createUserWithEmailAndPassword(dados.email, dados.senha);
                         uid = newUser.user.uid;
                         usuarioJaExiste = false;
                     } else if (loginError.code === 'auth/wrong-password') {
-                        // Email existe mas senha diferente
-                        usuarioJaExiste = true;
-                        // Tenta buscar UID pelo Firestore
                         const userSnapshot = await db.collection('usuarios').where('email', '==', dados.email).get();
                         if (!userSnapshot.empty) {
                             uid = userSnapshot.docs[0].id;
                         }
-                        alert('⚠️ Este email já está cadastrado com outra senha!\n\nO usuário precisa recuperar a senha ou usar outro email.');
+                        alert('⚠️ Este email já está cadastrado com outra senha!');
                         btn.innerText = textoOriginal;
                         btn.disabled = false;
                         return;
@@ -292,7 +302,8 @@
                     }
                 }
                 
-                // 2. VERIFICAR/ATUALIZAR FIRESTORE
+                // Volta a logar como Super Admin (já está logado)
+                // Cria/Atualiza no Firestore
                 const userDoc = await db.collection('usuarios').doc(uid).get();
                 if (!userDoc.exists) {
                     await db.collection('usuarios').doc(uid).set({
@@ -304,39 +315,23 @@
                         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
                         perfil: { nome: dados.nome, bio: '✨ Bem-vindo!', foto: '' }
                     });
-                    console.log("✅ Documento criado no Firestore");
                 } else if (usuarioJaExiste) {
-                    // Se já existia, atualiza o plano
                     await db.collection('usuarios').doc(uid).update({
                         plano: dados.plano,
                         status: 'ativo'
                     });
-                    console.log("✅ Plano atualizado no Firestore");
                 }
                 
-                // 3. REMOVER DA LISTA DE PENDENTES
-                const pendingRef = db.collection('usuarios_pendentes').doc(pendingId);
-                const pendingDoc = await pendingRef.get();
-                if (pendingDoc.exists) {
-                    await pendingRef.delete();
-                    console.log("✅ Pendente removido");
-                }
+                // Remove pendente
+                await db.collection('usuarios_pendentes').doc(pendingId).delete();
                 
-                alert(`✅ ${dados.nome} foi ${usuarioJaExiste ? 'ATUALIZADO' : 'LIBERADO'} com sucesso!\n\nPlano: ${dados.plano}`);
-                
-                // 4. RECARREGAR DASHBOARD
+                alert(`✅ ${dados.nome} foi ${usuarioJaExiste ? 'ATUALIZADO' : 'LIBERADO'} com sucesso!`);
                 await carregarDashboard();
-                
-                // 5. IR PARA ABA DE USUÁRIOS ATIVOS
                 trocarAba('usuarios');
                 
             } catch (error) {
-                console.error("Erro detalhado:", error);
-                if (error.code === 'auth/email-already-in-use') {
-                    alert('❌ Este email já está cadastrado!\n\nSe já foi liberado, remova manualmente da lista de pendentes.');
-                } else {
-                    alert('❌ Erro ao liberar: ' + (error.message || 'Tente novamente'));
-                }
+                console.error("Erro:", error);
+                alert('❌ Erro ao liberar: ' + (error.message || 'Tente novamente'));
                 await carregarDashboard();
             } finally {
                 btn.innerText = textoOriginal;
@@ -344,12 +339,11 @@
             }
         };
 
-        // ========== FUNÇÃO PARA RECUSAR/DELETAR PENDENTE ==========
         window.recusarUsuario = async function(pendingId, nome) {
-            if (!confirm(`❌ Tem certeza que deseja RECUSAR o cadastro de ${nome}?`)) return;
+            if (!confirm(`❌ Recusar cadastro de ${nome}?`)) return;
             await db.collection('usuarios_pendentes').doc(pendingId).delete();
             await carregarDashboard();
-            alert('🗑️ Cadastro recusado e removido.');
+            alert('🗑️ Cadastro recusado.');
         };
 
         // ========== CARREGAR DASHBOARD ==========
@@ -404,27 +398,30 @@
             }
             
             const tabelaPendentes = document.getElementById('tabela-pendentes');
+            tabelaPendentes.innerHTML = '';
+            
             if (pendentes.length === 0) {
-                tabelaPendentes.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário pendente</td></tr>';
+                const row = tabelaPendentes.insertRow();
+                row.innerHTML = '<td colspan="6" style="text-align:center; padding:40px;">Nenhum usuário pendente</td>';
             } else {
-                tabelaPendentes.innerHTML = pendentes.map(p => {
+                pendentes.forEach(p => {
+                    const row = tabelaPendentes.insertRow();
                     const data = p.criadoEm?.toDate ? p.criadoEm.toDate().toLocaleDateString('pt-BR') : 'Nova';
                     const planoClass = p.plano === 'premium' ? 'badge-premium' : 'badge-pro';
-                    const dadosStr = JSON.stringify(p).replace(/"/g, '&quot;');
-                    return `
-                        <tr>
-                            <td>${p.nome || '--'}</td>
-                            <td style="font-size:12px;color:#8b949e;">${p.email || '--'}</td>
-                            <td><code style="font-size:11px;">${p.username || '--'}</code></td>
-                            <td><span class="badge-plano ${planoClass}">${p.plano === 'pro' ? '⭐ Pro' : '💎 Premium'}</span></td>
-                            <td><span style="font-size:11px;color:#8b949e;">${data}</span></td>
-                            <td>
-                                <button class="btn-success" onclick="liberarUsuario('${p.id}', '${dadosStr.replace(/'/g, "\\'")}')">✅ Liberar</button>
-                                <button class="btn-danger" onclick="recusarUsuario('${p.id}', '${p.nome}')">❌ Recusar</button>
-                            </td>
-                        </tr>
+                    const planoNome = p.plano === 'pro' ? '⭐ Pro' : '💎 Premium';
+                    
+                    row.innerHTML = `
+                        <td>${p.nome || '--'}</td>
+                        <td style="font-size:12px;color:#8b949e;">${p.email || '--'}</td>
+                        <td><code style="font-size:11px;">${p.username || '--'}</code></td>
+                        <td><span class="badge-plano ${planoClass}">${planoNome}</span></td>
+                        <td><span style="font-size:11px;color:#8b949e;">${data}</span></td>
+                        <td>
+                            <button class="btn-success" onclick='liberarUsuario("${p.id}", ${JSON.stringify(p)})'>✅ Liberar</button>
+                            <button class="btn-danger" onclick='recusarUsuario("${p.id}", "${p.nome}")'>❌ Recusar</button>
+                        </td>
                     `;
-                }).join('');
+                });
             }
             
             const configSnap = await db.collection('config').doc('geral').get();
@@ -480,4 +477,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
