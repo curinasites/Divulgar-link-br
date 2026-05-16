@@ -142,7 +142,6 @@
 <body>
 
 <div class="admin-container">
-    <!-- TELA DE LOGIN -->
     <div id="tela-login" class="login-container">
         <h2>🔐 Divulga Link BR</h2>
         <p class="subtitle">> authentication required</p>
@@ -152,14 +151,14 @@
         <button class="btn-primary-lt" onclick="fazerLogin()" style="width:100%;">> entrar_</button>
     </div>
 
-    <!-- PAINEL ADMIN -->
     <div id="tela-admin" class="hidden">
+        <!-- HEADER CORRIGIDO -->
         <div class="admin-header">
-            <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-            <div class="title"><span>admin@divulgalinkbr</span>:~$ dashboard</div>
+            <img src="favicon.png" alt="Logo" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';">
+            <div class="title"><span>Painel Admin</span> — dashboard</div>
             <span class="badge-plano badge-gratis" id="plano-badge">gratis</span>
             <button id="btn-upgrade" class="btn-upgrade">🔼 Fazer Upgrade</button>
-            <a href="index.html" class="btn-small-lt" style="text-decoration:none;">🏠 ver site</a>
+            <a href="#" id="btn-ver-site" class="btn-small-lt" style="text-decoration:none;" target="_blank">🏠 ver site</a>
             <button class="btn-logout" onclick="logout()">> exit</button>
         </div>
 
@@ -167,6 +166,15 @@
             <p>🔗 Seu link público:</p>
             <code id="perfil-link-preview"></code>
             <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
+        </div>
+
+        <!-- FUNDO (PREMIUM) -->
+        <div class="admin-section" id="secao-fundo" style="display:none;">
+            <h3><span class="icon">🌄</span> Fundo Personalizado (Premium)</h3>
+            <div class="form-group"><label>🖼️ URL da Imagem de Fundo</label><input type="text" id="config-fundo-usuario" placeholder="https://..."></div>
+            <div class="form-group"><label>🎨 Cor do Overlay (rgba)</label><input type="text" id="config-overlay-usuario" placeholder="rgba(13,17,23,0.85)"></div>
+            <button class="btn-primary-lt" onclick="salvarFundoUsuario()">💾 Salvar Fundo</button>
+            <p class="msg-sucesso-lt" id="fundo-sucesso">✅ Fundo salvo!</p>
         </div>
 
         <div class="admin-section">
@@ -250,7 +258,6 @@
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
 <script>
-    // ========== ADMIN.JS ==========
     let userUID = null;
     let temaAtual = 'dev';
     let linksPagamentoUpgrade = { pro: '', premium: '' };
@@ -271,9 +278,9 @@
     };
 
     const LIMITES = {
-        gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false },
-        pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true },
-        premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true }
+        gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false, fundo: false },
+        pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true, fundo: false },
+        premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true, fundo: true }
     };
 
     function getTemasDisponiveis(plano) { return ['dev','clean','dark','rosa','minimal','warm','cyber','ocean','sunset','forest','galaxy','coffee'].slice(0, LIMITES[plano]?.temas || 3); }
@@ -307,6 +314,19 @@
         else { alert('⚠️ Link não configurado.'); fecharModalUpgrade(); }
     }
     function copiarLinkPerfil() { const link = document.getElementById('perfil-link-preview')?.textContent; if (link) navigator.clipboard.writeText(link).then(() => alert('✅ Copiado!')); }
+
+    // ========== FUNDO DO USUÁRIO ==========
+    async function salvarFundoUsuario() {
+        const plano = await getPlanoAtual();
+        if (!LIMITES[plano].fundo) { alert('⚠️ Fundo personalizado disponível apenas no plano Premium.'); return; }
+        const bg = document.getElementById('config-fundo-usuario').value.trim();
+        const overlay = document.getElementById('config-overlay-usuario').value.trim();
+        await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set({
+            backgroundImage: bg,
+            overlayColor: overlay || 'rgba(13,17,23,0.85)'
+        }, { merge: true });
+        mostrarSucesso('fundo-sucesso');
+    }
 
     // ========== LINKS ==========
     async function carregarListaLinks() {
@@ -400,6 +420,11 @@
         const badge = document.getElementById('plano-badge');
         if (badge) { badge.textContent = plano; badge.className = 'badge-plano badge-' + plano; }
         if (btnUpgrade) btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
+        
+        // Fundo (Premium)
+        const secaoFundo = document.getElementById('secao-fundo');
+        if (secaoFundo) secaoFundo.style.display = LIMITES[plano].fundo ? 'block' : 'none';
+        
         const campoTemaLogo = document.getElementById('tema-logo');
         if (campoTemaLogo) { campoTemaLogo.disabled = !LIMITES[plano].logo; campoTemaLogo.placeholder = LIMITES[plano].logo ? 'https://...' : '🔒 Pro/Premium'; }
         const temasPermitidos = getTemasDisponiveis(plano);
@@ -407,15 +432,34 @@
         const selectMidia = document.getElementById('midia-tipo');
         if (selectMidia) { const optY = selectMidia.querySelector('option[value="youtube"]'); const optM = selectMidia.querySelector('option[value="mp4"]'); if (optY) optY.disabled = !LIMITES[plano].youtube; if (optM) optM.disabled = !LIMITES[plano].mp4; }
         const userDoc = await db.collection('usuarios').doc(userUID).get();
-        if (userDoc.exists) { const d = userDoc.data(); document.getElementById('perfil-nome').value = d.perfil?.nome || ''; document.getElementById('perfil-bio').value = d.perfil?.bio || ''; document.getElementById('perfil-foto').value = d.perfil?.foto || ''; if (d.username) { const link = window.location.origin + window.location.pathname.replace('admin.html','index.html') + '?u=' + d.username; document.getElementById('perfil-link-preview').textContent = link; document.getElementById('meu-link-admin').style.display = 'block'; } }
+        if (userDoc.exists) { 
+            const d = userDoc.data(); 
+            document.getElementById('perfil-nome').value = d.perfil?.nome || ''; 
+            document.getElementById('perfil-bio').value = d.perfil?.bio || ''; 
+            document.getElementById('perfil-foto').value = d.perfil?.foto || ''; 
+            if (d.username) { 
+                const link = window.location.origin + window.location.pathname.replace('admin.html','index.html') + '?u=' + d.username; 
+                document.getElementById('perfil-link-preview').textContent = link; 
+                document.getElementById('meu-link-admin').style.display = 'block';
+                // 🔥 Atualiza botão "ver site" para link do usuário
+                const btnVerSite = document.getElementById('btn-ver-site');
+                if (btnVerSite) btnVerSite.href = link;
+            }
+        }
         const temaSnap = await db.collection('usuarios').doc(userUID).collection('config').doc('tema').get();
-        if (temaSnap.exists) { const t = temaSnap.data(); temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev'; if (campoTemaLogo) campoTemaLogo.value = t.logo || ''; }
+        if (temaSnap.exists) { 
+            const t = temaSnap.data(); 
+            temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev'; 
+            if (campoTemaLogo) campoTemaLogo.value = t.logo || ''; 
+            // Carrega fundo do usuário
+            if (document.getElementById('config-fundo-usuario')) document.getElementById('config-fundo-usuario').value = t.backgroundImage || '';
+            if (document.getElementById('config-overlay-usuario')) document.getElementById('config-overlay-usuario').value = t.overlayColor || 'rgba(13,17,23,0.85)';
+        }
         aplicarPreset(temaAtual); carregarListaLinks(); carregarListaMidias();
     }
 
     function mostrarSucesso(id) { const el = document.getElementById(id); if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); } }
 
-    // ========== LOGIN CORRIGIDO ==========
     function fazerLogin() {
         const email = document.getElementById('login-email').value.trim();
         const senha = document.getElementById('login-senha').value;
