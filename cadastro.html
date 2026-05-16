@@ -106,13 +106,13 @@
         
         <div class="planos" id="planos">
             <div class="plano-card ativo" data-plano="gratis" onclick="selecionarPlano('gratis')">
-                <div class="plano-nome">🌱 Grátis</div><div class="plano-preco">R$0</div><div class="plano-desc">3 links</div>
+                <div class="plano-nome">🌱 Grátis</div><div class="plano-preco" id="preco-gratis">R$0</div><div class="plano-desc">3 links</div>
             </div>
             <div class="plano-card" data-plano="pro" onclick="selecionarPlano('pro')">
-                <div class="plano-nome">⭐ Pro</div><div class="plano-preco">R$10</div><div class="plano-desc">10 links + vídeos</div>
+                <div class="plano-nome">⭐ Pro</div><div class="plano-preco" id="preco-pro">R$10</div><div class="plano-desc">10 links + vídeos</div>
             </div>
             <div class="plano-card" data-plano="premium" onclick="selecionarPlano('premium')">
-                <div class="plano-nome">💎 Premium</div><div class="plano-preco">R$25</div><div class="plano-desc">Ilimitado</div>
+                <div class="plano-nome">💎 Premium</div><div class="plano-preco" id="preco-premium">R$25</div><div class="plano-desc">Ilimitado</div>
             </div>
         </div>
         
@@ -170,31 +170,72 @@
             document.querySelector(`[data-plano="${p}"]`).classList.add('ativo'); 
         }
         
-        // Carrega links de pagamento do Firestore
-        async function carregarLinksPagamento() {
+        // ========== CARREGA PREÇOS E LINKS DO FIRESTORE ==========
+        async function carregarPrecosELinks() {
             try {
+                console.log("🔄 Carregando preços e links do Firestore...");
                 const snap = await db.collection('config').doc('planos').get();
+                
                 if (snap.exists) {
                     const d = snap.data();
-                    if (d.pro?.link) linksPagamento.pro = d.pro.link;
-                    if (d.premium?.link) linksPagamento.premium = d.premium.link;
+                    console.log("📦 Dados carregados:", d);
+                    
+                    // Atualiza preço do Pro
+                    if (d.pro) {
+                        if (d.pro.preco) {
+                            const proPrecoEl = document.getElementById('preco-pro');
+                            if (proPrecoEl) {
+                                proPrecoEl.textContent = 'R$' + d.pro.preco;
+                                console.log("✅ Preço Pro atualizado: R$" + d.pro.preco);
+                            }
+                        }
+                        if (d.pro.link) {
+                            linksPagamento.pro = d.pro.link;
+                            console.log("✅ Link Pro carregado");
+                        }
+                    }
+                    
+                    // Atualiza preço do Premium
+                    if (d.premium) {
+                        if (d.premium.preco) {
+                            const premiumPrecoEl = document.getElementById('preco-premium');
+                            if (premiumPrecoEl) {
+                                premiumPrecoEl.textContent = 'R$' + d.premium.preco;
+                                console.log("✅ Preço Premium atualizado: R$" + d.premium.preco);
+                            }
+                        }
+                        if (d.premium.link) {
+                            linksPagamento.premium = d.premium.link;
+                            console.log("✅ Link Premium carregado");
+                        }
+                    }
+                } else {
+                    console.log("⚠️ Documento 'config/planos' não encontrado, usando valores padrão");
                 }
-            } catch(e) { console.error("Erro:", e); }
+            } catch(e) { 
+                console.error("❌ Erro ao carregar preços:", e); 
+            }
         }
         
         // Mostra modal com os dados do usuário
         function mostrarModal(plano, email, senha, nome) {
             const modal = document.getElementById('modalConfirmacao');
             const planoNome = plano === 'pro' ? '⭐ Plano Pro' : '💎 Plano Premium';
-            const planoPreco = plano === 'pro' ? 'R$10' : 'R$25';
+            
+            // Busca o preço atualizado
+            let planoPreco = plano === 'pro' ? 'R$10' : 'R$25';
+            const precoEl = document.getElementById(`preco-${plano}`);
+            if (precoEl) {
+                planoPreco = precoEl.textContent;
+            }
             
             document.getElementById('modal-plano-nome').innerHTML = `${planoNome} - ${planoPreco}`;
             document.getElementById('modal-email').textContent = email;
             document.getElementById('modal-senha').textContent = senha;
             
-            // Link do WhatsApp - COLOQUE SEU NÚMERO AQUI
+            // Link do WhatsApp
             const msg = `Olá! Acabei de me cadastrar no plano ${planoNome} e realizei o pagamento. Meu email é: ${email}. Aguardando liberação.`;
-            const whatsappLink = `https://wa.me/+5547996427266?text=${encodeURIComponent(msg)}`;
+            const whatsappLink = `https://wa.me/5547996427266?text=${encodeURIComponent(msg)}`;
             document.getElementById('whatsapp-link').href = whatsappLink;
             
             dadosPendentes = { plano, email, senha, nome };
@@ -211,12 +252,11 @@
             const modal = document.getElementById('modalConfirmacao');
             modal.style.display = 'none';
             
-            // Redireciona para o link de pagamento
             const link = linksPagamento[dadosPendentes?.plano];
             if (link && link !== '') {
                 window.location.href = link;
             } else {
-                // Se não tiver link configurado, volta para home
+                alert('⚠️ Link de pagamento não configurado. Entre em contato com o suporte.');
                 window.location.href = 'index.html';
             }
         }
@@ -310,7 +350,7 @@
             
             // ========== PLANOS PAGOS (PRO/PREMIUM) ==========
             if (planoSelecionado !== 'gratis') {
-                // Salva como pendente no Firestore (para aparecer no Super Admin)
+                // Salva como pendente no Firestore
                 const pendingRef = db.collection('usuarios_pendentes').doc();
                 await pendingRef.set({
                     nome: nome,
@@ -350,8 +390,8 @@
             }
         }
         
-        // Inicializa
-        carregarLinksPagamento();
+        // Inicializa - carrega preços e links
+        carregarPrecosELinks();
     </script>
 </body>
-</html>
+        </html>
