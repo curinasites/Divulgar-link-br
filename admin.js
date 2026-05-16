@@ -133,21 +133,6 @@ async function carregarDadosAdmin() {
         };
     }
     
-    // Configura botão ver perfil
-    const btnVerPerfil = document.getElementById('btn-ver-perfil');
-    if (btnVerPerfil) {
-        btnVerPerfil.onclick = (e) => {
-            e.preventDefault();
-            const username = document.getElementById('perfil-username')?.value;
-            if (username) {
-                const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
-                window.open(baseURL + '?u=' + username, '_blank');
-            } else {
-                alert('⚠️ Salve seu perfil primeiro para gerar o link!');
-            }
-        };
-    }
-    
     const plano = await getPlanoAtual();
     const limites = LIMITES[plano];
     
@@ -233,7 +218,7 @@ async function carregarDadosAdmin() {
                 <p style="font-size:11px;color:#8b949e;font-family:'JetBrains Mono',monospace;margin-bottom:6px;">🔗 Seu link público (copie e divulgue):</p>
                 <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
                     <code style="background:#0d1117;padding:8px 14px;border-radius:8px;font-size:12px;color:#a78bfa;">${link}</code>
-                    <button onclick="navigator.clipboard.writeText('${link}').then(()=>alert('✅ Link copiado!'))" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button>
+                    <button onclick="copiarLinkPerfil()" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button>
                 </div>
             `;
         }
@@ -424,4 +409,19 @@ function fazerLogin() {
     auth.signInWithEmailAndPassword(email, senha).catch(() => {
         erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
     });
-        }
+}
+
+// ========== BOTÃO VER SITE (ADICIONADO) ==========
+document.addEventListener('DOMContentLoaded', () => {
+    const btnVerSite = document.getElementById('btn-ver-site');
+    if (btnVerSite) {
+        btnVerSite.addEventListener('click', () => {
+            const linkPreview = document.getElementById('perfil-link-preview');
+            if (linkPreview && linkPreview.textContent && linkPreview.textContent !== '') {
+                window.open(linkPreview.textContent, '_blank');
+            } else {
+                alert('⚠️ Salve seu perfil primeiro para gerar o link!');
+            }
+        });
+    }
+});
