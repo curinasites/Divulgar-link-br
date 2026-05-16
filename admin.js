@@ -22,6 +22,69 @@ const LIMITES = {
     premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true }
 };
 
+// ========== UPGRADE - LINKS DE PAGAMENTO ==========
+let linksPagamentoUpgrade = { pro: '', premium: '' };
+
+async function carregarLinksPagamentoUpgrade() {
+    try {
+        const snap = await db.collection('config').doc('planos').get();
+        if (snap.exists) {
+            const d = snap.data();
+            if (d.pro) {
+                linksPagamentoUpgrade.pro = d.pro.link || '';
+                const precoEl = document.getElementById('preco-upgrade-pro');
+                if (precoEl && d.pro.preco) precoEl.textContent = 'R$' + d.pro.preco;
+            }
+            if (d.premium) {
+                linksPagamentoUpgrade.premium = d.premium.link || '';
+                const precoEl = document.getElementById('preco-upgrade-premium');
+                if (precoEl && d.premium.preco) precoEl.textContent = 'R$' + d.premium.preco;
+            }
+        }
+    } catch(e) { console.error("Erro ao carregar links de pagamento:", e); }
+}
+
+function abrirModalUpgrade() {
+    const modal = document.getElementById('modal-upgrade');
+    if (modal) modal.classList.add('ativo');
+}
+
+function fecharModalUpgrade() {
+    const modal = document.getElementById('modal-upgrade');
+    if (modal) modal.classList.remove('ativo');
+}
+
+function escolherPlanoUpgrade(plano) {
+    const link = linksPagamentoUpgrade[plano];
+    if (link && link !== '') {
+        window.open(link, '_blank');
+        alert(`✅ Você será redirecionado para o pagamento do plano ${plano.toUpperCase()}\n\nApós o pagamento, entre em contato com o Super Admin para ativação.`);
+        fecharModalUpgrade();
+    } else {
+        alert('⚠️ Link de pagamento não configurado. Entre em contato com o Super Admin.');
+        fecharModalUpgrade();
+    }
+}
+
+// ========== VER PERFIL PÚBLICO ==========
+function verPerfilPublico() {
+    const username = document.getElementById('perfil-username')?.value;
+    if (username) {
+        const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+        window.open(baseURL + '?u=' + username, '_blank');
+    }
+}
+
+function copiarLinkPerfil() {
+    const linkEl = document.getElementById('perfil-link-preview');
+    if (linkEl && linkEl.textContent) {
+        navigator.clipboard.writeText(linkEl.textContent).then(() => {
+            alert('✅ Link copiado! Compartilhe com seus seguidores.');
+        });
+    }
+}
+
+// ========== FUNÇÕES EXISTENTES ==========
 function getTemasDisponiveis(plano) {
     const todosTemas = ['dev', 'clean', 'dark', 'rosa', 'minimal', 'warm', 'cyber', 'ocean', 'sunset', 'forest', 'galaxy', 'coffee'];
     return todosTemas.slice(0, LIMITES[plano]?.temas || 3);
@@ -58,6 +121,33 @@ async function carregarDadosAdmin() {
     document.getElementById('tela-login').classList.add('hidden');
     document.getElementById('tela-admin').classList.remove('hidden');
     
+    // Carrega links de pagamento para upgrade
+    await carregarLinksPagamentoUpgrade();
+    
+    // Configura botão de upgrade
+    const btnUpgrade = document.getElementById('btn-upgrade');
+    if (btnUpgrade) {
+        btnUpgrade.onclick = (e) => {
+            e.preventDefault();
+            abrirModalUpgrade();
+        };
+    }
+    
+    // Configura botão ver perfil
+    const btnVerPerfil = document.getElementById('btn-ver-perfil');
+    if (btnVerPerfil) {
+        btnVerPerfil.onclick = (e) => {
+            e.preventDefault();
+            const username = document.getElementById('perfil-username')?.value;
+            if (username) {
+                const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+                window.open(baseURL + '?u=' + username, '_blank');
+            } else {
+                alert('⚠️ Salve seu perfil primeiro para gerar o link!');
+            }
+        };
+    }
+    
     const plano = await getPlanoAtual();
     const limites = LIMITES[plano];
     
@@ -67,7 +157,7 @@ async function carregarDadosAdmin() {
         badge.className = 'badge-plano badge-' + plano;
     }
     
-    const btnUpgrade = document.getElementById('btn-upgrade');
+    // Mostrar/esconder botão upgrade (só mostra se não for premium)
     if (btnUpgrade) {
         btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
     }
@@ -115,6 +205,22 @@ async function carregarDadosAdmin() {
         if (d.username) {
             const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
             const link = baseURL + '?u=' + d.username;
+            
+            // Atualiza preview do link
+            const previewEl = document.getElementById('perfil-link-preview');
+            if (previewEl) previewEl.textContent = link;
+            
+            // Adiciona campo hidden para username usado no ver perfil
+            if (!document.getElementById('perfil-username')) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.id = 'perfil-username';
+                input.value = d.username;
+                document.body.appendChild(input);
+            } else {
+                document.getElementById('perfil-username').value = d.username;
+            }
+            
             let divLink = document.getElementById('meu-link-admin');
             if (!divLink) {
                 divLink = document.createElement('div');
@@ -173,6 +279,16 @@ async function salvarPerfil() {
             foto: document.getElementById('perfil-foto').value.trim()
         }
     }, { merge: true });
+    
+    // Atualiza o link de perfil se username existir
+    const userDoc = await db.collection('usuarios').doc(userUID).get();
+    if (userDoc.exists && userDoc.data().username) {
+        const baseURL = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+        const link = baseURL + '?u=' + userDoc.data().username;
+        const previewEl = document.getElementById('perfil-link-preview');
+        if (previewEl) previewEl.textContent = link;
+    }
+    
     mostrarSucesso('perfil-sucesso');
 }
 
@@ -308,4 +424,4 @@ function fazerLogin() {
     auth.signInWithEmailAndPassword(email, senha).catch(() => {
         erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block';
     });
-           }
+        }
