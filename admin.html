@@ -12,75 +12,40 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .admin-header .btn-upgrade {
-            background: rgba(245,158,11,0.1);
-            border: 1px solid rgba(245,158,11,0.3);
-            color: #f59e0b;
-            padding: 6px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            white-space: nowrap;
-            display: inline-block;
+            background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+            color: #f59e0b; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+            font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; display: inline-block;
         }
         .admin-header .btn-upgrade:hover { background: rgba(245,158,11,0.2); }
         
         .link-card {
             background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.05));
-            border: 1px solid rgba(245,158,11,0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
+            border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center;
         }
         .link-card p { font-size: 12px; color: #8b949e; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; }
         .link-card code {
-            background: #0d1117;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #a78bfa;
-            word-break: break-all;
-            display: inline-block;
-            max-width: 100%;
+            background: #0d1117; padding: 10px 14px; border-radius: 10px; font-size: 12px;
+            color: #a78bfa; word-break: break-all; display: inline-block; max-width: 100%;
         }
         .btn-copiar { background: #8b5cf6; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; margin-top: 12px; }
-        .btn-copiar:hover { background: #7c3aed; }
+        .btn-copiar:hover { background: #7c3aed; transform: translateY(-1px); }
         
         .modal-upgrade {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            z-index: 1000; justify-content: center; align-items: center;
         }
         .modal-upgrade.ativo { display: flex !important; }
         .modal-upgrade-content {
-            background: #161b22;
-            border: 1px solid #f59e0b;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 450px;
-            width: 90%;
-            text-align: center;
+            background: #161b22; border: 1px solid #f59e0b; border-radius: 24px;
+            padding: 32px; max-width: 450px; width: 90%; text-align: center;
         }
         .modal-upgrade-content h3 { color: #f59e0b; margin-bottom: 8px; font-size: 24px; }
         .modal-upgrade-content p { color: #8b949e; margin-bottom: 24px; font-size: 13px; }
         .planos-upgrade { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
         .plano-upgrade-btn {
-            background: #0d1117;
-            border: 2px solid #30363d;
-            border-radius: 16px;
-            padding: 20px 24px;
-            cursor: pointer;
-            text-align: center;
-            flex: 1;
-            min-width: 120px;
-            transition: all 0.2s;
+            background: #0d1117; border: 2px solid #30363d; border-radius: 16px;
+            padding: 20px 24px; cursor: pointer; text-align: center; flex: 1; min-width: 120px; transition: all 0.2s;
         }
         .plano-upgrade-btn:hover { border-color: #8b5cf6; transform: translateY(-2px); }
         .plano-upgrade-btn .plano-icon { font-size: 32px; display: block; margin-bottom: 8px; }
@@ -95,28 +60,36 @@
         .msg-erro-lt { color: #f85149; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
         .msg-sucesso-lt { color: #3fb950; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
         .hidden { display: none !important; }
-        .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
-        .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; white-space: nowrap; text-decoration: none; display: inline-block; }
-        .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
-        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-primary-lt { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+        .btn-primary-lt:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.4); }
+        .btn-small-lt { background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; white-space: nowrap; text-decoration: none; display: inline-block; transition: all 0.2s; }
+        .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; transform: translateY(-1px); }
+        .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; transition: all 0.2s; }
         .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
-        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; }
+        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 8px; transition: all 0.2s; }
+        .list-item:hover { border-color: rgba(139,92,246,0.2); background: #111; }
         .list-item .info { flex: 1; min-width: 0; }
         .list-item .info strong { display: block; font-size: 13px; color: #c9d1d9; }
         .list-item .info small { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
         .list-item .actions { display: flex; gap: 6px; }
-        .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+        .admin-section { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 24px; margin-bottom: 20px; transition: all 0.2s; }
+        .admin-section:hover { border-color: rgba(139,92,246,0.1); }
         .admin-section h3 { font-size: 15px; font-weight: 600; color: #f0f6fc; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .admin-section h3 .icon { color: #8b5cf6; }
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #30363d;
+            background: #0d1117; color: #c9d1d9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none;
+            transition: all 0.2s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
+            border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); transform: translateY(-1px);
+        }
         .form-group textarea { min-height: 60px; resize: vertical; }
         .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; background: #0d1117; color: #c9d1d9; }
-        .tema-preset:hover { border-color: #8b5cf6; }
+        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; background: #0d1117; color: #c9d1d9; transition: all 0.2s; }
+        .tema-preset:hover { border-color: #8b5cf6; transform: translateY(-2px); }
         .tema-preset.ativo { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
         .cor-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
         .badge-plano { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
@@ -131,11 +104,38 @@
         .btn-logout { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
         .btn-logout:hover { background: rgba(248,81,73,0.2); }
         .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        
+        /* ========== ANALYTICS PREMIUM ========== */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px; margin-bottom: 16px;
+        }
+        .analytics-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; padding: 16px; text-align: center;
+            animation: fadeInUp 0.4s ease both; transition: all 0.3s;
+        }
+        .analytics-card:hover {
+            border-color: rgba(139,92,246,0.2); transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139,92,246,0.1);
+        }
+        .analytics-icon { font-size: 24px; margin-bottom: 8px; }
+        .analytics-numero { font-size: 24px; font-weight: 800; color: #f0f6fc; }
+        .analytics-label { font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+        .analytics-top-link {
+            background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15);
+            border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+            font-size: 13px; animation: fadeInUp 0.4s ease both;
+        }
+        .analytics-top-link .link-cliques { margin-left: auto; color: #a78bfa; font-weight: 600; }
+        
         @media (max-width: 600px) { 
             .admin-container { padding: 12px; } 
             .admin-section { padding: 16px; } 
             .tema-presets { grid-template-columns: 1fr; } 
             .admin-header { gap: 8px; }
+            .analytics-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -152,7 +152,6 @@
     </div>
 
     <div id="tela-admin" class="hidden">
-        <!-- HEADER CORRIGIDO -->
         <div class="admin-header">
             <img src="favicon.png" alt="Logo" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';">
             <div class="title"><span>Painel Admin</span> — dashboard</div>
@@ -163,12 +162,24 @@
         </div>
 
         <div id="meu-link-admin" class="link-card" style="display:none;">
-            <p>🔗 Seu link público:</p>
+            <p>🔗 Seu link público (link curto):</p>
             <code id="perfil-link-preview"></code>
             <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
         </div>
 
-        <!-- FUNDO (PREMIUM) -->
+        <!-- ANALYTICS (PREMIUM) -->
+        <div class="admin-section" id="secao-analytics" style="display:none;">
+            <h3><span class="icon">📊</span> Analytics (Premium)</h3>
+            <div class="analytics-grid" id="analytics-grid">
+                <div class="analytics-card"><div class="analytics-icon">👁️</div><div class="analytics-numero" id="analytics-views">0</div><div class="analytics-label">Visualizações</div></div>
+                <div class="analytics-card"><div class="analytics-icon">🖱️</div><div class="analytics-numero" id="analytics-clicks">0</div><div class="analytics-label">Cliques Totais</div></div>
+                <div class="analytics-card"><div class="analytics-icon">🔗</div><div class="analytics-numero" id="analytics-links-count">0</div><div class="analytics-label">Links Ativos</div></div>
+            </div>
+            <div id="analytics-top-link" class="analytics-top-link" style="display:none;">
+                <span>🏆</span><span id="top-link-name">--</span><span class="link-cliques" id="top-link-cliques">0 cliques</span>
+            </div>
+        </div>
+
         <div class="admin-section" id="secao-fundo" style="display:none;">
             <h3><span class="icon">🌄</span> Fundo Personalizado (Premium)</h3>
             <div class="form-group"><label>🖼️ URL da Imagem de Fundo</label><input type="text" id="config-fundo-usuario" placeholder="https://..."></div>
@@ -278,9 +289,9 @@
     };
 
     const LIMITES = {
-        gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false, fundo: false },
-        pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true, fundo: false },
-        premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true, fundo: true }
+        gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false, fundo: false, analytics: false },
+        pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true, fundo: false, analytics: false },
+        premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true, fundo: true, analytics: true }
     };
 
     function getTemasDisponiveis(plano) { return ['dev','clean','dark','rosa','minimal','warm','cyber','ocean','sunset','forest','galaxy','coffee'].slice(0, LIMITES[plano]?.temas || 3); }
@@ -298,8 +309,7 @@
     async function carregarLinksPagamentoUpgrade() {
         try {
             const snap = await db.collection('config').doc('planos').get();
-            if (snap.exists) {
-                const d = snap.data();
+            if (snap.exists) { const d = snap.data();
                 if (d.pro) { linksPagamentoUpgrade.pro = d.pro.link || ''; const el = document.getElementById('preco-upgrade-pro'); if (el && d.pro.preco) el.textContent = 'R$' + d.pro.preco; }
                 if (d.premium) { linksPagamentoUpgrade.premium = d.premium.link || ''; const el = document.getElementById('preco-upgrade-premium'); if (el && d.premium.preco) el.textContent = 'R$' + d.premium.preco; }
             }
@@ -308,23 +318,40 @@
 
     function abrirModalUpgrade() { document.getElementById('modal-upgrade').classList.add('ativo'); }
     function fecharModalUpgrade() { document.getElementById('modal-upgrade').classList.remove('ativo'); }
-    function escolherPlanoUpgrade(plano) {
-        const link = linksPagamentoUpgrade[plano];
-        if (link) { window.open(link, '_blank'); alert('✅ Redirecionando...'); fecharModalUpgrade(); }
-        else { alert('⚠️ Link não configurado.'); fecharModalUpgrade(); }
-    }
+    function escolherPlanoUpgrade(plano) { const link = linksPagamentoUpgrade[plano]; if (link) { window.open(link, '_blank'); alert('✅ Redirecionando...'); fecharModalUpgrade(); } else { alert('⚠️ Link não configurado.'); fecharModalUpgrade(); } }
     function copiarLinkPerfil() { const link = document.getElementById('perfil-link-preview')?.textContent; if (link) navigator.clipboard.writeText(link).then(() => alert('✅ Copiado!')); }
 
-    // ========== FUNDO DO USUÁRIO ==========
+    // ========== ANALYTICS ==========
+    async function carregarAnalytics() {
+        const plano = await getPlanoAtual();
+        const secao = document.getElementById('secao-analytics');
+        if (secao) secao.style.display = LIMITES[plano].analytics ? 'block' : 'none';
+        if (!LIMITES[plano].analytics) return;
+
+        const snap = await db.collection('usuarios').doc(userUID).collection('links').get();
+        const links = []; snap.forEach(doc => links.push({ id: doc.id, ...doc.data() }));
+        
+        document.getElementById('analytics-links-count').textContent = links.length;
+        const totalCliques = links.reduce((s, l) => s + (l.cliques || 0), 0);
+        document.getElementById('analytics-clicks').textContent = totalCliques;
+        const views = (await db.collection('usuarios').doc(userUID).get()).data()?.views || 0;
+        document.getElementById('analytics-views').textContent = views;
+
+        if (links.length > 0) {
+            const top = links.reduce((a, b) => (a.cliques || 0) > (b.cliques || 0) ? a : b);
+            document.getElementById('top-link-name').textContent = top.titulo || '--';
+            document.getElementById('top-link-cliques').textContent = (top.cliques || 0) + ' cliques';
+            document.getElementById('analytics-top-link').style.display = 'flex';
+        }
+    }
+
+    // ========== FUNDO ==========
     async function salvarFundoUsuario() {
         const plano = await getPlanoAtual();
-        if (!LIMITES[plano].fundo) { alert('⚠️ Fundo personalizado disponível apenas no plano Premium.'); return; }
+        if (!LIMITES[plano].fundo) { alert('⚠️ Premium apenas.'); return; }
         const bg = document.getElementById('config-fundo-usuario').value.trim();
         const overlay = document.getElementById('config-overlay-usuario').value.trim();
-        await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set({
-            backgroundImage: bg,
-            overlayColor: overlay || 'rgba(13,17,23,0.85)'
-        }, { merge: true });
+        await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set({ backgroundImage: bg, overlayColor: overlay || 'rgba(13,17,23,0.85)' }, { merge: true });
         mostrarSucesso('fundo-sucesso');
     }
 
@@ -334,12 +361,9 @@
         const lista = document.getElementById('lista-links');
         if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
         lista.innerHTML = '';
-        snap.forEach(doc => {
-            const l = doc.data();
-            const div = document.createElement('div'); div.className = 'list-item';
-            div.innerHTML = `<div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1}</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
-            lista.appendChild(div);
-        });
+        snap.forEach(doc => { const l = doc.data(); const div = document.createElement('div'); div.className = 'list-item';
+            div.innerHTML = `<div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1} | 👁 ${l.cliques||0} cliques</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
+            lista.appendChild(div); });
     }
 
     async function salvarLink() {
@@ -349,11 +373,11 @@
         if (!dados.titulo || !dados.url) { alert('⚠️ Título e URL obrigatórios!'); return; }
         const ref = db.collection('usuarios').doc(userUID).collection('links');
         if (id) await ref.doc(id).update(dados); else await ref.add(dados);
-        limparFormLink(); carregarListaLinks(); mostrarSucesso('link-sucesso');
+        limparFormLink(); carregarListaLinks(); carregarAnalytics(); mostrarSucesso('link-sucesso');
     }
 
     async function editarLink(id) { const doc = await db.collection('usuarios').doc(userUID).collection('links').doc(id).get(); if (doc.exists) { const l = doc.data(); document.getElementById('link-id').value = id; document.getElementById('link-titulo').value = l.titulo||''; document.getElementById('link-url').value = l.url||''; document.getElementById('link-icone').value = l.icone||''; document.getElementById('link-ordem').value = l.ordem||1; } }
-    async function removerLink(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete(); carregarListaLinks(); } }
+    async function removerLink(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete(); carregarListaLinks(); carregarAnalytics(); } }
     function limparFormLink() { ['link-id','link-titulo','link-url','link-icone'].forEach(id => document.getElementById(id).value = ''); document.getElementById('link-ordem').value = '1'; }
 
     // ========== MÍDIA ==========
@@ -362,12 +386,9 @@
         const lista = document.getElementById('lista-midias');
         if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhuma mídia.</p>'; return; }
         lista.innerHTML = '';
-        snap.forEach(doc => {
-            const m = doc.data();
-            const div = document.createElement('div'); div.className = 'list-item';
+        snap.forEach(doc => { const m = doc.data(); const div = document.createElement('div'); div.className = 'list-item';
             div.innerHTML = `<div class="info"><strong>${({imagem:'🖼️',youtube:'▶️',mp4:'🎥'})[m.tipo]||'📁'} ${m.tipo}</strong><small>ordem: ${m.ordem||1}</small></div><div class="actions"><button class="btn-small-lt" onclick="editarMidia('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerMidia('${doc.id}')">🗑</button></div>`;
-            lista.appendChild(div);
-        });
+            lista.appendChild(div); });
     }
 
     async function salvarMidia() {
@@ -392,10 +413,8 @@
     async function salvarTema() {
         const plano = await getPlanoAtual();
         if (!getTemasDisponiveis(plano).includes(temaAtual)) { alert('⚠️ Tema não disponível.'); return; }
-        const tema = { ...TEMAS[temaAtual] };
-        tema.logo = LIMITES[plano].logo ? document.getElementById('tema-logo').value.trim() : '';
-        await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set(tema);
-        mostrarSucesso('tema-sucesso');
+        const tema = { ...TEMAS[temaAtual] }; tema.logo = LIMITES[plano].logo ? document.getElementById('tema-logo').value.trim() : '';
+        await db.collection('usuarios').doc(userUID).collection('config').doc('tema').set(tema); mostrarSucesso('tema-sucesso');
     }
 
     async function salvarPerfil() {
@@ -421,7 +440,6 @@
         if (badge) { badge.textContent = plano; badge.className = 'badge-plano badge-' + plano; }
         if (btnUpgrade) btnUpgrade.style.display = plano !== 'premium' ? 'inline-block' : 'none';
         
-        // Fundo (Premium)
         const secaoFundo = document.getElementById('secao-fundo');
         if (secaoFundo) secaoFundo.style.display = LIMITES[plano].fundo ? 'block' : 'none';
         
@@ -432,30 +450,10 @@
         const selectMidia = document.getElementById('midia-tipo');
         if (selectMidia) { const optY = selectMidia.querySelector('option[value="youtube"]'); const optM = selectMidia.querySelector('option[value="mp4"]'); if (optY) optY.disabled = !LIMITES[plano].youtube; if (optM) optM.disabled = !LIMITES[plano].mp4; }
         const userDoc = await db.collection('usuarios').doc(userUID).get();
-        if (userDoc.exists) { 
-            const d = userDoc.data(); 
-            document.getElementById('perfil-nome').value = d.perfil?.nome || ''; 
-            document.getElementById('perfil-bio').value = d.perfil?.bio || ''; 
-            document.getElementById('perfil-foto').value = d.perfil?.foto || ''; 
-            if (d.username) { 
-                const link = window.location.origin + window.location.pathname.replace('admin.html','index.html') + '?u=' + d.username; 
-                document.getElementById('perfil-link-preview').textContent = link; 
-                document.getElementById('meu-link-admin').style.display = 'block';
-                // 🔥 Atualiza botão "ver site" para link do usuário
-                const btnVerSite = document.getElementById('btn-ver-site');
-                if (btnVerSite) btnVerSite.href = link;
-            }
-        }
+        if (userDoc.exists) { const d = userDoc.data(); document.getElementById('perfil-nome').value = d.perfil?.nome || ''; document.getElementById('perfil-bio').value = d.perfil?.bio || ''; document.getElementById('perfil-foto').value = d.perfil?.foto || ''; if (d.username) { const link = window.location.origin + window.location.pathname.replace('admin.html','index.html') + '?u=' + d.username; document.getElementById('perfil-link-preview').textContent = link; document.getElementById('meu-link-admin').style.display = 'block'; const btnVerSite = document.getElementById('btn-ver-site'); if (btnVerSite) btnVerSite.href = link; } }
         const temaSnap = await db.collection('usuarios').doc(userUID).collection('config').doc('tema').get();
-        if (temaSnap.exists) { 
-            const t = temaSnap.data(); 
-            temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev'; 
-            if (campoTemaLogo) campoTemaLogo.value = t.logo || ''; 
-            // Carrega fundo do usuário
-            if (document.getElementById('config-fundo-usuario')) document.getElementById('config-fundo-usuario').value = t.backgroundImage || '';
-            if (document.getElementById('config-overlay-usuario')) document.getElementById('config-overlay-usuario').value = t.overlayColor || 'rgba(13,17,23,0.85)';
-        }
-        aplicarPreset(temaAtual); carregarListaLinks(); carregarListaMidias();
+        if (temaSnap.exists) { const t = temaSnap.data(); temaAtual = Object.keys(TEMAS).find(k => TEMAS[k].nome === t.nome) || 'dev'; if (campoTemaLogo) campoTemaLogo.value = t.logo || ''; if (document.getElementById('config-fundo-usuario')) document.getElementById('config-fundo-usuario').value = t.backgroundImage || ''; if (document.getElementById('config-overlay-usuario')) document.getElementById('config-overlay-usuario').value = t.overlayColor || 'rgba(13,17,23,0.85)'; }
+        aplicarPreset(temaAtual); carregarListaLinks(); carregarListaMidias(); carregarAnalytics();
     }
 
     function mostrarSucesso(id) { const el = document.getElementById(id); if (el) { el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); } }
@@ -466,14 +464,11 @@
         const erro = document.getElementById('login-erro');
         erro.style.display = 'none';
         if (!email || !senha) { erro.textContent = '⚠️ Preencha email e senha'; erro.style.display = 'block'; return; }
-        auth.signInWithEmailAndPassword(email, senha)
-            .then(() => { carregarDadosAdmin(); })
-            .catch(() => { erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block'; });
+        auth.signInWithEmailAndPassword(email, senha).then(() => { carregarDadosAdmin(); }).catch(() => { erro.textContent = '❌ Email ou senha incorretos'; erro.style.display = 'block'; });
     }
 
     function logout() { auth.signOut(); window.location.href = 'index.html'; }
-
     if (auth.currentUser) { carregarDadosAdmin(); }
 </script>
 </body>
-</html>
+                        </html>
