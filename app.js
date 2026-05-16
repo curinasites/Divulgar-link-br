@@ -13,7 +13,8 @@ const TEMA_PADRAO = {
     fontMain: "'Inter', 'JetBrains Mono', monospace",
     fontMono: "'JetBrains Mono', monospace",
     borderRadius: '12px', cardRadius: '16px',
-    estiloHeader: 'console', logo: ''
+    estiloHeader: 'console', logo: '',
+    backgroundImage: '', overlayColor: 'rgba(13,17,23,0.85)'
 };
 
 // Elementos DOM
@@ -21,34 +22,49 @@ const profileSection = document.getElementById('profile-section');
 const linksSection = document.getElementById('links-section');
 const mediaSection = document.getElementById('media-section');
 const headerLt = document.getElementById('header-lt');
-const previaBadge = document.getElementById('previa-badge');
 const meuLinkDiv = document.getElementById('meu-link');
 const botoesAdminDiv = document.getElementById('botoes-admin');
+const bgCustom = document.getElementById('bg-custom');
+const bgOverlay = document.getElementById('bg-overlay');
 
 // Variáveis globais
 let currentUserId = null;
 let currentUserData = null;
 
-// ========== FUNÇÃO PARA CARREGAR LOGO GLOBAL ==========
-async function carregarLogoGlobal() {
+// ========== CARREGAR CONFIG GLOBAL (logo, fundo, overlay) ==========
+async function carregarConfigGlobal() {
     try {
         const configSnap = await db.collection('config').doc('geral').get();
-        if (configSnap.exists && configSnap.data().logo) {
-            const logoUrl = configSnap.data().logo;
-            if (headerLt) {
+        if (configSnap.exists) {
+            const config = configSnap.data();
+            
+            // Logo no header
+            if (config.logo && headerLt) {
                 const consoleLine = headerLt.querySelector('.console-line');
                 if (consoleLine) {
                     consoleLine.innerHTML = `
-                        <img src="${logoUrl}" alt="Logo" style="width:22px;height:22px;border-radius:4px;object-fit:cover;">
+                        <img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:4px;object-fit:cover;">
                         <span class="console-text">> Divulga Link BR | online</span>
                     `;
                 }
             }
-            console.log("✅ Logo global carregada:", logoUrl);
-            return logoUrl;
+            
+            // Fundo personalizado
+            if (config.backgroundImage && bgCustom) {
+                bgCustom.style.backgroundImage = `url(${config.backgroundImage})`;
+                bgCustom.classList.add('visible');
+            }
+            
+            // Overlay
+            if (bgOverlay) {
+                const overlayColor = config.overlayColor || 'rgba(13,17,23,0.85)';
+                bgOverlay.style.background = overlayColor;
+            }
+            
+            return config;
         }
     } catch (error) {
-        console.error("❌ Erro ao carregar logo:", error);
+        console.error("❌ Erro ao carregar config global:", error);
     }
     return null;
 }
@@ -70,55 +86,45 @@ function aplicarTema(tema) {
     root.style.setProperty('--card-radius', t.cardRadius);
 }
 
-// ========== RENDERIZAR PRÉVIA (PÁGINA PRINCIPAL) ==========
-function renderizarPrevia() {
-    console.log("🎨 Renderizando prévia da página principal");
+// ========== RENDERIZAR PÁGINA PRINCIPAL (SUPER ADMIN) ==========
+function renderizarPaginaPrincipal() {
+    console.log("🎨 Renderizando página principal");
     
-    // Esconde o badge de prévia
-    if (previaBadge) previaBadge.style.display = 'block';
-    
-    // Aplica tema padrão
     aplicarTema(TEMA_PADRAO);
     
-    // Perfil de exemplo
+    // Perfil do Super Admin (você)
     if (profileSection) {
         profileSection.innerHTML = `
             <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #6366f1, #a78bfa);">D</div>
-            <h1 class="profile-name">@seunome</h1>
-            <p class="profile-bio">// sua bio personalizada aqui ✨</p>
+            <h1 class="profile-name">Divulga Link BR</h1>
+            <p class="profile-bio">// A plataforma definitiva para divulgar seus links</p>
         `;
     }
     
     // Links de exemplo
     if (linksSection) {
         linksSection.innerHTML = `
-            <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">💻</span><span>Meu GitHub</span><span class="link-arrow">→</span>
+            <a href="cadastro.html" class="link-btn" style="background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1)); border:1px solid rgba(139,92,246,0.2);">
+                <span class="link-icon">🚀</span>
+                <span>Criar Minha Conta Gratuita</span>
+                <span class="link-arrow">→</span>
             </a>
-            <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">📱</span><span>Instagram</span><span class="link-arrow">→</span>
+            <a href="admin.html" class="link-btn">
+                <span class="link-icon">🔐</span>
+                <span>Acessar Painel Admin</span>
+                <span class="link-arrow">→</span>
             </a>
-            <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">🌐</span><span>Meu Portfólio</span><span class="link-arrow">→</span>
-            </a>
-            <a href="#" class="link-btn" onclick="return false;">
-                <span class="link-icon">📺</span><span>Canal do YouTube</span><span class="link-arrow">→</span>
+            <a href="#" class="link-btn" onclick="abrirModalLogin(); return false;">
+                <span class="link-icon">👤</span>
+                <span>Fazer Login</span>
+                <span class="link-arrow">→</span>
             </a>
         `;
     }
     
-    // Mídia de exemplo
-    if (mediaSection) {
-        mediaSection.innerHTML = `
-            <div class="media-card">
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen></iframe>
-                </div>
-            </div>
-        `;
-    }
+    // Mídia vazia na página principal
+    if (mediaSection) mediaSection.innerHTML = '';
     
-    // Esconde botões admin e link de divulgação na prévia
     if (botoesAdminDiv) botoesAdminDiv.style.display = 'none';
     if (meuLinkDiv) meuLinkDiv.innerHTML = '';
 }
@@ -127,64 +133,47 @@ function renderizarPrevia() {
 async function renderizarPaginaUsuario(uid, userData) {
     console.log("👤 Renderizando página do usuário:", uid);
     
-    // Esconde o badge de prévia
-    if (previaBadge) previaBadge.style.display = 'none';
-    
-    // Carrega o tema do usuário
     try {
         const temaSnap = await db.collection('usuarios').doc(uid).collection('config').doc('tema').get();
         aplicarTema(temaSnap.exists ? temaSnap.data() : TEMA_PADRAO);
     } catch (error) {
-        console.error("Erro ao carregar tema:", error);
         aplicarTema(TEMA_PADRAO);
     }
     
-    // Renderiza perfil
     const perfil = userData?.perfil || { nome: '@dev', bio: '', foto: '' };
     renderizarPerfil(perfil);
     
-    // Renderiza links
     try {
         const linksSnap = await db.collection('usuarios').doc(uid).collection('links').orderBy('ordem', 'asc').get();
-        const links = [];
-        linksSnap.forEach(doc => links.push({ id: doc.id, ...doc.data() }));
+        const links = []; linksSnap.forEach(doc => links.push({ id: doc.id, ...doc.data() }));
         renderizarLinks(links);
-    } catch (error) {
-        console.error("Erro ao carregar links:", error);
-        renderizarLinks([]);
-    }
+    } catch (error) { renderizarLinks([]); }
     
-    // Renderiza mídias
     try {
         const midiaSnap = await db.collection('usuarios').doc(uid).collection('midia').orderBy('ordem', 'asc').get();
-        const midias = [];
-        midiaSnap.forEach(doc => midias.push({ id: doc.id, ...doc.data() }));
+        const midias = []; midiaSnap.forEach(doc => midias.push({ id: doc.id, ...doc.data() }));
         renderizarMidia(midias);
-    } catch (error) {
-        console.error("Erro ao carregar mídias:", error);
-        renderizarMidia([]);
-    }
+    } catch (error) { renderizarMidia([]); }
     
-    // Atualiza título da página
     document.title = `${perfil.nome || 'Perfil'} | Divulga Link BR`;
     
-    // Mostra botões admin para o dono da página
+    // Botões admin
     if (botoesAdminDiv && usuarioAtual && usuarioAtual.uid === uid) {
         botoesAdminDiv.style.display = 'flex';
         botoesAdminDiv.innerHTML = `
-            <a href="admin.html" class="btn-admin-link" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); color:#a78bfa; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:12px;">⚙️ Meu Painel</a>
+            <a href="admin.html" class="btn-admin-link" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;">⚙️ Meu Painel</a>
             ${usuarioAtual.email?.toLowerCase() === 'franciscodemelocurina9@gmail.com' ? 
-                `<a href="super-admin.html" class="btn-admin-link" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); color:#f59e0b; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:12px;">👑 Super Admin</a>` : ''}
+                `<a href="super-admin.html" class="btn-admin-link" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;">👑 Super Admin</a>` : ''}
         `;
     } else if (botoesAdminDiv) {
         botoesAdminDiv.style.display = 'none';
     }
     
-    // Mostra link de divulgação para o dono
+    // Link de divulgação
     if (meuLinkDiv && usuarioAtual && usuarioAtual.uid === uid && userData?.username) {
         const baseURL = window.location.origin + window.location.pathname;
         meuLinkDiv.innerHTML = `
-            <p style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">🔗 Seu link de divulgação:</p>
+            <p style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">🔗 Seu link:</p>
             <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
                 <code style="background:#161b22;padding:8px 14px;border-radius:8px;font-size:12px;color:#a78bfa;">${baseURL}?u=${userData.username}</code>
                 <button onclick="copiarLink('${baseURL}?u=${userData.username}')" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button>
@@ -210,7 +199,7 @@ function renderizarPerfil(perfil) {
 function renderizarLinks(links) {
     if (!linksSection) return;
     if (links.length === 0) {
-        linksSection.innerHTML = '<p style="text-align:center;color:#8b949e;font-size:13px;padding:20px;">Nenhum link adicionado ainda.</p>';
+        linksSection.innerHTML = '<p style="text-align:center;color:#8b949e;font-size:13px;padding:20px;">Nenhum link ainda.</p>';
         return;
     }
     linksSection.innerHTML = links.map((link, i) => `
@@ -224,10 +213,7 @@ function renderizarLinks(links) {
 
 function renderizarMidia(midias) {
     if (!mediaSection) return;
-    if (midias.length === 0) {
-        mediaSection.innerHTML = '';
-        return;
-    }
+    if (midias.length === 0) { mediaSection.innerHTML = ''; return; }
     mediaSection.innerHTML = midias.map((midia, i) => {
         let conteudo = '';
         if (midia.tipo === 'imagem') {
@@ -246,22 +232,20 @@ function renderizarMidia(midias) {
 async function carregarPaginaPublica() {
     console.log("🔍 Carregando página pública, userParam:", userParam);
     
-    // Carrega a logo global primeiro
-    await carregarLogoGlobal();
+    // Carrega config global (fundo, overlay, logo)
+    await carregarConfigGlobal();
     
-    // Se não tem username na URL, mostra prévia
+    // Se NÃO tem username na URL → página principal da plataforma
     if (!userParam) {
-        console.log("⚠️ Nenhum username na URL, mostrando prévia");
-        renderizarPrevia();
+        renderizarPaginaPrincipal();
         return;
     }
     
+    // Tem username → carrega página do usuário
     try {
-        // Busca o usuário pelo username
         const userSnapshot = await db.collection('usuarios').where('username', '==', userParam).get();
         
         if (userSnapshot.empty) {
-            console.log("❌ Usuário não encontrado:", userParam);
             renderizarUsuarioNaoEncontrado();
             return;
         }
@@ -270,13 +254,9 @@ async function carregarPaginaPublica() {
         currentUserId = userDoc.id;
         currentUserData = userDoc.data();
         
-        console.log("✅ Usuário encontrado:", currentUserData.email);
-        
-        // Renderiza a página do usuário
         await renderizarPaginaUsuario(currentUserId, currentUserData);
-        
     } catch (error) {
-        console.error("❌ Erro ao carregar página pública:", error);
+        console.error("❌ Erro:", error);
         renderizarErro();
     }
 }
@@ -287,12 +267,11 @@ function renderizarUsuarioNaoEncontrado() {
         profileSection.innerHTML = `
             <div class="profile-avatar-fallback" style="display:flex; background:linear-gradient(135deg, #f85149, #b91c1c);">!</div>
             <h1 class="profile-name">Usuário não encontrado</h1>
-            <p class="profile-bio">O perfil que você procura não existe ou foi removido.</p>
+            <p class="profile-bio">O perfil que você procura não existe.</p>
         `;
     }
     if (linksSection) linksSection.innerHTML = '';
     if (mediaSection) mediaSection.innerHTML = '';
-    if (previaBadge) previaBadge.style.display = 'none';
 }
 
 function renderizarErro() {
@@ -308,7 +287,6 @@ function renderizarErro() {
     if (mediaSection) mediaSection.innerHTML = '';
 }
 
-// ========== FUNÇÕES UTILITÁRIAS ==========
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -318,17 +296,14 @@ function escapeHtml(text) {
 
 function copiarLink(link) {
     navigator.clipboard.writeText(link).then(() => {
-        alert('✅ Link copiado! Compartilhe com seus seguidores.');
+        alert('✅ Link copiado!');
     }).catch(() => {
         prompt('Copie seu link:', link);
     });
 }
 
-// ========== EXPOR FUNÇÕES GLOBAIS ==========
 window.copiarLink = copiarLink;
 
-// Inicializa quando a página carregar
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("📄 DOM carregado, inicializando app.js");
     carregarPaginaPublica();
 });
