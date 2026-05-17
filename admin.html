@@ -224,7 +224,7 @@
             <h3><span class="icon">🔗</span> Links</h3>
             <div class="form-group"><label>Título</label><input type="text" id="link-titulo" placeholder="Meu GitHub"></div>
             <div class="form-group"><label>URL</label><input type="text" id="link-url" placeholder="https://github.com/..."></div>
-            <div class="form-group"><label>Ícone (emoji)</label><input type="text" id="link-icone" placeholder="💻"></div>
+            <div class="form-group"><label>Ícone (emoji ou URL da imagem)</label><input type="text" id="link-icone" placeholder="💻 ou https://..."></div>
             <div class="form-group"><label>Ordem (número)</label><input type="number" id="link-ordem" placeholder="1" value="1"></div>
             <input type="hidden" id="link-id" value="">
             <button class="btn-primary-lt" onclick="salvarLink()">💾 Salvar Link</button>
@@ -362,7 +362,12 @@
         if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
         lista.innerHTML = '';
         snap.forEach(doc => { const l = doc.data(); const div = document.createElement('div'); div.className = 'list-item';
-            div.innerHTML = `<div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1} | 👁 ${l.cliques||0} cliques</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
+            // 🆕 Mostra imagem se for URL, senão emoji
+            let iconPreview = l.icone || '🔗';
+            if (l.icone && /^https?:\/\//i.test(l.icone) && /\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(l.icone)) {
+                iconPreview = `<img src="${l.icone}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;">`;
+            }
+            div.innerHTML = `<div class="info"><strong>${iconPreview} ${l.titulo}</strong><small>ordem: ${l.ordem||1} | 👁 ${l.cliques||0} cliques</small></div><div class="actions"><button class="btn-small-lt" onclick="editarLink('${doc.id}')">✏️</button><button class="btn-danger-lt" onclick="removerLink('${doc.id}')">🗑</button></div>`;
             lista.appendChild(div); });
     }
 
@@ -471,4 +476,4 @@
     if (auth.currentUser) { carregarDadosAdmin(); }
 </script>
 </body>
-                        </html>
+    </html>
