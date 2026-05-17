@@ -119,168 +119,122 @@
             font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b949e; letter-spacing: 1px;
         }
 
-        /* ========== POP-UP DE ANÚNCIO PREMIUM ========== */
-        .popup-overlay {
-            display: none;
+        /* ========== BANNER FIXO NO RODAPÉ ========== */
+        .banner-rodape {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeInOverlay 0.4s ease;
-        }
-        .popup-overlay.ativo {
+            background: rgba(22, 27, 34, 0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(139, 92, 246, 0.3);
+            z-index: 500;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+            animation: slideUpBanner 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.5), 0 0 50px rgba(139,92,246,0.1);
         }
-        @keyframes fadeInOverlay {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .banner-rodape.fechado {
+            animation: slideDownBanner 0.4s ease forwards;
         }
-
-        .popup-card {
-            background: rgba(22, 27, 34, 0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-            border-radius: 24px;
-            padding: 36px 28px 28px;
-            max-width: 420px;
-            width: 90%;
-            text-align: center;
-            position: relative;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 80px rgba(139, 92, 246, 0.15);
+        @keyframes slideUpBanner {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.8) translateY(30px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+        @keyframes slideDownBanner {
+            from { transform: translateY(0); }
+            to { transform: translateY(100%); }
         }
 
-        .popup-emoji {
-            font-size: 52px;
-            margin-bottom: 12px;
-            animation: floatEmoji 3s ease-in-out infinite;
-        }
-        @keyframes floatEmoji {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .popup-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: #f0f6fc;
-            margin-bottom: 6px;
-            letter-spacing: -0.3px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .popup-subtitle {
+        .banner-texto {
             font-size: 13px;
-            color: #8b949e;
-            font-family: 'JetBrains Mono', monospace;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
         }
-
-        .popup-contador {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 18px;
-        }
-
-        .popup-circulo {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 3px solid rgba(139, 92, 246, 0.2);
-            border-top-color: #8b5cf6;
-            animation: spinContador 1s linear infinite;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        @keyframes spinContador {
-            to { transform: rotate(360deg); }
-        }
-
-        .popup-circulo-texto {
-            font-size: 18px;
-            font-weight: 700;
+        .banner-texto strong {
             color: #a78bfa;
-            font-family: 'JetBrains Mono', monospace;
-            animation: none;
         }
 
-        .popup-botoes {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .popup-btn-link {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
+        .banner-btn-link {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: #fff;
-            font-weight: 600;
-            font-size: 15px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
             text-decoration: none;
             font-family: 'Inter', sans-serif;
+            white-space: nowrap;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(99,102,241,0.3);
         }
-        .popup-btn-link:hover {
+        .banner-btn-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.5);
-            opacity: 0.95;
+            box-shadow: 0 8px 25px rgba(99,102,241,0.5);
         }
 
-        .popup-btn-fechar {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.03);
+        .banner-btn-fechar {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
             color: #8b949e;
-            font-size: 13px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             cursor: pointer;
-            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s;
+            flex-shrink: 0;
         }
-        .popup-btn-fechar:hover:not(:disabled) {
+        .banner-btn-fechar:hover {
             border-color: #f85149;
             color: #f85149;
-            background: rgba(248, 81, 73, 0.05);
+            background: rgba(248,81,73,0.1);
         }
-        .popup-btn-fechar:disabled {
+        .banner-btn-fechar:disabled {
             opacity: 0.4;
             cursor: not-allowed;
         }
 
-        /* Responsivo */
-        @media (max-width: 480px) {
-            .popup-card {
-                padding: 28px 20px 22px;
+        .banner-contador {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #a78bfa;
+            background: rgba(139,92,246,0.1);
+            border-radius: 8px;
+            padding: 4px 10px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            .banner-rodape {
+                padding: 10px 12px;
+                gap: 8px;
             }
-            .popup-emoji {
-                font-size: 40px;
+            .banner-texto {
+                font-size: 11px;
+                min-width: 100px;
             }
-            .popup-title {
-                font-size: 19px;
+            .banner-btn-link {
+                font-size: 11px;
+                padding: 8px 14px;
+            }
+            .banner-contador {
+                font-size: 10px;
+                padding: 3px 8px;
             }
         }
     </style>
@@ -331,25 +285,12 @@
         </div>
     </div>
 
-    <!-- POP-UP DE ANÚNCIO -->
-    <div class="popup-overlay" id="popup-overlay">
-        <div class="popup-card">
-            <div class="popup-emoji">🚀</div>
-            <div class="popup-title">Tenha um Site Lucrativo!</div>
-            <div class="popup-subtitle">Transformo sua ideia em site ou app profissional. Design moderno, preço acessível e entrega garantida.</div>
-            <div class="popup-contador" id="popup-contador">
-                <div class="popup-circulo">
-                    <span class="popup-circulo-texto" id="popup-segundos">3</span>
-                </div>
-                <span style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">seg</span>
-            </div>
-            <div class="popup-botoes">
-                <a href="https://curinaapps.s.gy/4KtnPC" target="_blank" class="popup-btn-link">🛒 Ver Oferta Completa</a>
-                <button class="popup-btn-fechar" id="popup-btn-fechar" disabled onclick="fecharPopup()">
-                    ⏳ Aguarde <span id="popup-contador-texto">3</span> seg...
-                </button>
-            </div>
-        </div>
+    <!-- BANNER FIXO NO RODAPÉ -->
+    <div class="banner-rodape" id="banner-rodape">
+        <span class="banner-texto">🚀 <strong>Tenha um Site Lucrativo!</strong> Transformo sua ideia em site ou app profissional.</span>
+        <span class="banner-contador" id="banner-contador">⏳ 3s</span>
+        <a href="https://curinaapps.s.gy/4KtnPC" target="_blank" class="banner-btn-link">🛒 Ver Oferta</a>
+        <button class="banner-btn-fechar" id="banner-btn-fechar" disabled onclick="fecharBanner()">✕</button>
     </div>
 
     <div class="container-lt">
@@ -425,65 +366,42 @@
     </script>
 
     <script>
-        // POP-UP COM CONTADOR DE 3 SEGUNDOS
-        let popupTimer;
-        let popupSegundos = 3;
+        // BANNER FIXO NO RODAPÉ COM CONTADOR DE 3 SEGUNDOS
+        let bannerTimer;
+        let bannerSegundos = 3;
 
-        function mostrarPopup() {
-            document.getElementById('popup-overlay').classList.add('ativo');
-            document.body.style.overflow = 'hidden';
-            iniciarContador();
-        }
-
-        function iniciarContador() {
-            const btnFechar = document.getElementById('popup-btn-fechar');
-            const textoSegundos = document.getElementById('popup-segundos');
-            const textoContador = document.getElementById('popup-contador-texto');
+        function iniciarContadorBanner() {
+            const btnFechar = document.getElementById('banner-btn-fechar');
+            const contador = document.getElementById('banner-contador');
             
             btnFechar.disabled = true;
-            popupSegundos = 3;
-            textoSegundos.textContent = popupSegundos;
-            textoContador.textContent = popupSegundos;
+            bannerSegundos = 3;
+            contador.textContent = '⏳ ' + bannerSegundos + 's';
 
-            popupTimer = setInterval(() => {
-                popupSegundos--;
-                textoSegundos.textContent = popupSegundos;
-                textoContador.textContent = popupSegundos;
-
-                if (popupSegundos <= 0) {
-                    clearInterval(popupTimer);
+            bannerTimer = setInterval(() => {
+                bannerSegundos--;
+                if (bannerSegundos <= 0) {
+                    clearInterval(bannerTimer);
                     btnFechar.disabled = false;
-                    btnFechar.innerHTML = '✕ Fechar';
-                    document.getElementById('popup-contador').style.display = 'none';
+                    contador.textContent = '';
+                } else {
+                    contador.textContent = '⏳ ' + bannerSegundos + 's';
                 }
             }, 1000);
         }
 
-        function fecharPopup() {
-            clearInterval(popupTimer);
-            document.getElementById('popup-overlay').classList.remove('ativo');
-            document.body.style.overflow = '';
+        function fecharBanner() {
+            clearInterval(bannerTimer);
+            const banner = document.getElementById('banner-rodape');
+            banner.classList.add('fechado');
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 400);
         }
 
-        // Mostrar pop-up após 1 segundo da página carregar
+        // Iniciar contador quando a página carregar
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                mostrarPopup();
-            }, 1000);
-        });
-
-        // Fechar ao clicar fora do card
-        document.getElementById('popup-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                fecharPopup();
-            }
-        });
-
-        // Fechar com tecla ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                fecharPopup();
-            }
+            iniciarContadorBanner();
         });
     </script>
 
@@ -495,7 +413,6 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // 🔥 Lê a cor das partículas da variável CSS (definida pelo app.js)
         function getParticulaCor() {
             const cor = getComputedStyle(document.documentElement).getPropertyValue('--particula-cor').trim();
             return cor || 'rgba(139, 92, 246, 0.4)';
@@ -516,9 +433,7 @@
             }
             draw() {
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                // 🔥 Usa a cor personalizada do Super Admin
                 const corBase = getParticulaCor();
-                // Substitui o último número (alpha) pela opacidade da partícula
                 const corFinal = corBase.replace(/[\d.]+\)$/, `${this.opacity})`);
                 ctx.fillStyle = corFinal;
                 ctx.fill();
