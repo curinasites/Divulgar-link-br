@@ -105,7 +105,6 @@
         .btn-logout:hover { background: rgba(248,81,73,0.2); }
         .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         
-        /* ========== ANALYTICS PREMIUM ========== */
         .analytics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -167,7 +166,6 @@
             <div><button class="btn-copiar" onclick="copiarLinkPerfil()">📋 Copiar Link</button></div>
         </div>
 
-        <!-- ANALYTICS (PREMIUM) -->
         <div class="admin-section" id="secao-analytics" style="display:none;">
             <h3><span class="icon">📊</span> Analytics (Premium)</h3>
             <div class="analytics-grid" id="analytics-grid">
@@ -204,6 +202,12 @@
                     <div class="tema-preset" data-tema="forest" onclick="aplicarPreset('forest')"><span class="cor-preview" style="background:#22c55e;"></span>Forest</div>
                     <div class="tema-preset" data-tema="galaxy" onclick="aplicarPreset('galaxy')"><span class="cor-preview" style="background:#7c3aed;"></span>Galaxy</div>
                     <div class="tema-preset" data-tema="coffee" onclick="aplicarPreset('coffee')"><span class="cor-preview" style="background:#92400e;"></span>Coffee</div>
+                    <!-- 🆕 5 TEMAS ESPECIAIS -->
+                    <div class="tema-preset" data-tema="matrix" onclick="aplicarPreset('matrix')"><span class="cor-preview" style="background:#00ff41;"></span>🟢 Matrix</div>
+                    <div class="tema-preset" data-tema="dragonball" onclick="aplicarPreset('dragonball')"><span class="cor-preview" style="background:#f97316;"></span>🟠 Dragon Ball</div>
+                    <div class="tema-preset" data-tema="naruto" onclick="aplicarPreset('naruto')"><span class="cor-preview" style="background:#ff6b35;"></span>🍥 Naruto</div>
+                    <div class="tema-preset" data-tema="harrypotter" onclick="aplicarPreset('harrypotter')"><span class="cor-preview" style="background:#d4a574;"></span>⚡ Harry Potter</div>
+                    <div class="tema-preset" data-tema="gamer" onclick="aplicarPreset('gamer')"><span class="cor-preview" style="background:#00ffff;"></span>🎮 Gamer</div>
                 </div>
             </div>
             <div class="form-group"><label>🖼️ Logo do Header (URL)</label><input type="text" id="tema-logo" placeholder="https://..."><div class="link-hint">💡 Disponível nos planos Pro/Premium</div></div>
@@ -274,27 +278,35 @@
     let linksPagamentoUpgrade = { pro: '', premium: '' };
 
     const TEMAS = {
-        dev: { nome: 'Dev Terminal', bg: '#0d1117', bgCard: '#161b22', border: '#30363d', text: '#c9d1d9', textSecondary: '#8b949e', primary: '#8b5cf6', primaryLight: '#a78bfa', fontMain: "'Inter','JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
-        clean: { nome: 'Clean Blue', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0e0f0', textSecondary: '#9090b0', primary: '#3b82f6', primaryLight: '#60a5fa', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
-        dark: { nome: 'Dark Green', bg: '#0a0f0a', bgCard: '#1a2a1a', border: '#2a3a2a', text: '#d0e0d0', textSecondary: '#809080', primary: '#10b981', primaryLight: '#34d399', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' },
-        rosa: { nome: 'Rose Pink', bg: '#1a0a14', bgCard: '#2d1a24', border: '#3d2a34', text: '#f0d0e0', textSecondary: '#b090a0', primary: '#ec4899', primaryLight: '#f472b6', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '' },
-        minimal: { nome: 'Minimal', bg: '#0a0a0a', bgCard: '#1a1a1a', border: '#2a2a2a', text: '#d0d0d0', textSecondary: '#808080', primary: '#6b7280', primaryLight: '#9ca3af', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', logo: '' },
-        warm: { nome: 'Warm Orange', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#f59e0b', primaryLight: '#fbbf24', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
-        cyber: { nome: 'Cyber Neon', bg: '#0a0a0a', bgCard: '#1a0a2d', border: '#3d1a6e', text: '#e0d0ff', textSecondary: '#9070c0', primary: '#a855f7', primaryLight: '#c084fc', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '' },
-        ocean: { nome: 'Ocean Blue', bg: '#0a1a2a', bgCard: '#1a2a3d', border: '#2a3a50', text: '#d0e8ff', textSecondary: '#80a8c0', primary: '#06b6d4', primaryLight: '#22d3ee', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
-        sunset: { nome: 'Sunset', bg: '#1a0a0a', bgCard: '#2d1a1a', border: '#3d2a2a', text: '#ffe0d0', textSecondary: '#c0a090', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '' },
-        forest: { nome: 'Forest', bg: '#0a1a0a', bgCard: '#1a2d1a', border: '#2a3d2a', text: '#d0f0d0', textSecondary: '#80b080', primary: '#22c55e', primaryLight: '#4ade80', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' },
-        galaxy: { nome: 'Galaxy', bg: '#0d0d1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0d0ff', textSecondary: '#9080c0', primary: '#7c3aed', primaryLight: '#8b5cf6', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '' },
-        coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '' }
+        dev: { nome: 'Dev Terminal', bg: '#0d1117', bgCard: '#161b22', border: '#30363d', text: '#c9d1d9', textSecondary: '#8b949e', primary: '#8b5cf6', primaryLight: '#a78bfa', fontMain: "'Inter','JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '', estiloParticulas: 'padrao' },
+        clean: { nome: 'Clean Blue', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0e0f0', textSecondary: '#9090b0', primary: '#3b82f6', primaryLight: '#60a5fa', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '', estiloParticulas: 'padrao' },
+        dark: { nome: 'Dark Green', bg: '#0a0f0a', bgCard: '#1a2a1a', border: '#2a3a2a', text: '#d0e0d0', textSecondary: '#809080', primary: '#10b981', primaryLight: '#34d399', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '', estiloParticulas: 'padrao' },
+        rosa: { nome: 'Rose Pink', bg: '#1a0a14', bgCard: '#2d1a24', border: '#3d2a34', text: '#f0d0e0', textSecondary: '#b090a0', primary: '#ec4899', primaryLight: '#f472b6', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '', estiloParticulas: 'padrao' },
+        minimal: { nome: 'Minimal', bg: '#0a0a0a', bgCard: '#1a1a1a', border: '#2a2a2a', text: '#d0d0d0', textSecondary: '#808080', primary: '#6b7280', primaryLight: '#9ca3af', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', logo: '', estiloParticulas: 'padrao' },
+        warm: { nome: 'Warm Orange', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#f59e0b', primaryLight: '#fbbf24', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '', estiloParticulas: 'padrao' },
+        cyber: { nome: 'Cyber Neon', bg: '#0a0a0a', bgCard: '#1a0a2d', border: '#3d1a6e', text: '#e0d0ff', textSecondary: '#9070c0', primary: '#a855f7', primaryLight: '#c084fc', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '', estiloParticulas: 'padrao' },
+        ocean: { nome: 'Ocean Blue', bg: '#0a1a2a', bgCard: '#1a2a3d', border: '#2a3a50', text: '#d0e8ff', textSecondary: '#80a8c0', primary: '#06b6d4', primaryLight: '#22d3ee', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '', estiloParticulas: 'padrao' },
+        sunset: { nome: 'Sunset', bg: '#1a0a0a', bgCard: '#2d1a1a', border: '#3d2a2a', text: '#ffe0d0', textSecondary: '#c0a090', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '', estiloParticulas: 'padrao' },
+        forest: { nome: 'Forest', bg: '#0a1a0a', bgCard: '#1a2d1a', border: '#2a3d2a', text: '#d0f0d0', textSecondary: '#80b080', primary: '#22c55e', primaryLight: '#4ade80', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '', estiloParticulas: 'padrao' },
+        galaxy: { nome: 'Galaxy', bg: '#0d0d1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0d0ff', textSecondary: '#9080c0', primary: '#7c3aed', primaryLight: '#8b5cf6', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '', estiloParticulas: 'padrao' },
+        coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', logo: '', estiloParticulas: 'padrao' },
+        // 🆕 5 TEMAS ESPECIAIS
+        matrix: { nome: 'Matrix', bg: '#000000', bgCard: '#0a0a0a', border: '#00ff4133', text: '#00ff41', textSecondary: '#00cc33', primary: '#00ff41', primaryLight: '#33ff66', fontMain: "'JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', logo: '', estiloParticulas: 'matrix' },
+        dragonball: { nome: 'Dragon Ball', bg: '#1a0a00', bgCard: '#2d1800', border: '#f9731633', text: '#ffd700', textSecondary: '#ff8c00', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Poppins',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', logo: '', estiloParticulas: 'dragonball' },
+        naruto: { nome: 'Naruto', bg: '#0a0a1a', bgCard: '#1a1a2d', border: '#ff6b3533', text: '#ffd700', textSecondary: '#ff8c00', primary: '#ff6b35', primaryLight: '#ff8c5a', fontMain: "'Nunito',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', logo: '', estiloParticulas: 'naruto' },
+        harrypotter: { nome: 'Harry Potter', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#d4a57433', text: '#d4a574', textSecondary: '#c4956a', primary: '#d4a574', primaryLight: '#e0c0a0', fontMain: "'Cinzel',serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', logo: '', estiloParticulas: 'harrypotter' },
+        gamer: { nome: 'Gamer', bg: '#0d0020', bgCard: '#1a0035', border: '#00ffff33', text: '#00ffff', textSecondary: '#00cccc', primary: '#00ffff', primaryLight: '#33ffff', fontMain: "'Press Start 2P',cursive", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', logo: '', estiloParticulas: 'gamer' }
     };
 
     const LIMITES = {
         gratis: { links: 3, midia: 1, temas: 3, youtube: false, mp4: false, logo: false, fundo: false, analytics: false },
         pro: { links: 10, midia: 5, temas: 7, youtube: true, mp4: false, logo: true, fundo: false, analytics: false },
-        premium: { links: 999, midia: 999, temas: 12, youtube: true, mp4: true, logo: true, fundo: true, analytics: true }
+        premium: { links: 999, midia: 999, temas: 999, youtube: true, mp4: true, logo: true, fundo: true, analytics: true }
     };
 
-    function getTemasDisponiveis(plano) { return ['dev','clean','dark','rosa','minimal','warm','cyber','ocean','sunset','forest','galaxy','coffee'].slice(0, LIMITES[plano]?.temas || 3); }
+    const TODOS_TEMAS = ['dev','clean','dark','rosa','minimal','warm','cyber','ocean','sunset','forest','galaxy','coffee','matrix','dragonball','naruto','harrypotter','gamer'];
+
+    function getTemasDisponiveis(plano) { return TODOS_TEMAS.slice(0, LIMITES[plano]?.temas || 3); }
     function aplicarPreset(nome) { temaAtual = nome; document.querySelectorAll('.tema-preset').forEach(el => el.classList.remove('ativo')); const el = document.querySelector(`[data-tema="${nome}"]`); if (el) el.classList.add('ativo'); }
     async function getPlanoAtual() { const doc = await db.collection('usuarios').doc(userUID).get(); return doc.exists ? (doc.data().plano || 'gratis') : 'gratis'; }
 
@@ -321,7 +333,6 @@
     function escolherPlanoUpgrade(plano) { const link = linksPagamentoUpgrade[plano]; if (link) { window.open(link, '_blank'); alert('✅ Redirecionando...'); fecharModalUpgrade(); } else { alert('⚠️ Link não configurado.'); fecharModalUpgrade(); } }
     function copiarLinkPerfil() { const link = document.getElementById('perfil-link-preview')?.textContent; if (link) navigator.clipboard.writeText(link).then(() => alert('✅ Copiado!')); }
 
-    // ========== ANALYTICS ==========
     async function carregarAnalytics() {
         const plano = await getPlanoAtual();
         const secao = document.getElementById('secao-analytics');
@@ -345,7 +356,6 @@
         }
     }
 
-    // ========== FUNDO ==========
     async function salvarFundoUsuario() {
         const plano = await getPlanoAtual();
         if (!LIMITES[plano].fundo) { alert('⚠️ Premium apenas.'); return; }
@@ -355,14 +365,12 @@
         mostrarSucesso('fundo-sucesso');
     }
 
-    // ========== LINKS ==========
     async function carregarListaLinks() {
         const snap = await db.collection('usuarios').doc(userUID).collection('links').orderBy('ordem','asc').get();
         const lista = document.getElementById('lista-links');
         if (snap.empty) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
         lista.innerHTML = '';
         snap.forEach(doc => { const l = doc.data(); const div = document.createElement('div'); div.className = 'list-item';
-            // 🆕 Mostra imagem se for URL, senão emoji
             let iconPreview = l.icone || '🔗';
             if (l.icone && /^https?:\/\//i.test(l.icone) && /\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(l.icone)) {
                 iconPreview = `<img src="${l.icone}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;">`;
@@ -385,7 +393,6 @@
     async function removerLink(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('links').doc(id).delete(); carregarListaLinks(); carregarAnalytics(); } }
     function limparFormLink() { ['link-id','link-titulo','link-url','link-icone'].forEach(id => document.getElementById(id).value = ''); document.getElementById('link-ordem').value = '1'; }
 
-    // ========== MÍDIA ==========
     async function carregarListaMidias() {
         const snap = await db.collection('usuarios').doc(userUID).collection('midia').orderBy('ordem','asc').get();
         const lista = document.getElementById('lista-midias');
@@ -414,7 +421,6 @@
     async function removerMidia(id) { if (confirm('Remover?')) { await db.collection('usuarios').doc(userUID).collection('midia').doc(id).delete(); carregarListaMidias(); } }
     function limparFormMidia() { document.getElementById('midia-id').value = ''; document.getElementById('midia-url').value = ''; document.getElementById('midia-ordem').value = '1'; }
 
-    // ========== TEMA & PERFIL ==========
     async function salvarTema() {
         const plano = await getPlanoAtual();
         if (!getTemasDisponiveis(plano).includes(temaAtual)) { alert('⚠️ Tema não disponível.'); return; }
@@ -476,4 +482,4 @@
     if (auth.currentUser) { carregarDadosAdmin(); }
 </script>
 </body>
-    </html>
+</html>
