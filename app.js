@@ -14,7 +14,57 @@ const TEMA_PADRAO = {
     fontMono: "'JetBrains Mono', monospace",
     borderRadius: '12px', cardRadius: '16px',
     estiloHeader: 'console', logo: '',
-    backgroundImage: '', overlayColor: 'rgba(13,17,23,0.85)'
+    backgroundImage: '', overlayColor: 'rgba(13,17,23,0.85)',
+    estiloParticulas: 'padrao'
+};
+
+// ========== TEMAS ESPECIAIS (PARTÍCULAS ANIMADAS) ==========
+const TEMAS_ESPECIAIS = {
+    matrix: {
+        nome: 'Matrix', bg: '#000000', bgCard: '#0a0a0a', border: '#00ff4133',
+        text: '#00ff41', textSecondary: '#00cc33', primary: '#00ff41', primaryLight: '#33ff66',
+        fontMain: "'JetBrains Mono', monospace", fontMono: "'JetBrains Mono', monospace",
+        borderRadius: '8px', cardRadius: '12px',
+        estiloHeader: 'console', logo: '',
+        backgroundImage: '', overlayColor: 'rgba(0,0,0,0.9)',
+        estiloParticulas: 'matrix'
+    },
+    dragonball: {
+        nome: 'Dragon Ball', bg: '#1a0a00', bgCard: '#2d1800', border: '#f9731633',
+        text: '#ffd700', textSecondary: '#ff8c00', primary: '#f97316', primaryLight: '#fb923c',
+        fontMain: "'Poppins', sans-serif", fontMono: "'JetBrains Mono', monospace",
+        borderRadius: '16px', cardRadius: '20px',
+        estiloHeader: 'console', logo: '',
+        backgroundImage: '', overlayColor: 'rgba(26,10,0,0.85)',
+        estiloParticulas: 'dragonball'
+    },
+    naruto: {
+        nome: 'Naruto', bg: '#0a0a1a', bgCard: '#1a1a2d', border: '#ff6b3533',
+        text: '#ffd700', textSecondary: '#ff8c00', primary: '#ff6b35', primaryLight: '#ff8c5a',
+        fontMain: "'Nunito', sans-serif", fontMono: "'JetBrains Mono', monospace",
+        borderRadius: '14px', cardRadius: '18px',
+        estiloHeader: 'console', logo: '',
+        backgroundImage: '', overlayColor: 'rgba(10,10,26,0.85)',
+        estiloParticulas: 'naruto'
+    },
+    harrypotter: {
+        nome: 'Harry Potter', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#d4a57433',
+        text: '#d4a574', textSecondary: '#c4956a', primary: '#d4a574', primaryLight: '#e0c0a0',
+        fontMain: "'Cinzel', serif", fontMono: "'JetBrains Mono', monospace",
+        borderRadius: '12px', cardRadius: '16px',
+        estiloHeader: 'console', logo: '',
+        backgroundImage: '', overlayColor: 'rgba(10,10,26,0.9)',
+        estiloParticulas: 'harrypotter'
+    },
+    gamer: {
+        nome: 'Gamer', bg: '#0d0020', bgCard: '#1a0035', border: '#00ffff33',
+        text: '#00ffff', textSecondary: '#00cccc', primary: '#00ffff', primaryLight: '#33ffff',
+        fontMain: "'Press Start 2P', cursive", fontMono: "'JetBrains Mono', monospace",
+        borderRadius: '8px', cardRadius: '12px',
+        estiloHeader: 'console', logo: '',
+        backgroundImage: '', overlayColor: 'rgba(13,0,32,0.9)',
+        estiloParticulas: 'gamer'
+    }
 };
 
 // Elementos DOM
@@ -30,6 +80,7 @@ const bgOverlay = document.getElementById('bg-overlay');
 // Variáveis globais
 let currentUserId = null;
 let currentUserData = null;
+let particulasAtivas = null; // Referência para o loop de partículas
 
 // ========== APLICAR FUNDO (imagem + overlay) ==========
 function aplicarFundo(config) {
@@ -49,18 +100,12 @@ function aplicarFundo(config) {
 function aplicarCoresPersonalizadas(config) {
     if (!config) return;
     const root = document.documentElement;
-    
-    // Cor das partículas → variável CSS
     if (config.corParticulas) {
         root.style.setProperty('--particula-cor', config.corParticulas);
     }
-    
-    // Cor dos cards → variável CSS
     if (config.corCards) {
         root.style.setProperty('--link-card-bg', config.corCards);
     }
-    
-    // Cor do overlay → variável CSS
     if (config.overlayColor) {
         root.style.setProperty('--overlay-cor', config.overlayColor);
     }
@@ -82,6 +127,8 @@ function aplicarTema(tema) {
     root.style.setProperty('--border-radius', t.borderRadius);
     root.style.setProperty('--card-radius', t.cardRadius);
     aplicarFundo(t);
+    // 🆕 Iniciar partículas do tema
+    iniciarParticulasTema(t.estiloParticulas || 'padrao', t.primary || '#8b5cf6');
 }
 
 // ========== CARREGAR CONFIG GLOBAL ==========
@@ -243,6 +290,290 @@ function renderizarMidia(midias) {
         } else if (midia.tipo === 'mp4') conteudo = `<video controls style="width:100%;"><source src="${midia.url}" type="video/mp4"></video>`;
         return `<div class="media-card" style="animation-delay:${i*0.08}s;">${conteudo}</div>`;
     }).join('');
+}
+
+// ========== PARTÍCULAS ANIMADAS POR TEMA ==========
+const particulasCanvas = document.getElementById('particles-canvas');
+const particulasCtx = particulasCanvas?.getContext('2d');
+
+function iniciarParticulasTema(estilo, corPrimaria) {
+    if (!particulasCanvas || !particulasCtx) return;
+    
+    // Cancela animação anterior
+    if (particulasAtivas) {
+        cancelAnimationFrame(particulasAtivas);
+        particulasAtivas = null;
+    }
+    
+    const ctx = particulasCtx;
+    const canvas = particulasCanvas;
+    let particulas = [];
+    
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    
+    const cor = corPrimaria || '#8b5cf6';
+    
+    // ═══════════════════════════════════════
+    // 🟢 MATRIX - Chuva de caracteres verdes
+    // ═══════════════════════════════════════
+    if (estilo === 'matrix') {
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const fontSize = 14;
+        let colunas;
+        let drops;
+        
+        function initMatrix() {
+            colunas = Math.floor(canvas.width / fontSize);
+            drops = Array(colunas).fill(1);
+        }
+        initMatrix();
+        window.addEventListener('resize', initMatrix);
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        function animarMatrix() {
+            drawMatrix();
+            particulasAtivas = requestAnimationFrame(animarMatrix);
+        }
+        animarMatrix();
+    }
+    
+    // ═══════════════════════════════════════
+    // 🟠 DRAGON BALL - Esferas laranja
+    // ═══════════════════════════════════════
+    else if (estilo === 'dragonball') {
+        for (let i = 0; i < 30; i++) {
+            particulas.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 6 + 4,
+                speed: Math.random() * 1.5 + 0.5,
+                opacity: Math.random() * 0.6 + 0.2,
+                estrelas: Math.floor(Math.random() * 4) + 1
+            });
+        }
+        
+        function drawBola(particula) {
+            ctx.save();
+            ctx.globalAlpha = particula.opacity;
+            
+            // Esfera laranja
+            const grad = ctx.createRadialGradient(particula.x, particula.y, 0, particula.x, particula.y, particula.r);
+            grad.addColorStop(0, cor);
+            grad.addColorStop(0.6, '#ff8c00');
+            grad.addColorStop(1, '#cc4400');
+            ctx.beginPath();
+            ctx.arc(particula.x, particula.y, particula.r, 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            
+            // Estrelinhas dentro
+            ctx.fillStyle = '#ffd700';
+            ctx.font = (particula.r * 1.5) + 'px sans-serif';
+            ctx.fillText('⭐', particula.x - particula.r * 0.7, particula.y + particula.r * 0.5);
+            
+            ctx.restore();
+        }
+        
+        function animarDBZ() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particulas.forEach(p => {
+                p.y += p.speed;
+                if (p.y > canvas.height + p.r) {
+                    p.y = -p.r;
+                    p.x = Math.random() * canvas.width;
+                }
+                drawBola(p);
+            });
+            particulasAtivas = requestAnimationFrame(animarDBZ);
+        }
+        animarDBZ();
+    }
+    
+    // ═══════════════════════════════════════
+    // 🍥 NARUTO - Folhas caindo
+    // ═══════════════════════════════════════
+    else if (estilo === 'naruto') {
+        for (let i = 0; i < 25; i++) {
+            particulas.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 12 + 6,
+                speedX: (Math.random() - 0.5) * 1.5,
+                speedY: Math.random() * 1.5 + 0.8,
+                rotacao: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.05,
+                cor: ['#ff6b35', '#ff8c00', '#ff4500', '#228b22', '#ffd700'][Math.floor(Math.random() * 5)]
+            });
+        }
+        
+        function drawFolha(p) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotacao);
+            ctx.globalAlpha = 0.7;
+            ctx.fillStyle = p.cor;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.size, p.size * 0.4, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(-p.size, 0);
+            ctx.lineTo(p.size, 0);
+            ctx.stroke();
+            ctx.restore();
+        }
+        
+        function animarNaruto() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particulas.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.rotacao += p.rotSpeed;
+                if (p.y > canvas.height + p.size) {
+                    p.y = -p.size;
+                    p.x = Math.random() * canvas.width;
+                }
+                if (p.x > canvas.width + p.size) p.x = -p.size;
+                if (p.x < -p.size) p.x = canvas.width + p.size;
+                drawFolha(p);
+            });
+            particulasAtivas = requestAnimationFrame(animarNaruto);
+        }
+        animarNaruto();
+    }
+    
+    // ═══════════════════════════════════════
+    // ⚡ HARRY POTTER - Faíscas douradas
+    // ═══════════════════════════════════════
+    else if (estilo === 'harrypotter') {
+        for (let i = 0; i < 40; i++) {
+            particulas.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2.5 + 1,
+                speedX: (Math.random() - 0.5) * 0.8,
+                speedY: (Math.random() - 0.5) * 0.8,
+                opacity: Math.random(),
+                fadeSpeed: Math.random() * 0.02 + 0.005
+            });
+        }
+        
+        function animarHP() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particulas.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.opacity += p.fadeSpeed;
+                if (p.opacity >= 1 || p.opacity <= 0) p.fadeSpeed *= -1;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.x < 0) p.x = canvas.width;
+                if (p.y > canvas.height) p.y = 0;
+                if (p.y < 0) p.y = canvas.height;
+                
+                ctx.save();
+                ctx.globalAlpha = Math.abs(p.opacity);
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+                grad.addColorStop(0, cor);
+                grad.addColorStop(0.5, '#ffd700');
+                grad.addColorStop(1, 'transparent');
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.restore();
+            });
+            particulasAtivas = requestAnimationFrame(animarHP);
+        }
+        animarHP();
+    }
+    
+    // ═══════════════════════════════════════
+    // 🎮 GAMER - Ícones de games
+    // ═══════════════════════════════════════
+    else if (estilo === 'gamer') {
+        const icones = ['🎮', '🕹️', '👾', '💾', '🖥️', '🎯', '🏆', '⚡'];
+        for (let i = 0; i < 20; i++) {
+            particulas.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                icone: icones[Math.floor(Math.random() * icones.length)],
+                size: Math.random() * 16 + 12,
+                speed: Math.random() * 1.2 + 0.4,
+                opacity: Math.random() * 0.5 + 0.3
+            });
+        }
+        
+        function animarGamer() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particulas.forEach(p => {
+                p.y += p.speed;
+                if (p.y > canvas.height + 30) {
+                    p.y = -30;
+                    p.x = Math.random() * canvas.width;
+                }
+                ctx.save();
+                ctx.globalAlpha = p.opacity;
+                ctx.font = p.size + 'px sans-serif';
+                ctx.fillText(p.icone, p.x, p.y);
+                ctx.restore();
+            });
+            particulasAtivas = requestAnimationFrame(animarGamer);
+        }
+        animarGamer();
+    }
+    
+    // ═══════════════════════════════════════
+    // 🔮 PADRÃO - Partículas circulares
+    // ═══════════════════════════════════════
+    else {
+        for (let i = 0; i < 50; i++) {
+            particulas.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 0.5,
+                speedX: (Math.random() - 0.5) * 0.3,
+                speedY: (Math.random() - 0.5) * 0.3,
+                opacity: Math.random() * 0.5 + 0.1
+            });
+        }
+        
+        function animarPadrao() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particulas.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = cor.replace(/[\d.]+\)$/, `${p.opacity})`);
+                ctx.fill();
+            });
+            particulasAtivas = requestAnimationFrame(animarPadrao);
+        }
+        animarPadrao();
+    }
 }
 
 // ========== FUNÇÃO PRINCIPAL ==========
