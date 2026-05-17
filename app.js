@@ -256,12 +256,32 @@ async function renderizarPaginaUsuario(uid, userData) {
         meuLinkDiv.innerHTML = `<p style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">🔗 Seu link curto:</p><div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;"><code style="background:#161b22;padding:8px 14px;border-radius:8px;font-size:12px;color:#a78bfa;">${baseURL}?u=${userData.username}</code><button onclick="copiarLink('${baseURL}?u=${userData.username}')" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button></div>`;
     } else if (meuLinkDiv) { meuLinkDiv.innerHTML = ''; }
 }
-
 // ========== FUNÇÕES DE RENDERIZAÇÃO ==========
 function renderizarPerfil(perfil) {
     if (!profileSection) return;
     const inicial = (perfil.nome || 'D').charAt(0).toUpperCase();
-    profileSection.innerHTML = `${perfil.foto ? `<img src="${perfil.foto}" class="profile-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}<div class="profile-avatar-fallback" style="display:${perfil.foto ? 'none' : 'flex'};">${inicial}</div><h1 class="profile-name">${escapeHtml(perfil.nome || '@dev')}</h1><p class="profile-bio">${escapeHtml(perfil.bio || '')}</p>`;
+    profileSection.innerHTML = `${perfil.foto ? `<img src="${perfil.foto}" class="profile-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}<div class="profile-avatar-fallback" style="display:${perfil.foto ? 'none' : 'flex'}; animation: avatarGlow 3s ease-in-out infinite;">${inicial}</div><h1 class="profile-name">${escapeHtml(perfil.nome || '@dev')}</h1><p class="profile-bio">${escapeHtml(perfil.bio || '')}</p>`;
+    
+    // 🆕 Aplica brilho pulsante na borda da foto de perfil (todos os temas)
+    const avatar = profileSection.querySelector('.profile-avatar');
+    if (avatar) {
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#8b5cf6';
+        avatar.style.animation = 'avatarGlow 2s ease-in-out infinite';
+        avatar.style.boxShadow = `0 0 20px ${primaryColor}, 0 0 40px ${primaryColor}, 0 0 60px ${primaryColor}`;
+    }
+}
+
+// Adiciona keyframe do brilho pulsante se não existir
+if (!document.getElementById('glow-keyframes')) {
+    const styleEl = document.createElement('style');
+    styleEl.id = 'glow-keyframes';
+    styleEl.textContent = `
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary), 0 0 60px var(--primary); }
+            50% { box-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary), 0 0 100px var(--primary), 0 0 140px var(--primary); }
+        }
+    `;
+    document.head.appendChild(styleEl);
 }
 
 function renderizarLinks(links, uid) {
@@ -319,77 +339,147 @@ function iniciarParticulasTema(estilo, corPrimaria) {
     const cor = corPrimaria || '#8b5cf6';
     
     // ═══════════════════════════════════════
-    // 🟢 MATRIX - Chuva de caracteres verdes
+    // 🟢 MATRIX - Chuva densa com glow verde
     // ═══════════════════════════════════════
     if (estilo === 'matrix') {
-        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const fontSize = 14;
-        let colunas;
-        let drops;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*{}[]<>/\|?+=_-';
+        const fontSize = 16;
+        let colunas, drops;
         
         function initMatrix() {
-            colunas = Math.floor(canvas.width / fontSize);
-            drops = Array(colunas).fill(1);
+            colunas = Math.floor(canvas.width / fontSize) + 1;
+            drops = Array(colunas).fill(Math.random() * -canvas.height / fontSize);
         }
         initMatrix();
         window.addEventListener('resize', initMatrix);
         
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        function animarMatrix() {
+            // Fundo semi-transparente para rastro
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px monospace';
             
             for (let i = 0; i < drops.length; i++) {
+                // Caractere aleatório
                 const char = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                
+                // Primeiro caractere (cabeça da chuva) - brilhante
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#00ff41';
+                ctx.shadowBlur = 10;
+                ctx.font = 'bold ' + fontSize + 'px "JetBrains Mono", monospace';
+                ctx.fillText(char, x, y);
+                
+                // Caracteres abaixo (rastro) - mais escuros
+                for (let j = 1; j < 5; j++) {
+                    const trailY = y - j * fontSize;
+                    if (trailY > 0) {
+                        const alpha = 1 - (j * 0.2);
+                        ctx.fillStyle = `rgba(0, 255, 65, ${alpha})`;
+                        ctx.shadowColor = 'transparent';
+                        ctx.shadowBlur = 0;
+                        ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+                        ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, trailY);
+                    }
+                }
+                
+                // Reinicia a coluna
+                if (y > canvas.height && Math.random() > 0.97) {
+                    drops[i] = Math.random() * -canvas.height / fontSize;
                 }
                 drops[i]++;
             }
-        }
-        
-        function animarMatrix() {
-            drawMatrix();
+            
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            
             particulasAtivas = requestAnimationFrame(animarMatrix);
         }
         animarMatrix();
     }
     
     // ═══════════════════════════════════════
-    // 🟠 DRAGON BALL - Esferas laranja
+    // 🟠 DRAGON BALL - Esferas do Dragão reais
     // ═══════════════════════════════════════
     else if (estilo === 'dragonball') {
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 40; i++) {
             particulas.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                r: Math.random() * 6 + 4,
-                speed: Math.random() * 1.5 + 0.5,
-                opacity: Math.random() * 0.6 + 0.2,
-                estrelas: Math.floor(Math.random() * 4) + 1
+                r: Math.random() * 10 + 6,
+                speed: Math.random() * 1.8 + 0.6,
+                opacity: Math.random() * 0.4 + 0.4,
+                estrelas: Math.floor(Math.random() * 7) + 1
             });
         }
         
-        function drawBola(particula) {
+        function drawDragonBall(p) {
             ctx.save();
-            ctx.globalAlpha = particula.opacity;
+            ctx.globalAlpha = p.opacity;
             
-            // Esfera laranja
-            const grad = ctx.createRadialGradient(particula.x, particula.y, 0, particula.x, particula.y, particula.r);
-            grad.addColorStop(0, cor);
-            grad.addColorStop(0.6, '#ff8c00');
-            grad.addColorStop(1, '#cc4400');
+            const x = p.x;
+            const y = p.y;
+            const r = p.r;
+            
+            // Brilho externo (glow laranja)
+            const glowGrad = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 2);
+            glowGrad.addColorStop(0, 'rgba(249, 115, 22, 0.4)');
+            glowGrad.addColorStop(1, 'rgba(249, 115, 22, 0)');
             ctx.beginPath();
-            ctx.arc(particula.x, particula.y, particula.r, 0, Math.PI * 2);
+            ctx.arc(x, y, r * 2, 0, Math.PI * 2);
+            ctx.fillStyle = glowGrad;
+            ctx.fill();
+            
+            // Esfera principal (gradiente radial laranja)
+            const grad = ctx.createRadialGradient(x - r*0.25, y - r*0.3, r*0.1, x, y, r);
+            grad.addColorStop(0, '#ffcc00');
+            grad.addColorStop(0.3, '#f97316');
+            grad.addColorStop(0.7, '#e65c00');
+            grad.addColorStop(1, '#993300');
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
             
-            // Estrelinhas dentro
-            ctx.fillStyle = '#ffd700';
-            ctx.font = (particula.r * 1.5) + 'px sans-serif';
-            ctx.fillText('⭐', particula.x - particula.r * 0.7, particula.y + particula.r * 0.5);
+            // Borda
+            ctx.strokeStyle = 'rgba(255,200,0,0.6)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Brilho na parte superior
+            const shineGrad = ctx.createRadialGradient(x - r*0.3, y - r*0.35, 0, x, y, r);
+            shineGrad.addColorStop(0, 'rgba(255,255,255,0.5)');
+            shineGrad.addColorStop(0.3, 'rgba(255,255,255,0.1)');
+            shineGrad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = shineGrad;
+            ctx.fill();
+            
+            // Estrelas dentro (1 a 7)
+            const numEstrelas = p.estrelas;
+            const starSize = r * 0.45;
+            ctx.fillStyle = '#ff0000';
+            ctx.font = `bold ${starSize}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            if (numEstrelas === 1) {
+                ctx.fillText('★', x, y);
+            } else if (numEstrelas <= 4) {
+                const offset = starSize * 0.35;
+                const positions = numEstrelas === 2 ? [[0,-offset],[0,offset]] :
+                                  numEstrelas === 3 ? [[0,-offset],[-offset,offset],[offset,offset]] :
+                                  [[-offset,-offset],[offset,-offset],[-offset,offset],[offset,offset]];
+                positions.forEach(([dx, dy]) => ctx.fillText('★', x + dx, y + dy));
+            } else {
+                const offset = starSize * 0.4;
+                [[0,-offset],[-offset,-offset*0.3],[offset,-offset*0.3],[-offset,offset*0.3],[offset,offset*0.3],[0,offset],[0,0]]
+                    .slice(0, numEstrelas)
+                    .forEach(([dx, dy]) => ctx.fillText('★', x + dx, y + dy));
+            }
             
             ctx.restore();
         }
@@ -398,11 +488,12 @@ function iniciarParticulasTema(estilo, corPrimaria) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particulas.forEach(p => {
                 p.y += p.speed;
-                if (p.y > canvas.height + p.r) {
-                    p.y = -p.r;
+                if (p.y > canvas.height + p.r * 2) {
+                    p.y = -p.r * 2;
                     p.x = Math.random() * canvas.width;
+                    p.estrelas = Math.floor(Math.random() * 7) + 1;
                 }
-                drawBola(p);
+                drawDragonBall(p);
             });
             particulasAtivas = requestAnimationFrame(animarDBZ);
         }
@@ -410,14 +501,14 @@ function iniciarParticulasTema(estilo, corPrimaria) {
     }
     
     // ═══════════════════════════════════════
-    // 🍥 NARUTO - Folhas caindo
+    // 🍥 NARUTO - Folhas caindo (mantido)
     // ═══════════════════════════════════════
     else if (estilo === 'naruto') {
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 30; i++) {
             particulas.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() * 12 + 6,
+                size: Math.random() * 14 + 8,
                 speedX: (Math.random() - 0.5) * 1.5,
                 speedY: Math.random() * 1.5 + 0.8,
                 rotacao: Math.random() * Math.PI * 2,
@@ -430,11 +521,14 @@ function iniciarParticulasTema(estilo, corPrimaria) {
             ctx.save();
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rotacao);
-            ctx.globalAlpha = 0.7;
+            ctx.globalAlpha = 0.8;
             ctx.fillStyle = p.cor;
+            ctx.shadowColor = p.cor;
+            ctx.shadowBlur = 6;
             ctx.beginPath();
             ctx.ellipse(0, 0, p.size, p.size * 0.4, 0, 0, Math.PI * 2);
             ctx.fill();
+            ctx.shadowBlur = 0;
             ctx.strokeStyle = 'rgba(255,255,255,0.3)';
             ctx.lineWidth = 0.5;
             ctx.beginPath();
@@ -467,7 +561,7 @@ function iniciarParticulasTema(estilo, corPrimaria) {
     // ⚡ HARRY POTTER - Faíscas douradas
     // ═══════════════════════════════════════
     else if (estilo === 'harrypotter') {
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             particulas.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
@@ -493,12 +587,13 @@ function iniciarParticulasTema(estilo, corPrimaria) {
                 
                 ctx.save();
                 ctx.globalAlpha = Math.abs(p.opacity);
-                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
-                grad.addColorStop(0, cor);
-                grad.addColorStop(0.5, '#ffd700');
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.3, cor);
+                grad.addColorStop(0.6, '#ffd700');
                 grad.addColorStop(1, 'transparent');
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
                 ctx.fillStyle = grad;
                 ctx.fill();
                 ctx.restore();
@@ -509,34 +604,138 @@ function iniciarParticulasTema(estilo, corPrimaria) {
     }
     
     // ═══════════════════════════════════════
-    // 🎮 GAMER - Ícones de games
+    // 🎮 GAMER - Controles desenhados
     // ═══════════════════════════════════════
     else if (estilo === 'gamer') {
-        const icones = ['🎮', '🕹️', '👾', '💾', '🖥️', '🎯', '🏆', '⚡'];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 25; i++) {
             particulas.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                icone: icones[Math.floor(Math.random() * icones.length)],
-                size: Math.random() * 16 + 12,
-                speed: Math.random() * 1.2 + 0.4,
-                opacity: Math.random() * 0.5 + 0.3
+                size: Math.random() * 14 + 10,
+                speed: Math.random() * 1.5 + 0.5,
+                opacity: Math.random() * 0.5 + 0.3,
+                tipo: Math.floor(Math.random() * 3)
             });
+        }
+        
+        function drawControle(x, y, size, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(x, y);
+            
+            const s = size;
+            
+            // Corpo do controle
+            ctx.fillStyle = '#333366';
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 10;
+            
+            // Base arredondada
+            ctx.beginPath();
+            ctx.roundRect(-s*0.8, -s*0.5, s*1.6, s*1.2, s*0.3);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Direcional (esquerda)
+            ctx.fillStyle = '#222244';
+            ctx.strokeStyle = '#00cccc';
+            ctx.lineWidth = 1.5;
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(-s*0.35, -s*0.05, s*0.25, 0, Math.PI*2);
+            ctx.fill();
+            ctx.stroke();
+            // Cruz direcional
+            ctx.fillStyle = '#00ffff';
+            ctx.fillRect(-s*0.35 - s*0.06, -s*0.05 - s*0.15, s*0.12, s*0.3);
+            ctx.fillRect(-s*0.35 - s*0.15, -s*0.05 - s*0.06, s*0.3, s*0.12);
+            
+            // Botões A/B (direita)
+            ctx.fillStyle = '#ff0044';
+            ctx.beginPath();
+            ctx.arc(s*0.3, -s*0.15, s*0.1, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#00ff44';
+            ctx.beginPath();
+            ctx.arc(s*0.5, s*0.05, s*0.1, 0, Math.PI*2);
+            ctx.fill();
+            
+            // Botões centrais
+            ctx.fillStyle = '#888888';
+            ctx.fillRect(-s*0.1, -s*0.12, s*0.2, s*0.08);
+            ctx.fillRect(-s*0.04, -s*0.2, s*0.08, s*0.24);
+            
+            ctx.restore();
+        }
+        
+        function drawNave(x, y, size, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(x, y);
+            
+            const s = size;
+            ctx.fillStyle = '#00ff88';
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 1.5;
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 8;
+            
+            // Corpo da nave
+            ctx.beginPath();
+            ctx.moveTo(0, -s*0.7);
+            ctx.lineTo(s*0.5, s*0.5);
+            ctx.lineTo(-s*0.5, s*0.5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Canhão
+            ctx.fillStyle = '#ff00ff';
+            ctx.fillRect(-s*0.06, s*0.5, s*0.12, s*0.3);
+            
+            ctx.restore();
+        }
+        
+        function drawPowerUp(x, y, size, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(x, y);
+            
+            const s = size;
+            ctx.fillStyle = '#ffdd00';
+            ctx.strokeStyle = '#ff8800';
+            ctx.lineWidth = 1.5;
+            ctx.shadowColor = '#ffdd00';
+            ctx.shadowBlur = 8;
+            
+            // Diamante
+            ctx.beginPath();
+            ctx.moveTo(0, -s*0.6);
+            ctx.lineTo(s*0.4, 0);
+            ctx.lineTo(0, s*0.6);
+            ctx.lineTo(-s*0.4, 0);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.restore();
         }
         
         function animarGamer() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particulas.forEach(p => {
                 p.y += p.speed;
-                if (p.y > canvas.height + 30) {
-                    p.y = -30;
+                if (p.y > canvas.height + 40) {
+                    p.y = -40;
                     p.x = Math.random() * canvas.width;
+                    p.tipo = Math.floor(Math.random() * 3);
                 }
-                ctx.save();
-                ctx.globalAlpha = p.opacity;
-                ctx.font = p.size + 'px sans-serif';
-                ctx.fillText(p.icone, p.x, p.y);
-                ctx.restore();
+                
+                if (p.tipo === 0) drawControle(p.x, p.y, p.size, p.opacity);
+                else if (p.tipo === 1) drawNave(p.x, p.y, p.size, p.opacity);
+                else drawPowerUp(p.x, p.y, p.size, p.opacity);
             });
             particulasAtivas = requestAnimationFrame(animarGamer);
         }
@@ -547,14 +746,14 @@ function iniciarParticulasTema(estilo, corPrimaria) {
     // 🔮 PADRÃO - Partículas circulares
     // ═══════════════════════════════════════
     else {
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 60; i++) {
             particulas.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                r: Math.random() * 2 + 0.5,
+                r: Math.random() * 2.5 + 0.8,
                 speedX: (Math.random() - 0.5) * 0.3,
                 speedY: (Math.random() - 0.5) * 0.3,
-                opacity: Math.random() * 0.5 + 0.1
+                opacity: Math.random() * 0.5 + 0.2
             });
         }
         
@@ -565,10 +764,25 @@ function iniciarParticulasTema(estilo, corPrimaria) {
                 p.y += p.speedY;
                 if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                
+                // Glow na partícula
+                ctx.save();
+                const glowGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+                glowGrad.addColorStop(0, cor);
+                glowGrad.addColorStop(1, 'transparent');
+                ctx.globalAlpha = p.opacity * 0.5;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                ctx.fillStyle = glowGrad;
+                ctx.fill();
+                
+                // Partícula central
+                ctx.globalAlpha = p.opacity;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = cor.replace(/[\d.]+\)$/, `${p.opacity})`);
+                ctx.fillStyle = cor;
                 ctx.fill();
+                ctx.restore();
             });
             particulasAtivas = requestAnimationFrame(animarPadrao);
         }
