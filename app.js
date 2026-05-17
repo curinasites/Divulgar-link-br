@@ -93,7 +93,7 @@ async function carregarConfigGlobal() {
             if (config.logo && headerLt) {
                 const consoleLine = headerLt.querySelector('.console-line');
                 if (consoleLine) {
-                    consoleLine.innerHTML = `<img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;"><span class="console-text"> Divulga Link BR 🇧🇷</span>`;
+                    consoleLine.innerHTML = `<img src="${config.logo}" alt="Logo" style="width:22px;height:22px;border-radius:50%;object-fit:cover;"><span class="console-text"> Divulga Link BR</span>`;
                 }
             }
             aplicarCoresPersonalizadas(config);
@@ -101,6 +101,24 @@ async function carregarConfigGlobal() {
         }
     } catch (error) {}
     return null;
+}
+
+// ========== VERIFICA SE É URL DE IMAGEM ==========
+function isImageUrl(texto) {
+    if (!texto) return false;
+    const urlPattern = /^https?:\/\//i;
+    const imageExtPattern = /\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)(\?.*)?$/i;
+    const imageHostPattern = /(imgur|ibb\.co|cloudinary|images\.unsplash|firebasestorage|googleapis\.com\/.*\/o\/)/i;
+    return urlPattern.test(texto) && (imageExtPattern.test(texto) || imageHostPattern.test(texto));
+}
+
+// ========== RENDERIZAR ÍCONE (emoji ou imagem) ==========
+function renderizarIcone(icone) {
+    if (!icone) return '🔗';
+    if (isImageUrl(icone)) {
+        return `<img src="${icone}" alt="ícone" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">`;
+    }
+    return icone;
 }
 
 // ========== CONTADOR DE CLIQUES ==========
@@ -202,13 +220,15 @@ function renderizarPerfil(perfil) {
 function renderizarLinks(links, uid) {
     if (!linksSection) return;
     if (links.length === 0) { linksSection.innerHTML = '<p style="text-align:center;color:#8b949e;font-size:13px;padding:20px;">Nenhum link ainda.</p>'; return; }
-    linksSection.innerHTML = links.map((link, i) => `
+    linksSection.innerHTML = links.map((link, i) => {
+        const iconHtml = renderizarIcone(link.icone);
+        return `
         <a href="${link.url || '#'}" class="link-btn" target="_blank" rel="noopener" style="animation-delay:${i*0.05}s;" onclick="contarClique('${link.id}', '${uid || currentUserId}')">
-            <span class="link-icon">${link.icone || '🔗'}</span>
+            <span class="link-icon">${iconHtml}</span>
             <span>${escapeHtml(link.titulo || 'Link')}</span>
             <span class="link-arrow">→</span>
         </a>
-    `).join('');
+    `}).join('');
 }
 
 function renderizarMidia(midias) {
