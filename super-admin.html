@@ -87,6 +87,11 @@
         .btn-small-lt:hover { border-color: #8b5cf6; color: #a78bfa; }
         .btn-danger-lt { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #f85149; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .btn-danger-lt:hover { background: rgba(248,81,73,0.2); }
+        .tema-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .tema-preset { padding: 12px; border-radius: 10px; border: 2px solid #30363d; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; background: #0d1117; color: #c9d1d9; transition: all 0.2s; }
+        .tema-preset:hover { border-color: #f59e0b; transform: translateY(-2px); }
+        .tema-preset.ativo { border-color: #f59e0b; background: rgba(245,158,11,0.1); }
+        .cor-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -161,10 +166,36 @@
             
             <hr style="border-color:#30363d;margin:16px 0;">
             
+            <h4 style="color:#a78bfa;margin-bottom:12px;">🎨 Tema da Página Principal</h4>
+            <div class="form-group"><label>Presets</label>
+                <div class="tema-presets" id="pp-tema-presets">
+                    <div class="tema-preset ativo" data-tema="dev" onclick="aplicarPresetPP('dev')"><span class="cor-preview" style="background:#8b5cf6;"></span>Dev Terminal</div>
+                    <div class="tema-preset" data-tema="clean" onclick="aplicarPresetPP('clean')"><span class="cor-preview" style="background:#3b82f6;"></span>Clean Blue</div>
+                    <div class="tema-preset" data-tema="dark" onclick="aplicarPresetPP('dark')"><span class="cor-preview" style="background:#10b981;"></span>Dark Green</div>
+                    <div class="tema-preset" data-tema="rosa" onclick="aplicarPresetPP('rosa')"><span class="cor-preview" style="background:#ec4899;"></span>Rose Pink</div>
+                    <div class="tema-preset" data-tema="minimal" onclick="aplicarPresetPP('minimal')"><span class="cor-preview" style="background:#6b7280;"></span>Minimal</div>
+                    <div class="tema-preset" data-tema="warm" onclick="aplicarPresetPP('warm')"><span class="cor-preview" style="background:#f59e0b;"></span>Warm Orange</div>
+                    <div class="tema-preset" data-tema="cyber" onclick="aplicarPresetPP('cyber')"><span class="cor-preview" style="background:#a855f7;"></span>Cyber Neon</div>
+                    <div class="tema-preset" data-tema="ocean" onclick="aplicarPresetPP('ocean')"><span class="cor-preview" style="background:#06b6d4;"></span>Ocean Blue</div>
+                    <div class="tema-preset" data-tema="sunset" onclick="aplicarPresetPP('sunset')"><span class="cor-preview" style="background:#f97316;"></span>Sunset</div>
+                    <div class="tema-preset" data-tema="forest" onclick="aplicarPresetPP('forest')"><span class="cor-preview" style="background:#22c55e;"></span>Forest</div>
+                    <div class="tema-preset" data-tema="galaxy" onclick="aplicarPresetPP('galaxy')"><span class="cor-preview" style="background:#7c3aed;"></span>Galaxy</div>
+                    <div class="tema-preset" data-tema="coffee" onclick="aplicarPresetPP('coffee')"><span class="cor-preview" style="background:#92400e;"></span>Coffee</div>
+                    <!-- 🆕 5 TEMAS ESPECIAIS -->
+                    <div class="tema-preset" data-tema="matrix" onclick="aplicarPresetPP('matrix')"><span class="cor-preview" style="background:#00ff41;"></span>🟢 Matrix</div>
+                    <div class="tema-preset" data-tema="dragonball" onclick="aplicarPresetPP('dragonball')"><span class="cor-preview" style="background:#f97316;"></span>🟠 Dragon Ball</div>
+                    <div class="tema-preset" data-tema="naruto" onclick="aplicarPresetPP('naruto')"><span class="cor-preview" style="background:#ff6b35;"></span>🍥 Naruto</div>
+                    <div class="tema-preset" data-tema="harrypotter" onclick="aplicarPresetPP('harrypotter')"><span class="cor-preview" style="background:#d4a574;"></span>⚡ Harry Potter</div>
+                    <div class="tema-preset" data-tema="gamer" onclick="aplicarPresetPP('gamer')"><span class="cor-preview" style="background:#00ffff;"></span>🎮 Gamer</div>
+                </div>
+            </div>
+            
+            <hr style="border-color:#30363d;margin:16px 0;">
+            
             <h4 style="color:#a78bfa;margin-bottom:12px;">🔗 Links da Página Principal</h4>
             <div class="form-group"><label>Título do Link</label><input type="text" id="pp-link-titulo" placeholder="Criar Minha Conta"></div>
             <div class="form-group"><label>URL do Link</label><input type="text" id="pp-link-url" placeholder="cadastro.html"></div>
-            <div class="form-group"><label>Ícone (emoji)</label><input type="text" id="pp-link-icone" placeholder="🚀"></div>
+            <div class="form-group"><label>Ícone (emoji ou URL da imagem)</label><input type="text" id="pp-link-icone" placeholder="🚀 ou https://..."></div>
             <div class="form-group"><label>Ordem</label><input type="number" id="pp-link-ordem" value="1"></div>
             <input type="hidden" id="pp-link-id" value="">
             <button class="btn-primary-lt" onclick="salvarLinkPP()">💾 Salvar Link</button>
@@ -211,7 +242,6 @@
             <div class="form-group"><label>🖼️ Logo do Site (URL)</label><input type="text" id="config-logo" placeholder="https://..."></div>
             <div class="form-group"><label>🌄 Imagem de Fundo (URL)</label><input type="text" id="config-bg" placeholder="https://... (deixe vazio para fundo escuro)"></div>
             <div class="form-group"><label>🎨 Cor do Overlay (rgba)</label><input type="text" id="config-overlay" placeholder="rgba(13,17,23,0.85)"></div>
-            <!-- 🆕 NOVOS CAMPOS DE COR -->
             <div class="form-group"><label>✨ Cor das Partículas (rgba)</label><input type="text" id="config-cor-particulas" placeholder="rgba(139, 92, 246, 0.4)"></div>
             <div class="form-group"><label>🎨 Cor dos Cards de Link (rgba)</label><input type="text" id="config-cor-cards" placeholder="rgba(139, 92, 246, 0.1)"></div>
             <button class="btn-small" onclick="salvarConfigGeral()">💾 Salvar Configurações</button>
@@ -227,6 +257,38 @@
         const SUPER_ADMIN_EMAIL = "Franciscodemelocurina9@gmail.com";
 
         function isSuperAdmin(email) { return email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase(); }
+
+        // 🆕 Tema atual da página principal
+        let temaAtualPP = 'dev';
+        
+        // 🆕 TEMAS DISPONÍVEIS (incluindo os 5 especiais)
+        const TEMAS_PP = {
+            dev: { nome: 'Dev Terminal', bg: '#0d1117', bgCard: '#161b22', border: '#30363d', text: '#c9d1d9', textSecondary: '#8b949e', primary: '#8b5cf6', primaryLight: '#a78bfa', fontMain: "'Inter','JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloParticulas: 'padrao' },
+            clean: { nome: 'Clean Blue', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0e0f0', textSecondary: '#9090b0', primary: '#3b82f6', primaryLight: '#60a5fa', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloParticulas: 'padrao' },
+            dark: { nome: 'Dark Green', bg: '#0a0f0a', bgCard: '#1a2a1a', border: '#2a3a2a', text: '#d0e0d0', textSecondary: '#809080', primary: '#10b981', primaryLight: '#34d399', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloParticulas: 'padrao' },
+            rosa: { nome: 'Rose Pink', bg: '#1a0a14', bgCard: '#2d1a24', border: '#3d2a34', text: '#f0d0e0', textSecondary: '#b090a0', primary: '#ec4899', primaryLight: '#f472b6', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', estiloParticulas: 'padrao' },
+            minimal: { nome: 'Minimal', bg: '#0a0a0a', bgCard: '#1a1a1a', border: '#2a2a2a', text: '#d0d0d0', textSecondary: '#808080', primary: '#6b7280', primaryLight: '#9ca3af', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', estiloParticulas: 'padrao' },
+            warm: { nome: 'Warm Orange', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#f59e0b', primaryLight: '#fbbf24', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloParticulas: 'padrao' },
+            cyber: { nome: 'Cyber Neon', bg: '#0a0a0a', bgCard: '#1a0a2d', border: '#3d1a6e', text: '#e0d0ff', textSecondary: '#9070c0', primary: '#a855f7', primaryLight: '#c084fc', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloParticulas: 'padrao' },
+            ocean: { nome: 'Ocean Blue', bg: '#0a1a2a', bgCard: '#1a2a3d', border: '#2a3a50', text: '#d0e8ff', textSecondary: '#80a8c0', primary: '#06b6d4', primaryLight: '#22d3ee', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloParticulas: 'padrao' },
+            sunset: { nome: 'Sunset', bg: '#1a0a0a', bgCard: '#2d1a1a', border: '#3d2a2a', text: '#ffe0d0', textSecondary: '#c0a090', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloParticulas: 'padrao' },
+            forest: { nome: 'Forest', bg: '#0a1a0a', bgCard: '#1a2d1a', border: '#2a3d2a', text: '#d0f0d0', textSecondary: '#80b080', primary: '#22c55e', primaryLight: '#4ade80', fontMain: "'Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloParticulas: 'padrao' },
+            galaxy: { nome: 'Galaxy', bg: '#0d0d1a', bgCard: '#1a1a35', border: '#2a2a50', text: '#e0d0ff', textSecondary: '#9080c0', primary: '#7c3aed', primaryLight: '#8b5cf6', fontMain: "'Poppins','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', estiloParticulas: 'padrao' },
+            coffee: { nome: 'Coffee', bg: '#1a0f0a', bgCard: '#2d1f1a', border: '#3d2f2a', text: '#f0e0d0', textSecondary: '#b0a090', primary: '#92400e', primaryLight: '#b45309', fontMain: "'Nunito','Inter',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '10px', cardRadius: '14px', estiloParticulas: 'padrao' },
+            // 🆕 5 TEMAS ESPECIAIS
+            matrix: { nome: 'Matrix', bg: '#000000', bgCard: '#0a0a0a', border: '#00ff4133', text: '#00ff41', textSecondary: '#00cc33', primary: '#00ff41', primaryLight: '#33ff66', fontMain: "'JetBrains Mono',monospace", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', estiloParticulas: 'matrix' },
+            dragonball: { nome: 'Dragon Ball', bg: '#1a0a00', bgCard: '#2d1800', border: '#f9731633', text: '#ffd700', textSecondary: '#ff8c00', primary: '#f97316', primaryLight: '#fb923c', fontMain: "'Poppins',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '16px', cardRadius: '20px', estiloParticulas: 'dragonball' },
+            naruto: { nome: 'Naruto', bg: '#0a0a1a', bgCard: '#1a1a2d', border: '#ff6b3533', text: '#ffd700', textSecondary: '#ff8c00', primary: '#ff6b35', primaryLight: '#ff8c5a', fontMain: "'Nunito',sans-serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '14px', cardRadius: '18px', estiloParticulas: 'naruto' },
+            harrypotter: { nome: 'Harry Potter', bg: '#0a0a1a', bgCard: '#1a1a35', border: '#d4a57433', text: '#d4a574', textSecondary: '#c4956a', primary: '#d4a574', primaryLight: '#e0c0a0', fontMain: "'Cinzel',serif", fontMono: "'JetBrains Mono',monospace", borderRadius: '12px', cardRadius: '16px', estiloParticulas: 'harrypotter' },
+            gamer: { nome: 'Gamer', bg: '#0d0020', bgCard: '#1a0035', border: '#00ffff33', text: '#00ffff', textSecondary: '#00cccc', primary: '#00ffff', primaryLight: '#33ffff', fontMain: "'Press Start 2P',cursive", fontMono: "'JetBrains Mono',monospace", borderRadius: '8px', cardRadius: '12px', estiloParticulas: 'gamer' }
+        };
+
+        function aplicarPresetPP(nome) {
+            temaAtualPP = nome;
+            document.querySelectorAll('#pp-tema-presets .tema-preset').forEach(el => el.classList.remove('ativo'));
+            const el = document.querySelector(`#pp-tema-presets [data-tema="${nome}"]`);
+            if (el) el.classList.add('ativo');
+        }
 
         async function garantirSuperAdminNoFirestore(user) {
             const userRef = db.collection('usuarios').doc(user.uid);
@@ -290,12 +352,14 @@
 
         // ========== PÁGINA PRINCIPAL ==========
         async function salvarPerfilPP() {
+            const temaPP = TEMAS_PP[temaAtualPP] || TEMAS_PP['dev'];
             const dados = {
                 perfil: {
                     nome: document.getElementById('pp-nome').value.trim(),
                     bio: document.getElementById('pp-bio').value.trim(),
                     foto: document.getElementById('pp-foto').value.trim()
-                }
+                },
+                tema: temaPP
             };
             await db.collection('config').doc('paginaPrincipal').set(dados, { merge: true });
             mostrarSucesso('pp-perfil-sucesso');
@@ -331,15 +395,20 @@
             const links = snap.exists && snap.data().links ? snap.data().links : [];
             const lista = document.getElementById('lista-links-pp');
             if (links.length === 0) { lista.innerHTML = '<p style="color:#8b949e;font-size:12px;">Nenhum link.</p>'; return; }
-            lista.innerHTML = links.map(l => `
+            lista.innerHTML = links.map(l => {
+                let iconPreview = l.icone || '🔗';
+                if (l.icone && /^https?:\/\//i.test(l.icone) && /\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(l.icone)) {
+                    iconPreview = `<img src="${l.icone}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;">`;
+                }
+                return `
                 <div class="list-item">
-                    <div class="info"><strong>${l.icone||'🔗'} ${l.titulo}</strong><small>ordem: ${l.ordem||1}</small></div>
+                    <div class="info"><strong>${iconPreview} ${l.titulo}</strong><small>ordem: ${l.ordem||1}</small></div>
                     <div class="actions">
                         <button class="btn-small-lt" onclick="editarLinkPP('${l.id}')">✏️</button>
                         <button class="btn-danger-lt" onclick="removerLinkPP('${l.id}')">🗑</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function editarLinkPP(id) {
@@ -521,7 +590,6 @@
                 document.getElementById('config-logo').value = d.logo || '';
                 document.getElementById('config-bg').value = d.backgroundImage || '';
                 document.getElementById('config-overlay').value = d.overlayColor || 'rgba(13,17,23,0.85)';
-                // 🆕 Carrega cores personalizadas
                 document.getElementById('config-cor-particulas').value = d.corParticulas || 'rgba(139, 92, 246, 0.4)';
                 document.getElementById('config-cor-cards').value = d.corCards || 'rgba(139, 92, 246, 0.1)';
             }
@@ -534,7 +602,12 @@
                     document.getElementById('pp-bio').value = pp.perfil.bio || '';
                     document.getElementById('pp-foto').value = pp.perfil.foto || '';
                 }
+                // 🆕 Carrega tema da página principal
+                if (pp.tema) {
+                    temaAtualPP = Object.keys(TEMAS_PP).find(k => TEMAS_PP[k].nome === pp.tema.nome) || 'dev';
+                }
             }
+            aplicarPresetPP(temaAtualPP);
             carregarLinksPP();
             carregarMidiasPP();
         }
@@ -602,7 +675,6 @@
                 logo: document.getElementById('config-logo').value.trim(),
                 backgroundImage: document.getElementById('config-bg').value.trim(),
                 overlayColor: document.getElementById('config-overlay').value.trim() || 'rgba(13,17,23,0.85)',
-                // 🆕 Salva cores personalizadas
                 corParticulas: document.getElementById('config-cor-particulas').value.trim(),
                 corCards: document.getElementById('config-cor-cards').value.trim(),
                 atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
