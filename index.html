@@ -127,6 +127,11 @@
             opacity: 0;
             pointer-events: none;
         }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         #loading-screen .spinner {
             width: 36px;
             height: 36px;
@@ -134,13 +139,6 @@
             border-top-color: #8b5cf6;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #loading-screen .text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: #8b949e;
-            letter-spacing: 1px;
         }
 
         /* ========== FOOTER FIXO ========== */
@@ -337,10 +335,14 @@
         <button class="banner-btn-fechar" id="banner-btn-fechar" disabled onclick="fecharBanner()">✕</button>
     </div>
 
-    <!-- LOADING SCREEN -->
+    <!-- LOADING SCREEN COM LOGO E NOME -->
     <div id="loading-screen">
-        <div class="spinner"></div>
-        <p class="text">> carregando...</p>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
+            <img src="favicon.png" alt="Logo" style="width:60px;height:60px;border-radius:50%;object-fit:cover; animation: pulse 1.5s ease-in-out infinite;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:#a78bfa;font-weight:700; letter-spacing: 1px;">Divulga Link BR</span>
+            <div class="spinner"></div>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8b949e;">Preparando seus links...</p>
+        </div>
     </div>
 
     <div class="container-lt">
@@ -501,4 +503,4 @@
     <script defer src="auth.js"></script>
     <script defer src="app.js"></script>
 </body>
-                </html>
+</html>
