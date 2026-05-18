@@ -106,17 +106,61 @@
         .login-erro { color: #f85149; font-size: 12px; margin-top: 8px; display: none; }
         .modal-link { margin-top: 16px; font-size: 12px; }
         .modal-link a { color: #a78bfa; text-decoration: none; }
-        .loading-inicial {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 50vh; gap: 14px;
+        
+        /* ========== LOADING SCREEN ========== */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1117;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            transition: opacity 0.3s ease;
         }
-        .loading-inicial .spinner {
-            width: 36px; height: 36px; border: 3px solid rgba(139,92,246,0.15);
-            border-top-color: #8b5cf6; border-radius: 50%; animation: spin 0.7s linear infinite;
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #loading-screen .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(139,92,246,0.15);
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-inicial .text {
-            font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b949e; letter-spacing: 1px;
+        #loading-screen .text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #8b949e;
+            letter-spacing: 1px;
+        }
+
+        /* ========== FOOTER FIXO ========== */
+        .footer-lt {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            background: rgba(13, 17, 23, 0.9);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 12px 20px;
+            margin: 0;
+        }
+        .footer-lt p {
+            font-size: 11px;
+            color: #484f58;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0;
         }
 
         /* ========== BANNER FIXO NO RODAPÉ ========== */
@@ -293,6 +337,12 @@
         <button class="banner-btn-fechar" id="banner-btn-fechar" disabled onclick="fecharBanner()">✕</button>
     </div>
 
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p class="text">> carregando...</p>
+    </div>
+
     <div class="container-lt">
         <header id="header-lt">
             <div class="console-line">
@@ -399,7 +449,6 @@
             }, 400);
         }
 
-        // Iniciar contador quando a página carregar
         window.addEventListener('load', () => {
             iniciarContadorBanner();
         });
@@ -445,11 +494,11 @@
         animateParticles();
     </script>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script defer src="firebase-config.js"></script>
+    <script defer src="auth.js"></script>
+    <script defer src="app.js"></script>
 </body>
-</html>
+                </html>
