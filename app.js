@@ -198,6 +198,8 @@ async function renderizarPaginaPrincipal() {
             else if (linksSection) linksSection.innerHTML = `<a href="cadastro.html" class="link-btn" style="background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1)); border:1px solid rgba(139,92,246,0.2);"><span class="link-icon">🚀</span><span>Criar Minha Conta Gratuita</span><span class="link-arrow">→</span></a><a href="admin.html" class="link-btn"><span class="link-icon">🔐</span><span>Acessar Painel Admin</span><span class="link-arrow">→</span></a>`;
             if (data.midias && data.midias.length > 0 && mediaSection) renderizarMidia(data.midias);
             else if (mediaSection) mediaSection.innerHTML = '';
+            // ✅ Esconde o loading screen
+            document.getElementById('loading-screen')?.classList.add('hidden');
             return;
         }
     } catch(e) {}
@@ -210,6 +212,8 @@ async function renderizarPaginaPrincipal() {
     if (mediaSection) mediaSection.innerHTML = '';
     if (botoesAdminDiv) botoesAdminDiv.style.display = 'none';
     if (meuLinkDiv) meuLinkDiv.innerHTML = '';
+    // ✅ Esconde o loading screen
+    document.getElementById('loading-screen')?.classList.add('hidden');
 }
 
 // ========== RENDERIZAR PÁGINA DO USUÁRIO ==========
@@ -255,6 +259,9 @@ async function renderizarPaginaUsuario(uid, userData) {
         const baseURL = window.location.origin + window.location.pathname;
         meuLinkDiv.innerHTML = `<p style="font-size:12px;color:#8b949e;font-family:'JetBrains Mono',monospace;">🔗 Seu link curto:</p><div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;"><code style="background:#161b22;padding:8px 14px;border-radius:8px;font-size:12px;color:#a78bfa;">${baseURL}?u=${userData.username}</code><button onclick="copiarLink('${baseURL}?u=${userData.username}')" style="background:#8b5cf6;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:11px;">📋 Copiar</button></div>`;
     } else if (meuLinkDiv) { meuLinkDiv.innerHTML = ''; }
+    
+    // ✅ Esconde o loading screen
+    document.getElementById('loading-screen')?.classList.add('hidden');
 }
 // ========== FUNÇÕES DE RENDERIZAÇÃO ==========
 function renderizarPerfil(perfil) {
@@ -800,10 +807,14 @@ async function carregarPaginaPublica() {
             currentUserId = userDoc.id;
             currentUserData = userDoc.data();
             await renderizarPaginaUsuario(currentUserId, currentUserData);
+            // ✅ Esconde o loading screen
+            document.getElementById('loading-screen')?.classList.add('hidden');
             return;
         } catch (error) { renderizarErro(); return; }
     }
     await renderizarPaginaPrincipal();
+    // ✅ Esconde o loading screen
+    document.getElementById('loading-screen')?.classList.add('hidden');
 }
 
 function renderizarUsuarioNaoEncontrado() {
